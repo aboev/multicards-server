@@ -17,7 +17,6 @@ class Constants
   JSON_GAME_PROFILES	=	"profiles"
   JSON_GAME_CURQUESTION	=	"question"
   JSON_GAME_QUESTIONCNT	=	"question_count"
-  JSON_GAME_QUESTIONTYPE=	"question_type"
   JSON_GAME_SETID	=	"setid"
 
   JSON_USER_SOCKETID	=	"socketid"
@@ -38,6 +37,7 @@ class Constants
   JSON_QST_QUESTION	=	"question"
   JSON_QST_OPTIONS	=	"options"
   JSON_QST_ANSWER_ID	=	"answer_id"
+  JSON_QST_TYPE		=	"question_type"
 
   RESULT_OK             =       "OK"
   RESULT_ERROR          =       "ERROR"
