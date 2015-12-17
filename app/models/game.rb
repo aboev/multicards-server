@@ -12,25 +12,50 @@ class Game < ActiveRecord::Base
 
   QUESTIONS_PER_GAME = 25
 
+  def init
+    game_details = {Constants::JSON_GAME_STATUS => Game::STATUS_SEARCHING_PLAYERS,
+	Constants::JSON_GAME_QUESTIONCNT => 0,
+	Constants::JSON_GAME_PROFILES => {},
+	Constants::JSON_GAME_PLAYERS => {}}
+    self.status = Game::STATUS_SEARCHING_PLAYERS
+    self.details = game_details.to_json
+    self.save
+  end
+
   def start_game
-    details = JSON.parse(self.details)
-    if (details[Constants::JSON_GAME_PLAYERS].length > 1 )
-      msg_to = details[Constants::JSON_GAME_PLAYERS].keys
+    details_json = JSON.parse(self.details)
+    if (details_json[Constants::JSON_GAME_PLAYERS].length > 1 )
+      details_json[Constants::JSON_GAME_STATUS] = STATUS_IN_PROGRESS
+      self.status = STATUS_IN_PROGRESS
+      self.details = details_json.to_json
+      self.save
+
+      msg_to = details_json[Constants::JSON_GAME_PLAYERS].keys
       msg_type = Constants::SOCK_MSG_TYPE_GAME_START
-      msg_body = details
+      msg_body = details_json
       message = Protocol.make_msg(msg_to, msg_type, msg_body)
       $redis.publish Constants::SOCK_CHANNEL, message
       next_question
     end
   end
 
+  def join_player(user)
+    details_json = JSON.parse(self.details)
+    details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
+    details_json[Constants::JSON_GAME_PLAYERS][user.socket_id] = Game::PLAYER_STATUS_WAITING
+    self.details = details_json.to_json
+    self.save
+  end
+
   def next_question
    details = JSON.parse(self.details)
    ready_players = self.get_ready_players_count
-   if ( (details[Constants::JSON_GAME_STATUS] == Game::STATUS_IN_PROGRESS) and ( ready_players == details[Constants::JSON_GAME_PLAYERS].length ) )
+   total_players = details[Constants::JSON_GAME_PLAYERS].length
+   game_status = details[Constants::JSON_GAME_STATUS]
+   if ( (game_status == Game::STATUS_IN_PROGRESS) and ( ready_players == total_players ) )
 
      question = Question.make_random(Question::QTYPE_MULTI_CHOICE)
-     if ( rand(100) > 90 )
+     if ( rand(100) > 110 )
        question = Question.make_random(Question::QTYPE_DIRECT_INPUT)
      end
 
@@ -43,7 +68,7 @@ class Game < ActiveRecord::Base
 
      Hash.new.merge(details[Constants::JSON_GAME_PLAYERS]).keys.each do |player_id|
        details[Constants::JSON_GAME_PLAYERS][player_id] = PLAYER_STATUS_THINKING
-     end 
+     end
 
      self.details = details.to_json
      save
