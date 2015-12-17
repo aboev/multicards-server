@@ -28,15 +28,26 @@ class Game < ActiveRecord::Base
    details = JSON.parse(self.details)
    ready_players = self.get_ready_players_count
    if ( (details[Constants::JSON_GAME_STATUS] == Game::STATUS_IN_PROGRESS) and ( ready_players == details[Constants::JSON_GAME_PLAYERS].length ) )
-     question = Question.make_random
+
+     question = Question.make_random(Question::QTYPE_MULTI_CHOICE)
+     if ( rand(100) > 90 )
+       question = Question.make_random(Question::QTYPE_DIRECT_INPUT)
+     end
+
      msg_to = details[Constants::JSON_GAME_PLAYERS].keys
      msg_type = Constants::SOCK_MSG_TYPE_NEW_QUESTION
      msg_body = question
      message = Protocol.make_msg(msg_to, msg_type, msg_body)
      details[Constants::JSON_GAME_CURQUESTION] = question
      details[Constants::JSON_GAME_QUESTIONCNT] = details[Constants::JSON_GAME_QUESTIONCNT] + 1
+
+     Hash.new.merge(details[Constants::JSON_GAME_PLAYERS]).keys.each do |player_id|
+       details[Constants::JSON_GAME_PLAYERS][player_id] = PLAYER_STATUS_THINKING
+     end 
+
      self.details = details.to_json
      save
+
      $redis.publish Constants::SOCK_CHANNEL, message
    end
   end
@@ -56,7 +67,6 @@ class Game < ActiveRecord::Base
       game_details = JSON.parse(game.details)
       players = game_details[Constants::JSON_GAME_PLAYERS]
       players.each do |sockid, status|
-        logger.debug("Comparing " + sockid + " and " + socket_id)
         if ( sockid == socket_id )
           res << game
         end
