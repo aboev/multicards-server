@@ -14,6 +14,7 @@ exports.msg_ext = function (io, socket, msg) {
   if ((msg_json.id_to != null) && (msg_json.id_to.length > 0)) {
     for (var i = 0; i < msg_json.id_to.length; i++)
       io.to(msg_json.id_to[i]).emit('event', JSON.stringify(msg_json));
+    this.http_post_local(msg_json);
   } else {
     this.http_post_local(msg_json);
   }
