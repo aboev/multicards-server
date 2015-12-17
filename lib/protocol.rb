@@ -9,10 +9,10 @@ class Protocol
       game_details[Constants::JSON_GAME_PLAYERS][id_from] = new_status
       game.details = game_details.to_json
       game.save
-      if (game_details[Constants::JSON_GAME_PLAYERS].length == game.get_ready_players_count())
-        puts game_details[Constants::JSON_GAME_QUESTIONCNT]
-        puts Game::QUESTIONS_PER_GAME
-        if (game_details[Constants::JSON_GAME_QUESTIONCNT] >= Game::QUESTIONS_PER_GAME)
+      players_count = game_details[Constants::JSON_GAME_PLAYERS].length
+      questions_count = game_details[Constants::JSON_GAME_QUESTIONCNT]
+      if (players_count == game.get_ready_players_count())
+        if (questions_count >= Game::QUESTIONS_PER_GAME)
           game.end_game
           game.destroy
         else
@@ -46,6 +46,11 @@ class Protocol
     game_details[Constants::JSON_GAME_PLAYERS][id_from] = Game::PLAYER_STATUS_ANSWERED
     game.details = game_details.to_json
     game.save
+
+    msg_to = game_details[Constants::JSON_GAME_PLAYERS].keys
+    msg_to.delete(id_from)
+    message = Protocol.make_msg(msg_to, msg_type, msg_body) 
+    $redis.publish Constants::SOCK_CHANNEL, message  
     #players = game_details[Constants::JSON_GAME_PLAYERS].keys.except(id_from)
   end
 
