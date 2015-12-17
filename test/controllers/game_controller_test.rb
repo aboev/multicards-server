@@ -70,14 +70,23 @@ class GameControllerTest < ActionController::TestCase
     new_game(user_id2, @@socket2.session_id)
     sleep(1)
     question_msg = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)[0][Constants::JSON_SOCK_MSG_BODY]
+    question_type = question_msg[Constants::JSON_QST_TYPE]
     question = question_msg[Constants::JSON_QST_QUESTION]
-    options = question_msg[Constants::JSON_QST_OPTIONS]
-    answer_id = question_msg[Constants::JSON_QST_ANSWER_ID]
-    answer = options[answer_id]
-    assert_equal true, (question.length > 0) 
-    assert_equal true, (options.length > 1)
-    card = Card.where(:front => question, :back => answer).first
-    assert_not_nil card 
+    if question_type == Question::QTYPE_MULTI_CHOICE
+      options = question_msg[Constants::JSON_QST_OPTIONS]
+      answer_id = question_msg[Constants::JSON_QST_ANSWER_ID]
+      answer = options[answer_id]
+      assert_equal true, (question.length > 0) 
+      assert_equal true, (options.length > 1)
+      card = Card.where(:front => question, :back => answer).first
+      assert_not_nil card
+    elsif question_type == Question::QTYPE_DIRECT_INPUT
+      hidden_chars_pos = question_msg[Constants::JSON_QST_OPTIONS]
+      answer = question_msg[Constants::JSON_QST_ANSWER_ID]
+      assert_equal true, (hidden_chars_pos.length > 0)
+      card = Card.where(:front => question, :back => answer).first
+      assert_not_nil card
+    end
   end
 
   test "Should send new question after user answer" do
