@@ -4,7 +4,7 @@ require 'question'
 class QuestionTest < ActiveSupport::TestCase
 
   test "Should generate random multi-choice question" do
-    question_msg = Question.make_random(Question::QTYPE_MULTI_CHOICE)
+    question_msg = Question.make_random(Question::QTYPE_MULTI_CHOICE, -1)
     assert_not_nil question_msg
     question = question_msg[Constants::JSON_QST_QUESTION]
     options = question_msg[Constants::JSON_QST_OPTIONS]
@@ -17,7 +17,7 @@ class QuestionTest < ActiveSupport::TestCase
   end
 
   test "Should generate random direct input question" do
-    question_msg = Question.make_random(Question::QTYPE_DIRECT_INPUT)
+    question_msg = Question.make_random(Question::QTYPE_DIRECT_INPUT, -1)
     question = question_msg[Constants::JSON_QST_QUESTION]
     hidden_chars = question_msg[Constants::JSON_QST_OPTIONS]
     answer = question_msg[Constants::JSON_QST_ANSWER_ID]
