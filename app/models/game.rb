@@ -12,13 +12,14 @@ class Game < ActiveRecord::Base
 
   QUESTIONS_PER_GAME = 25
 
-  def init
+  def init(setid)
     game_details = {Constants::JSON_GAME_STATUS => Game::STATUS_SEARCHING_PLAYERS,
 	Constants::JSON_GAME_QUESTIONCNT => 0,
 	Constants::JSON_GAME_PROFILES => {},
 	Constants::JSON_GAME_PLAYERS => {}}
     self.status = Game::STATUS_SEARCHING_PLAYERS
     self.details = game_details.to_json
+    self.setid = setid
     self.save
   end
 
