@@ -31,7 +31,7 @@ module Utils
           card = Card.new
           card.front = term["term"]
           card.back = term["definition"]
-          card.set_id = cardset.gid
+          card.set_id = cardset.id
           card.save
           puts card.to_json
         end
