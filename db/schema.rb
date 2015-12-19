@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151212182236) do
+ActiveRecord::Schema.define(version: 20151219110828) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 20151212182236) do
 
   create_table "cardsets", force: true do |t|
     t.string   "language"
-    t.string   "details"
+    t.text     "details"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "gid"
@@ -45,6 +45,7 @@ ActiveRecord::Schema.define(version: 20151212182236) do
     t.text     "details"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "contactkey"
   end
 
 end
