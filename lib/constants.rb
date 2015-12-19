@@ -51,6 +51,7 @@ class Constants
 
   HEADER_USERID         =       "id"
   HEADER_SOCKETID       =       "socketid"
+  HEADER_SETID		=       "setid"
 
   SOCK_CHANNEL          =       "events"
 
