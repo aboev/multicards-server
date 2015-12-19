@@ -11,6 +11,12 @@ module Utils
     return [provider, set_id]
   end
 
+  def self.get_cardset(gid)
+    cardset = Cardset.where(:gid => gid).first
+    import_cardset(gid) if (cardset == nil)
+    return Cardset.where(:gid => gid).first
+  end
+
   def self.import_cardset(gid)
     set_id = parse_gid(gid)[1]
     provider = parse_gid(gid)[0]
@@ -28,6 +34,7 @@ module Utils
         cardset.details = cardset_json.to_json
         cardset.save
         terms.each do |term|
+          puts cardset.id
           card = Card.new
           card.front = term["term"]
           card.back = term["definition"]
