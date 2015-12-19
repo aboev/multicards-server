@@ -1,5 +1,6 @@
 require 'constants'
 require 'net/http'
+require 'utils'
 
 class CardsetController < ApplicationController
 skip_before_filter :verify_authenticity_token
@@ -15,17 +16,13 @@ def get
 end
 
 def import
-  cardsetid = request.headers['cardsetid']
-  url = URI.parse('https://api.quizlet.com/2.0/sets/'+cardsetid)
-  req = Net::HTTP::Get.new(url.to_s)
-  res = Net::HTTP.start(url.host, url.port) {|http| http.request(req)}
-  if res.code == 200
-    cardset = Cardset.new
-    cardset.gid = "quizlet_" + cardsetid
-    terms = JSON.parse(res.body)[:terms]
-    terms.each do |term|
-      card = Card.new
-    end 
+  gid = request.headers['setid']
+  msg = { :result => Constants::RESULT_OK }
+  if Utils.import_cardset(gid) == false
+    msg = { :result => Constants::RESULT_ERROR }
+  end
+  respond_to do |format|
+    format.json  { render :json => msg }
   end
 end
 
