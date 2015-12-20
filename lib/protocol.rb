@@ -1,3 +1,5 @@
+require 'question'
+
 class Protocol
 
   def self.msg_user_status_update(id_from, msg_type, msg_body)
@@ -43,15 +45,43 @@ class Protocol
   def self.msg_user_answered(id_from, msg_type, msg_body)
     game = Game.find_by_socket_id(id_from).first
     game_details = JSON.parse(game.details)
+
+    answer_id = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ANSWER_ID]
+    question_status = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS]
+    question_id = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ID]
+    answer_accepted = true
+    if ((question_status == Question::QSTATUS_RIGHT_ANSWER) and (answer_id == msg_body))
+      msg_to = [id_from]
+      msg_type = Constants::SOCK_MSG_TYPE_ANSWER_REJECTED
+      msg_body = question_id
+      message = Protocol.make_msg(msg_to, msg_type, msg_body)
+      $redis.publish Constants::SOCK_CHANNEL, message
+      answer_accepted = false
+    elsif ((question_status == Question::QSTATUS_NO_ANSWER))
+      msg_to = [id_from]
+      msg_type = Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED
+      msg_body = question_id
+      message = Protocol.make_msg(msg_to, msg_type, msg_body)
+      $redis.publish Constants::SOCK_CHANNEL, message
+      if (answer_id == msg_body)
+        game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS] = Question::QSTATUS_RIGHT_ANSWER
+      else
+        game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS] = Question::QSTAT
+US_WRONG_ANSWER
+      end
+    end
+
     game_details[Constants::JSON_GAME_PLAYERS][id_from] = Game::PLAYER_STATUS_ANSWERED
     game.details = game_details.to_json
     game.save
 
-    msg_to = game_details[Constants::JSON_GAME_PLAYERS].keys
-    msg_to.delete(id_from)
-    message = Protocol.make_msg(msg_to, msg_type, msg_body) 
-    $redis.publish Constants::SOCK_CHANNEL, message  
-    #players = game_details[Constants::JSON_GAME_PLAYERS].keys.except(id_from)
+    if answer_accepted == true
+      msg_to = game_details[Constants::JSON_GAME_PLAYERS].keys
+      msg_to.delete(id_from)
+      message = Protocol.make_msg(msg_to, msg_type, msg_body) 
+      $redis.publish Constants::SOCK_CHANNEL, message  
+      #players = game_details[Constants::JSON_GAME_PLAYERS].keys.except(id_from)
+    end
   end
 
   def self.parse_msg(msg_json)
@@ -87,10 +117,12 @@ class Protocol
     return message
   end
 
-  def self.make_question(question, options, answer_id)
+  def self.make_question(question, options, answer_id, question_id)
     question = {Constants::JSON_QST_QUESTION => question,
         Constants::JSON_QST_OPTIONS => options,
-        Constants::JSON_QST_ANSWER_ID => answer_id}
+        Constants::JSON_QST_ANSWER_ID => answer_id,
+	Constants::JSON_QST_ID => question_id,
+	Constants::JSON_QST_STATUS => Question::QSTATUS_NO_ANSWER}
   end
 
 end
