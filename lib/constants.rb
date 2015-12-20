@@ -9,6 +9,8 @@ class Constants
   SOCK_MSG_TYPE_QUIT_GAME	="quit_game"
   SOCK_MSG_TYPE_GAME_START	="game_start"
   SOCK_MSG_TYPE_ANNOUNCE_USERID	="announce_userid"
+  SOCK_MSG_TYPE_ANSWER_ACCEPTED	="answer_accepted"
+  SOCK_MSG_TYPE_ANSWER_REJECTED	="answer_rejected"
 
   JSON_GAME_ID		=	"game_id"
   JSON_GAME_STATUS	=	"status"
@@ -34,10 +36,12 @@ class Constants
   JSON_SOCK_MSG_NEW_EVENT_TYPE=	"event"
   JSON_SOCK_MSG_NEW_EVENT_DATA=	"data"
 
+  JSON_QST_ID		=	"question_id"
   JSON_QST_QUESTION	=	"question"
   JSON_QST_OPTIONS	=	"options"
   JSON_QST_ANSWER_ID	=	"answer_id"
   JSON_QST_TYPE		=	"question_type"
+  JSON_QST_STATUS	=	"question_status"
 
   RESULT_OK             =       "OK"
   RESULT_ERROR          =       "ERROR"
@@ -56,6 +60,5 @@ class Constants
   SOCK_CHANNEL          =       "events"
 
   SOCK_EV_NEW_GAME      =       "game_start"
-
 
 end
