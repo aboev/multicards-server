@@ -77,6 +77,7 @@ class Protocol
 
     if answer_accepted == true
       msg_to = game_details[Constants::JSON_GAME_PLAYERS].keys
+      msg_type = Constants::SOCK_MSG_TYPE_PLAYER_ANSWERED
       msg_to.delete(id_from)
       message = Protocol.make_msg(msg_to, msg_type, user_answer) 
       $redis.publish Constants::SOCK_CHANNEL, message  
