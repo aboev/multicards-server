@@ -58,7 +58,7 @@ class Protocol
       message = Protocol.make_msg(msg_to, msg_type, msg_body)
       $redis.publish Constants::SOCK_CHANNEL, message
       answer_accepted = false
-    elsif ((question_status == Question::QSTATUS_NO_ANSWER))
+    elsif (question_status != Question::QSTATUS_RIGHT_ANSWER)
       msg_to = [id_from]
       msg_type = Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED
       msg_body = question_id
