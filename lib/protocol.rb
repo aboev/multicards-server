@@ -46,11 +46,12 @@ class Protocol
     game = Game.find_by_socket_id(id_from).first
     game_details = JSON.parse(game.details)
 
-    answer_id = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ANSWER_ID]
+    user_answer = msg_body
+    correct_answer = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ANSWER_ID]
     question_status = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS]
     question_id = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ID]
     answer_accepted = true
-    if ((question_status == Question::QSTATUS_RIGHT_ANSWER) and (answer_id == msg_body))
+    if ((question_status == Question::QSTATUS_RIGHT_ANSWER) and (user_answer == correct_answer))
       msg_to = [id_from]
       msg_type = Constants::SOCK_MSG_TYPE_ANSWER_REJECTED
       msg_body = question_id
@@ -77,7 +78,7 @@ class Protocol
     if answer_accepted == true
       msg_to = game_details[Constants::JSON_GAME_PLAYERS].keys
       msg_to.delete(id_from)
-      message = Protocol.make_msg(msg_to, msg_type, msg_body) 
+      message = Protocol.make_msg(msg_to, msg_type, user_answer) 
       $redis.publish Constants::SOCK_CHANNEL, message  
       #players = game_details[Constants::JSON_GAME_PLAYERS].keys.except(id_from)
     end
