@@ -53,11 +53,12 @@ class Game < ActiveRecord::Base
    ready_players = self.get_ready_players_count
    total_players = details[Constants::JSON_GAME_PLAYERS].length
    game_status = details[Constants::JSON_GAME_STATUS]
+   question_id = details[Constants::JSON_GAME_QUESTIONCNT] + 1
    if ( (game_status == Game::STATUS_IN_PROGRESS) and ( ready_players == total_players ) )
 
-     question = Question.make_random(Question::QTYPE_MULTI_CHOICE, self.setid)
+     question = Question.make_random(Question::QTYPE_MULTI_CHOICE, self.setid, question_id)
      if ( rand(100) > 110 )
-       question = Question.make_random(Question::QTYPE_DIRECT_INPUT, self.setid)
+       question = Question.make_random(Question::QTYPE_DIRECT_INPUT, self.setid, question_id)
      end
 
      msg_to = details[Constants::JSON_GAME_PLAYERS].keys
