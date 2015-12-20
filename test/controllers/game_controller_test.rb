@@ -130,7 +130,7 @@ class GameControllerTest < ActionController::TestCase
     update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
     update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
 
-    sleep(1)
+    sleep(2)
     assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).length
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).length
   end
