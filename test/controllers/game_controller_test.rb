@@ -106,7 +106,7 @@ class GameControllerTest < ActionController::TestCase
     assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_PLAYER_ANSWERED).length
-    assert_equal 1, @@sock1_msg_list.length
+    assert_equal 2, @@sock1_msg_list.length
     assert_equal 2, @@sock2_msg_list.length
   end
 
@@ -133,6 +133,39 @@ class GameControllerTest < ActionController::TestCase
     sleep(2)
     assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).length
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).length
+  end
+
+  test "Should deliver answer to second player" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
+
+    @@sock2_msg_list = []
+    @@sock1_msg_list = []
+    player_answer(@@socket1, 0, [])
+
+    sleep(1)
+    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_PLAYER_ANSWERED).length
+  end
+
+  test "Should accept single answer" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
+
+    @@sock2_msg_list = []
+    @@sock1_msg_list = []
+    player_answer(@@socket1, 0, [])
+    player_answer(@@socket2, 0, [])
+
+    sleep(1)
+    accepted_cnt_1 = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
+    accepted_cnt_2 = filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
+    assert_equal 1, (accepted_cnt_1 + accepted_cnt_2)
   end
 
   @@socket1.on :event do |msg|
