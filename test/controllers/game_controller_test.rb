@@ -61,6 +61,9 @@ class GameControllerTest < ActionController::TestCase
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).length
     assert_equal 3, @@sock1_msg_list.length
     assert_equal 3, @@sock2_msg_list.length
+    game_cnt1 = Game.where(:status => Game::STATUS_SEARCHING_PLAYERS).length
+    game_cnt2 = Game.where(:status => Game::STATUS_IN_PROGRESS).length
+    assert_equal 0, (game_cnt1 + game_cnt2)
   end
 
   test "Should send valid question" do
@@ -157,15 +160,19 @@ class GameControllerTest < ActionController::TestCase
     new_game(user_id2, @@socket2.session_id)
     sleep(1)
 
+    answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
     @@sock2_msg_list = []
     @@sock1_msg_list = []
-    player_answer(@@socket1, 0, [])
-    player_answer(@@socket2, 0, [])
+    player_answer(@@socket1, answer_id, [])
+    player_answer(@@socket2, answer_id, [])
 
     sleep(1)
     accepted_cnt_1 = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
     accepted_cnt_2 = filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
+    rejected_cnt_1 = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
+    rejected_cnt_2 = filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
     assert_equal 1, (accepted_cnt_1 + accepted_cnt_2)
+    assert_equal 1, (rejected_cnt_1 + rejected_cnt_2)
   end
 
   @@socket1.on :event do |msg|
