@@ -29,6 +29,7 @@ class Constants
   JSON_SOCK_MSG_FROM	=	"id_from"
   JSON_SOCK_MSG_BODY	=	"msg_body"
   JSON_SOCK_MSG_TYPE	=	"msg_type"
+  JSON_SOCK_MSG_EXTRA	=	"msg_extra"
   JSON_SOCK_MSG_GAMEID	=	"game_id"
   JSON_SOCK_MSG_EVENTTYPE=	"event"
   JSON_SOCK_MSG_DATA	=	"data"
