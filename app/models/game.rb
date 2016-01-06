@@ -90,24 +90,12 @@ class Game < ActiveRecord::Base
     $redis.publish Constants::SOCK_CHANNEL, message
   end
 
-  def self.find_by_socket_id(socket_id)
-    res = []
-    games = Game.all
-    games.each do |game|
-      game_details = JSON.parse(game.details)
-      players = game_details[Constants::JSON_GAME_PLAYERS]
-      players.each do |sockid, status|
-        if ( sockid == socket_id )
-          res << game
-        end
-      end
-    end
-    return res
-  end
-
   def self.find_by_socket_id(socket_id, status)
     res = []
-    games = Game.where(:status => status)
+    games = Game.all
+    if status != nil
+      games = Game.where(:status => status)
+    end
     games.each do |game|
       game_details = JSON.parse(game.details)
       players = game_details[Constants::JSON_GAME_PLAYERS]

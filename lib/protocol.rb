@@ -23,7 +23,7 @@ class Protocol
   def self.msg_socket_close(id_from, msg_type, msg_body)
     puts id_from
     socket_id = msg_body
-    games = Game.find_by_socket_id(socket_id)
+    games = Game.find_by_socket_id(socket_id, nil)
     games.each do |game|
       puts game.id
       game.end_game
@@ -39,7 +39,7 @@ class Protocol
   end
 
   def self.msg_user_answered(id_from, msg_type, msg_body)
-    game = Game.find_by_socket_id(id_from).first
+    game = Game.find_by_socket_id(id_from, nil).first
     game_details = JSON.parse(game.details)
 
     user_answer = msg_body
