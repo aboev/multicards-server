@@ -3,23 +3,19 @@ require 'question'
 class Protocol
 
   def self.msg_user_status_update(id_from, msg_type, msg_body)
-    new_status = msg_body
     Rails.logger.info("Player status update request")
-    games = Game.find_by_socket_id(id_from)
-    games.each do |game|
-      game_details = JSON.parse(game.details)
-      game_details[Constants::JSON_GAME_PLAYERS][id_from] = new_status
-      game.details = game_details.to_json
-      game.save
-      players_count = game_details[Constants::JSON_GAME_PLAYERS].length
-      questions_count = game_details[Constants::JSON_GAME_QUESTIONCNT]
-      if (players_count == game.get_ready_players_count())
-        if (questions_count >= Game::QUESTIONS_PER_GAME)
-          game.end_game
-          game.destroy
-        else
-          game.next_question
-        end
+    games = Game.find_by_socket_id(id_from, Game::STATUS_IN_PROGRESS).first
+
+    new_status = msg_body
+    game.set_player_status(id_from, new_status)
+
+    questions_count = game_details[Constants::JSON_GAME_QUESTIONCNT]
+    if (game.get_players_count() == game.get_ready_players_count())
+      if (questions_count >= Game::QUESTIONS_PER_GAME)
+        game.end_game
+        game.destroy
+      else
+        game.next_question
       end
     end
   end
@@ -52,6 +48,7 @@ class Protocol
     question_id = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ID]
     answer_accepted = true
     if ((question_status == Question::QSTATUS_RIGHT_ANSWER) and (user_answer == correct_answer))
+      # Question already answered correctly -> reject correct answer
       msg_to = [id_from]
       msg_type = Constants::SOCK_MSG_TYPE_ANSWER_REJECTED
       msg_body = question_id
@@ -59,6 +56,7 @@ class Protocol
       $redis.publish Constants::SOCK_CHANNEL, message
       answer_accepted = false
     elsif (question_status != Question::QSTATUS_RIGHT_ANSWER)
+      # Question not answered correctly yet -> accept any answer
       msg_to = [id_from]
       msg_type = Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED
       msg_body = question_id
@@ -66,6 +64,7 @@ class Protocol
       $redis.publish Constants::SOCK_CHANNEL, message
       if (user_answer == correct_answer)
         game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS] = Question::QSTATUS_RIGHT_ANSWER
+        game.increase_player_score(id_from)
       else
         game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS] = Question::QSTATUS_WRONG_ANSWER
       end
@@ -115,6 +114,11 @@ class Protocol
 
   def self.make_msg(id_to, msg_type, msg_body)
     message = {Constants::JSON_SOCK_MSG_TO => id_to, Constants::JSON_SOCK_MSG_TYPE => msg_type, Constants::JSON_SOCK_MSG_BODY => msg_body}.to_json
+    return message
+  end
+
+  def self.make_msg_extra(id_to, msg_type, msg_body, msg_extra)
+    message = {Constants::JSON_SOCK_MSG_TO => id_to, Constants::JSON_SOCK_MSG_TYPE => msg_type, Constants::JSON_SOCK_MSG_BODY => msg_body, Constants::JSON_SOCK_MSG_EXTRA => msg_extra}.to_json
     return message
   end
 
