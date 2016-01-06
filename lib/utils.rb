@@ -17,6 +17,51 @@ module Utils
     return Cardset.where(:gid => gid).first
   end
 
+  def self.import_qcardset(gid)
+    set_id = parse_gid(gid)[1]
+    provider = parse_gid(gid)[0]
+    if provider == "quizlet"
+      url = URI.parse('https://api.quizlet.com/2.0/sets/'+set_id+'?client_id='+APP_CONFIG['quizlet_client_id'])
+      req = Net::HTTP::Get.new(url.to_s)
+      res = Net::HTTP.start(url.host, url.port, :use_ssl => url.scheme == 'https') {|http| http.request(req)}
+      if res.kind_of? Net::HTTPSuccess
+        cardset_json = JSON.parse(res.body)
+        terms = cardset_json['terms']
+        puts cardset_json['url']
+        cardset_json.delete('terms')
+        cardset = Qcardset.new
+        cardset.cardset_id = cardset_json['id']
+        cardset.url = cardset_json['url']
+        cardset.title = cardset_json['title']
+        cardset.created_date = cardset_json['created_date']
+        cardset.modified_date = cardset_json['modified_date']
+        cardset.published_date = cardset_json['published_date']
+        cardset.has_images = cardset_json['has_images']
+        cardset.lang_terms = cardset_json['lang_terms']
+        cardset.lang_definitions = cardset_json['lang_definitions']
+        cardset.creator_id = cardset_json['creator_id']
+        cardset.description = cardset_json['description']
+        cardset.likes = cardset_json['likes']
+        cardset.like_count = cardset_json['like_count']
+        cardset.total_diff = cardset_json['total_diff']
+        cardset.diff_count = cardset_json['diff_count']
+        cardset.save
+
+        terms = cardset_json['terms']
+        terms.each do |term|
+          card = Qcard.new
+          card.cardset_id = cardset.cardset_id
+          card.term_id = term['term_id']
+          card.term = term['term']
+          card.definition = term['definition']
+          card.image = term['image']
+          card.rank = term['rank']
+          card.save
+        end
+      end
+    end
+  end
+
   def self.import_cardset(gid)
     set_id = parse_gid(gid)[1]
     provider = parse_gid(gid)[0]
@@ -51,4 +96,8 @@ module Utils
       return false
     end
   end
+
+  def self.make_nickname
+  end
+
 end
