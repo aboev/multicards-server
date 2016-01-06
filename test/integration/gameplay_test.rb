@@ -1,17 +1,15 @@
-require 'controllers/test_utils'
+require 'test_helper'
 require 'rubygems'
 require 'game'
 require 'socket.io-client-simple'
 
-class GameControllerTest < ActionController::TestCase
-  include TestUtils
+class GameplayTest < ActionDispatch::IntegrationTest
 
   @@socket1 = SocketIO::Client::Simple.connect 'http://localhost:5002'
   @@socket2 = SocketIO::Client::Simple.connect 'http://localhost:5002'
 
   def setup
-    @request.headers["Content-Type"] = "application/json"
-    @request.headers["Accept"] = "*/*"
+    @headers = {'Content-Type' => 'application/json', 'Accept' => '*/*'}
     @contact1 = "111111"
     @contact2 = "222222"
     @profile1 = {:email => "test1@test.com", :phone => @contact1, :name => "alex1", :avatar => "http://google.com"}
