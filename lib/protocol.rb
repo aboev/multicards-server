@@ -5,6 +5,7 @@ class Protocol
   def self.msg_user_status_update(id_from, msg_type, msg_body)
     Rails.logger.info("Player status update request")
     game = Game.find_by_socket_id(id_from, Game::STATUS_IN_PROGRESS).first
+    game_details = JSON.parse(game.details)
 
     new_status = msg_body
     game.set_player_status(id_from, new_status)
