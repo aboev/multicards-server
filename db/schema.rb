@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151219135556) do
+ActiveRecord::Schema.define(version: 20160106115517) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,26 @@ ActiveRecord::Schema.define(version: 20151219135556) do
     t.datetime "updated_at"
     t.integer  "status"
     t.integer  "setid"
+  end
+
+  create_table "qcardsets", force: true do |t|
+    t.integer  "cardset_id",       limit: 8
+    t.text     "url"
+    t.text     "title"
+    t.integer  "created_date"
+    t.integer  "modified_date"
+    t.integer  "published_date"
+    t.boolean  "has_images"
+    t.string   "lang_terms",       limit: 7
+    t.string   "lang_definitions", limit: 7
+    t.integer  "creator_id",       limit: 8
+    t.text     "description"
+    t.string   "likes",                      default: [], array: true
+    t.integer  "like_count",                 default: 0
+    t.integer  "total_diff",                 default: 0
+    t.integer  "diff_count",                 default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "users", force: true do |t|
