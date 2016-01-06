@@ -16,7 +16,8 @@ class Game < ActiveRecord::Base
     game_details = {Constants::JSON_GAME_STATUS => Game::STATUS_SEARCHING_PLAYERS,
 	Constants::JSON_GAME_QUESTIONCNT => 0,
 	Constants::JSON_GAME_PROFILES => {},
-	Constants::JSON_GAME_PLAYERS => {}}
+	Constants::JSON_GAME_PLAYERS => {},
+	Constants::JSON_GAME_SCORES => {}}
     self.status = Game::STATUS_SEARCHING_PLAYERS
     self.details = game_details.to_json
     self.setid = setid
@@ -44,6 +45,7 @@ class Game < ActiveRecord::Base
     details_json = JSON.parse(self.details)
     details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
     details_json[Constants::JSON_GAME_PLAYERS][user.socket_id] = Game::PLAYER_STATUS_WAITING
+    details_json[Constants::JSON_GAME_SCORES][user.socket_id] = 0
     self.details = details_json.to_json
     self.save
   end
@@ -64,7 +66,8 @@ class Game < ActiveRecord::Base
       msg_to = details[Constants::JSON_GAME_PLAYERS].keys
       msg_type = Constants::SOCK_MSG_TYPE_NEW_QUESTION
       msg_body = question
-      message = Protocol.make_msg(msg_to, msg_type, msg_body)
+      msg_extra = self.get_scores
+      message = Protocol.make_msg_extra(msg_to, msg_type, msg_body, msg_extra)
       details[Constants::JSON_GAME_CURQUESTION] = question
       details[Constants::JSON_GAME_QUESTIONCNT] = details[Constants::JSON_GAME_QUESTIONCNT] + 1
 
@@ -102,6 +105,36 @@ class Game < ActiveRecord::Base
     return res
   end
 
+  def self.find_by_socket_id(socket_id, status)
+    res = []
+    games = Game.where(:status => status)
+    games.each do |game|
+      game_details = JSON.parse(game.details)
+      players = game_details[Constants::JSON_GAME_PLAYERS]
+      players.each do |sockid, status|
+        if ( sockid == socket_id )
+          res << game
+        end
+      end
+    end
+    return res
+  end
+
+  def increase_player_score(socket_id)
+    game_details = JSON.parse(self.details)
+    score = game_details[Constants::JSON_GAME_SCORES][socket_id]
+    game_details[Constants::JSON_GAME_SCORES][socket_id] = score + 1
+    self.details = game_details.to_json
+    self.save
+  end
+
+  def set_player_status(socket_id, status)
+    game_details = JSON.parse(self.details)
+    game_details[Constants::JSON_GAME_PLAYERS][socket_id] = status
+    self.details = game_details.to_json
+    self.save
+  end
+
   def get_ready_players_count
     game_details = JSON.parse(self.details)
     players = game_details[Constants::JSON_GAME_PLAYERS]
@@ -115,9 +148,15 @@ class Game < ActiveRecord::Base
   end
 
   def get_players_count
-    game_details = JSON.parse(game.details)
+    game_details = JSON.parse(self.details)
     players = game_details[Constants::JSON_GAME_PLAYERS]
     return players.length
+  end
+
+  def get_scores
+    game_details = JSON.parse(self.details)
+    scores = game_details[Constants::JSON_GAME_SCORES]
+    return scores
   end
 
 end
