@@ -1,9 +1,7 @@
-require 'controllers/test_utils'
 require 'rubygems'
 require 'socket.io-client-simple'
 
 class UserControllerTest < ActionController::TestCase
-  include TestUtils
 
   def setup
     @socket = SocketIO::Client::Simple.connect 'http://localhost:5001'
@@ -14,6 +12,13 @@ class UserControllerTest < ActionController::TestCase
   end
 
   def teardown
+  end
+
+  def register(profile)
+    @controller = UserController.new
+    post :new, profile.to_json, @headers
+    assert_response :success
+    user_id = JSON.parse(@response.body)['data']['id']
   end
 
   test "Should register new user" do
