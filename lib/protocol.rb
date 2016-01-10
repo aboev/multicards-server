@@ -65,7 +65,7 @@ class Protocol
       $redis.publish Constants::SOCK_CHANNEL, message
       if (user_answer == correct_answer)
         game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS] = Question::QSTATUS_RIGHT_ANSWER
-        game.increase_player_score(id_from)
+        game_details[Constants::JSON_GAME_SCORES] = game.increase_player_score(id_from)
       else
         game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS] = Question::QSTATUS_WRONG_ANSWER
       end

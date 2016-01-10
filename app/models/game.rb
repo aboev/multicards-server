@@ -112,8 +112,7 @@ class Game < ActiveRecord::Base
     game_details = JSON.parse(self.details)
     score = game_details[Constants::JSON_GAME_SCORES][socket_id]
     game_details[Constants::JSON_GAME_SCORES][socket_id] = score + 1
-    self.details = game_details.to_json
-    self.save
+    return game_details[Constants::JSON_GAME_SCORES]
   end
 
   def set_player_status(socket_id, status)
