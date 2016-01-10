@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160106125343) do
+ActiveRecord::Schema.define(version: 20160110121943) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,6 +68,14 @@ ActiveRecord::Schema.define(version: 20160106125343) do
     t.integer  "like_count",                 default: 0
     t.integer  "total_diff",                 default: 0
     t.integer  "diff_count",                 default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "tags",                       default: [], array: true
+  end
+
+  create_table "tag_descriptors", force: true do |t|
+    t.string   "tag_id"
+    t.string   "tag_name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
