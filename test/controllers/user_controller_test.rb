@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'socket.io-client-simple'
+require 'test_helper'
 
 class UserControllerTest < ActionController::TestCase
 
@@ -12,6 +13,10 @@ class UserControllerTest < ActionController::TestCase
   end
 
   def teardown
+    Game.delete_all
+    User.delete_all
+    Card.delete_all
+    Cardset.delete_all
   end
 
   def register(profile)
