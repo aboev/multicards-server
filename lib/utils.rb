@@ -27,7 +27,6 @@ module Utils
       if res.kind_of? Net::HTTPSuccess
         cardset_json = JSON.parse(res.body)
         terms = cardset_json['terms']
-        puts cardset_json['url']
         cardset_json.delete('terms')
         cardset = Qcardset.new
         cardset.cardset_id = cardset_json['id']
@@ -73,7 +72,6 @@ module Utils
       if res.kind_of? Net::HTTPSuccess
         cardset_json = JSON.parse(res.body)
         terms = cardset_json['terms']
-        puts cardset_json['url']
         cardset_json.delete('terms')
         cardset = Cardset.new
         cardset.gid = Utils.make_gid("quizlet", cardset_json['id'].to_s)
