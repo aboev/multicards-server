@@ -41,13 +41,12 @@ module Utils
         cardset.lang_definitions = cardset_json['lang_definitions']
         cardset.creator_id = cardset_json['creator_id']
         cardset.description = cardset_json['description']
-        cardset.likes = cardset_json['likes']
-        cardset.like_count = cardset_json['like_count']
-        cardset.total_diff = cardset_json['total_diff']
-        cardset.diff_count = cardset_json['diff_count']
+        cardset.term_count = cardset_json['term_count']
+        cardset.like_count = 0
+        cardset.total_diff = 0
+        cardset.diff_count = 0
         cardset.save
 
-        terms = cardset_json['terms']
         terms.each do |term|
           card = Qcard.new
           card.cardset_id = cardset.cardset_id
