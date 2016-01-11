@@ -18,7 +18,8 @@ class CardsetControllerTest < ActionController::TestCase
     @request.headers["Accept"] = "*/*"
     @contact = "111111"
     @profile = {:email => "test@test.com", :phone => @contact, :name => "alex", :avatar => "http://google.com"}
-    @request.headers[Constants::HEADER_USERID] = register(@profile)
+    @userid = register(@profile)
+    @request.headers[Constants::HEADER_USERID] = @userid
     @request.headers[Constants::HEADER_SOCKETID] = @@socket.session_id
   end
 
@@ -43,6 +44,25 @@ class CardsetControllerTest < ActionController::TestCase
     term_count = cardset.first.term_count
     terms = Qcard.where(:cardset_id => 415)
     assert_equal term_count, terms.count 
+  end
+
+  test "Should like cardset" do
+    cardset = Qcardset.where(:cardset_id => 415)
+    assert_equal 0, cardset.count
+    @controller = CardsetController.new
+    @request.headers["setid"] = "quizlet_415"
+    post :like, nil, @headers
+    assert_response :success
+    cardset = Qcardset.where(:cardset_id => 415)
+    assert_equal 1, cardset.count
+    term_count = cardset.first.term_count
+    terms = Qcard.where(:cardset_id => 415)
+    assert_equal term_count, terms.count
+    assert_includes cardset.first.likes, @userid.to_s
+  end
+
+  test "Should return popular cardsets" do
+    
   end
 
 end
