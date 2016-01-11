@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   post 'image' => 'upload#upload'
   get 'import' => 'cardset#import'
   get 'search' => 'search#search'
-  get 'search/popular' => 'search#popular'
+  get 'popular' => 'cardset#popular'
   post 'like' => 'cardset#like'
   post 'unlike' => 'cardset#unlike'
 
