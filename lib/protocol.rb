@@ -27,7 +27,7 @@ class Protocol
     games = Game.find_by_socket_id(socket_id, nil)
     games.each do |game|
       puts game.id
-      game.end_game
+      game.stop_game
       game.destroy
     end
   end

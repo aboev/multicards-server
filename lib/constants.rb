@@ -6,6 +6,7 @@ class Constants
   SOCK_MSG_TYPE_PLAYER_TYPED	="player_typed"
   SOCK_MSG_TYPE_SOCKET_CLOSE	="socket_disconnected"
   SOCK_MSG_TYPE_GAME_END	="game_end"
+  SOCK_MSG_TYPE_GAME_STOP	="game_stop"
   SOCK_MSG_TYPE_QUIT_GAME	="quit_game"
   SOCK_MSG_TYPE_GAME_START	="game_start"
   SOCK_MSG_TYPE_ANNOUNCE_USERID	="announce_userid"
