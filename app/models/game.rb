@@ -82,6 +82,14 @@ class Game < ActiveRecord::Base
     end
   end
 
+  def stop_game
+    details = JSON.parse(self.details)
+    players = details[Constants::JSON_GAME_PLAYERS]
+    message_to = players.keys
+    message = {Constants::JSON_SOCK_MSG_TO => message_to, Constants::JSON_SOCK_MSG_TYPE => Constants::SOCK_MSG_TYPE_GAME_STOP, Constants::JSON_SOCK_MSG_BODY => self.id}.to_json
+    $redis.publish Constants::SOCK_CHANNEL, message
+  end
+
   def end_game
     details = JSON.parse(self.details)
     players = details[Constants::JSON_GAME_PLAYERS]
