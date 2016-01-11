@@ -55,8 +55,8 @@ class GameplayTest < ActionDispatch::IntegrationTest
     sleep(1)
     quit_game(@@socket1)
     sleep(1)
-    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).length 
-    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).length
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_STOP).length 
+    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_STOP).length
     assert_equal 3, @@sock1_msg_list.length
     assert_equal 3, @@sock2_msg_list.length
     game_cnt1 = Game.where(:status => Game::STATUS_SEARCHING_PLAYERS).length
