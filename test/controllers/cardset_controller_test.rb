@@ -61,8 +61,26 @@ class CardsetControllerTest < ActionController::TestCase
     assert_includes cardset.first.likes, @userid.to_s
   end
 
-  test "Should return popular cardsets" do
-    
+  test "Should return only popular cardsets (with likes)" do
+    test_cardset1 = 415
+    test_cardset2 = 520
+    @controller = CardsetController.new
+    # Import cardset 415
+    @request.headers["setid"] = "quizlet_" + test_cardset1.to_s
+    get :import, nil, @headers
+    # Import cardset 420
+    @request.headers["setid"] = "quizlet_" + test_cardset2.to_s
+    get :import, nil, @headers
+    post :like, nil, @headers
+    assert_response :success
+    # Get popular cardsets
+    @request.headers["setid"] = nil
+    get :popular, nil, @headers
+    res_json = JSON.parse(response.body)
+    # Should return only single cardset with like
+    assert_equal Constants::RESULT_OK, res_json['result']
+    assert_equal 1, JSON.parse(res_json['data']).length
+    assert_equal test_cardset2, JSON.parse(res_json['data'])[0]['cardset_id']
   end
 
 end
