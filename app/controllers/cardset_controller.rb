@@ -18,7 +18,7 @@ end
 def import
   gid = request.headers['setid']
   msg = { :result => Constants::RESULT_OK }
-  if Utils.import_cardset(gid) == false
+  if Utils.import_qcardset(gid) == false
     msg = { :result => Constants::RESULT_ERROR }
   end
   respond_to do |format|
