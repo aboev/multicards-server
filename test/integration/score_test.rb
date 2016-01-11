@@ -47,6 +47,7 @@ class ScoreTest < ActionDispatch::IntegrationTest
     @@sock2_msg_list = []
     @@sock1_msg_list = []
     player_answer(@@socket1, answer_id, [])
+    sleep(0.1)
     update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
     update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
 
