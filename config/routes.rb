@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   get 'import' => 'cardset#import'
   get 'search' => 'search#search'
   get 'search/popular' => 'search#popular'
+  post 'like' => 'cardset#like'
+  post 'unlike' => 'cardset#unlike'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

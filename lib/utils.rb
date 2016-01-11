@@ -57,8 +57,10 @@ module Utils
           card.rank = term['rank']
           card.save
         end
+        return true
       end
     end
+    return false
   end
 
   def self.import_cardset(gid)
@@ -94,6 +96,36 @@ module Utils
     else
       return false
     end
+  end
+
+  def self.like(gid, userid)
+    set_id = parse_gid(gid)[1]
+    provider = parse_gid(gid)[0]
+    if provider == "quizlet"
+      if ((Qcardset.where(:cardset_id => set_id).count > 0) or (import_qcardset(gid) == true))
+        cardset = Qcardset.where(:cardset_id => set_id).first
+        if (!cardset.likes.include?(userid.to_s))
+          cardset.add_like(userid.to_s)
+          cardset.save
+          return true
+        end
+      end
+    end    
+    return false
+  end
+
+  def self.unlike(gid, userid)
+    set_id = parse_gid(gid)[1]
+    provider = parse_gid(gid)[0]
+    if provider == "quizlet"
+      cardset = Qcardset.where(:cardset_id => set_id)
+      if ((cardset.count > 0) and (cardset.first.likes.include?(userid.to_s)))
+        cardset.remove_like(userid.to_s)
+        cardset.save
+        return true
+      end
+    end
+    return false
   end
 
   def self.make_nickname

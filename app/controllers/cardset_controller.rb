@@ -26,4 +26,30 @@ def import
   end
 end
 
+def popular
+  res = Qcardset.where("like_count > 0 ORDER BY like_count DESC LIMIT 50")
+  msg = { :result => Constants::RESULT_OK, :data => res.to_json }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
+def like
+  gid = request.headers['setid']
+  Utils.like(gid, @user.id)
+  msg = { :result => Constants::RESULT_OK }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
+def unlike
+  gid = request.headers['setid']
+  Utils.unlike(gid, @user.id)
+  msg = { :result => Constants::RESULT_OK }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
 end
