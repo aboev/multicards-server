@@ -21,6 +21,8 @@ class Constants
   JSON_GAME_CURQUESTION	=	"question"
   JSON_GAME_QUESTIONCNT	=	"question_count"
   JSON_GAME_SETID	=	"setid"
+  JSON_GAME_OPPONENTID	=	"opponentid"
+  JSON_GAME_PREVQST	=	"prev_questions"
 
   JSON_USER_SOCKETID	=	"socketid"
   JSON_USER_ID		=	"id"
@@ -59,6 +61,7 @@ class Constants
   HEADER_SOCKETID       =       "socketid"
   HEADER_SETID		=       "setid"
   HEADER_QUERY	        =       "query"
+  HEADER_OPPONENTNAME   =       "opponentname"
 
   SOCK_CHANNEL          =       "events"
 

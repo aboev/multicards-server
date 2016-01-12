@@ -3,8 +3,9 @@ require 'protocol'
 class Game < ActiveRecord::Base
 
   STATUS_SEARCHING_PLAYERS = 0
-  STATUS_IN_PROGRESS = 1
-  STATUS_COMPLETED = 2
+  STATUS_WAITING_OPPONENT = 1
+  STATUS_IN_PROGRESS = 2
+  STATUS_COMPLETED = 3
 
   PLAYER_STATUS_WAITING = "player_waiting"
   PLAYER_STATUS_THINKING = "player_thinking"
@@ -12,13 +13,18 @@ class Game < ActiveRecord::Base
 
   QUESTIONS_PER_GAME = 25
 
-  def init(setid)
-    game_details = {Constants::JSON_GAME_STATUS => Game::STATUS_SEARCHING_PLAYERS,
+  def init(setid, rnd_opp)
+    status = Game::STATUS_SEARCHING_PLAYERS
+    if rnd_opp == false
+      status = Game::STATUS_WAITING_OPPONENT
+    end
+    game_details = {Constants::JSON_GAME_STATUS => status,
 	Constants::JSON_GAME_QUESTIONCNT => 0,
 	Constants::JSON_GAME_PROFILES => {},
 	Constants::JSON_GAME_PLAYERS => {},
-	Constants::JSON_GAME_SCORES => {}}
-    self.status = Game::STATUS_SEARCHING_PLAYERS
+	Constants::JSON_GAME_SCORES => {},
+	Constants::JSON_GAME_PREVQST => {}}
+    self.status = status
     self.details = game_details.to_json
     self.setid = setid
     self.save
@@ -111,10 +117,8 @@ class Game < ActiveRecord::Base
     games.each do |game|
       game_details = JSON.parse(game.details)
       players = game_details[Constants::JSON_GAME_PLAYERS]
-      players.each do |sockid, status|
-        if ( sockid == socket_id )
-          res << game
-        end
+      if players[socket_id] != nil
+        res << game
       end
     end
     return res

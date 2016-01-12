@@ -12,8 +12,10 @@ class GameplayTest < ActionDispatch::IntegrationTest
     @headers = {'Content-Type' => 'application/json', 'Accept' => '*/*'}
     @contact1 = "111111"
     @contact2 = "222222"
+    @contact3 = "333333"
     @profile1 = {:email => "test1@test.com", :phone => @contact1, :name => "alex1", :avatar => "http://google.com"}
     @profile2 = {:email => "test2@test.com", :phone => @contact2, :name => "alex2", :avatar => "http://google.com"}
+    @profile3 = {:email => "test3@test.com", :phone => @contact3, :name => "alex3", :avatar => "http://google.com"}
     @@sock1_msg_list = []
     @@sock2_msg_list = []
   end
@@ -171,6 +173,26 @@ class GameplayTest < ActionDispatch::IntegrationTest
     rejected_cnt_2 = filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
     assert_equal 1, (accepted_cnt_1 + accepted_cnt_2)
     assert_equal 1, (rejected_cnt_1 + rejected_cnt_2)
+  end
+
+  test "Should start game with opponent by invitation" do
+    @@socket3 = SocketIO::Client::Simple.connect 'http://localhost:5002'
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    user_id3 = register(@profile3)
+    new_game(user_id3, @@socket3.session_id)
+    sleep(0.1)
+    new_game_with_opponent(user_id1, @@socket1.session_id, "-1")
+    sleep(0.1)
+    new_game_with_opponent(user_id2, @@socket2.session_id, @profile1[:name])
+
+    sleep(1)
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_START).length
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_START).length
+    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 2, @@sock1_msg_list.length
+    assert_equal 2, @@sock2_msg_list.length
   end
 
   @@socket1.on :event do |msg|

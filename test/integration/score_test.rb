@@ -89,6 +89,14 @@ class ScoreTest < ActionDispatch::IntegrationTest
     sleep(1)
 
     for i in 0..(Game::QUESTIONS_PER_GAME-2)
+      sl = 0
+      while filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first == nil do
+        sleep (0.1)
+        sl = sl + 1
+        if (sl % 10 == 0)
+          puts "Waiting for " + sl.to_s
+        end
+      end
       answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
       @@sock1_msg_list = []
       @@sock2_msg_list = []
