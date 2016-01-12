@@ -36,7 +36,7 @@ class UserControllerTest < ActionController::TestCase
 
   test "Should generate random nickname" do
     @profile[:name] = nil
-    user_name = register(@profile)['details']['name']
+    user_name = register(@profile)['name']
     assert_not_nil user_name
   end
 

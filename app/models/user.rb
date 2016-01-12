@@ -1,5 +1,18 @@
 require 'constants'
 class User < ActiveRecord::Base
+  @@name = ""
+  @@phone = ""
+  @@email = ""
+  @@avatar = ""
+
+  def to_json
+    details_json = JSON.parse(self.details)
+    @@name = details_json['name']
+    @@phone = details_json['phone']
+    @@email = details_json['email']
+    @@avatar = details_json['avatar']
+    {:id => self.id, :name => @@name, :avatar => @@avatar}
+  end
 
   def update(json_body)
     if ((self.details == nil) or (self.details.length == 0))

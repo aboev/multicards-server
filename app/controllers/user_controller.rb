@@ -21,7 +21,7 @@ def new
   end
   user.details = json_body.to_json
   user.save
-  msg = { :result => Constants::RESULT_OK, :data => { :id => user.id, :details => json_body } }
+  msg = { :result => Constants::RESULT_OK, :data => user.to_json }
   respond_to do |format|
     format.json  { render :json => msg }
   end    
