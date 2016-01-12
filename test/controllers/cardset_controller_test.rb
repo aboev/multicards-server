@@ -62,14 +62,14 @@ class CardsetControllerTest < ActionController::TestCase
   end
 
   test "Should return only popular cardsets (with likes)" do
-    test_cardset1 = 415
-    test_cardset2 = 520
+    test_cardset1 = "quizlet_415"
+    test_cardset2 = "quizlet_520"
     @controller = CardsetController.new
     # Import cardset 415
-    @request.headers["setid"] = "quizlet_" + test_cardset1.to_s
+    @request.headers["setid"] = test_cardset1
     get :import, nil, @headers
     # Import cardset 420
-    @request.headers["setid"] = "quizlet_" + test_cardset2.to_s
+    @request.headers["setid"] = test_cardset2
     get :import, nil, @headers
     post :like, nil, @headers
     assert_response :success
@@ -80,7 +80,7 @@ class CardsetControllerTest < ActionController::TestCase
     # Should return only single cardset with like
     assert_equal Constants::RESULT_OK, res_json['result']
     assert_equal 1, res_json['data'].length
-    assert_equal test_cardset2, res_json['data'][0]['cardset_id']
+    assert_equal test_cardset2, res_json['data'][0]['gid']
   end
 
 end

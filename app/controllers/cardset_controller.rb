@@ -27,8 +27,9 @@ def import
 end
 
 def popular
-  limit = 50
-  res = Qcardset.where("like_count > 0").order('like_count DESC').limit(limit)
+  limit = 50  
+  qcardset_list = Qcardset.where("like_count > 0").order('like_count DESC').limit(limit)
+  res = CardsetDescriptor.from_qcardset_list(qcardset_list)
   msg = { :result => Constants::RESULT_OK, :data => res }
   respond_to do |format|
     format.json  { render :json => msg.to_json }
