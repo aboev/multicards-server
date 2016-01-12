@@ -79,8 +79,8 @@ class CardsetControllerTest < ActionController::TestCase
     res_json = JSON.parse(response.body)
     # Should return only single cardset with like
     assert_equal Constants::RESULT_OK, res_json['result']
-    assert_equal 1, JSON.parse(res_json['data']).length
-    assert_equal test_cardset2, JSON.parse(res_json['data'])[0]['cardset_id']
+    assert_equal 1, res_json['data'].length
+    assert_equal test_cardset2, res_json['data'][0]['cardset_id']
   end
 
 end
