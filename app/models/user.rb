@@ -20,4 +20,15 @@ class User < ActiveRecord::Base
     return details
   end
 
+  def self.find_by_name(name)
+    users = User.all
+    users.each do |user|
+      details = user.get_details
+      if ((details["name"] != nil) and (details["name"] == name))
+        return user
+      end
+    end
+    return nil
+  end
+
 end

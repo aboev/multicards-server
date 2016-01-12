@@ -1,4 +1,5 @@
 require 'net/https'
+require 'nicknames'
 
 module Utils
   def self.make_gid(provider, set_id)
@@ -127,6 +128,7 @@ module Utils
   end
 
   def self.make_nickname
+    Nicknames.haikunate
   end
 
 end

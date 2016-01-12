@@ -24,13 +24,20 @@ class UserControllerTest < ActionController::TestCase
     post :new, profile.to_json, @headers
     assert_response :success
     user_id = JSON.parse(@response.body)['data']['id']
+    return JSON.parse(@response.body)['data']
   end
 
   test "Should register new user" do
-    user_id = register(@profile)
+    user_id = register(@profile)['id']
     user = User.where(id: user_id).first
     assert_not_nil user
     assert_equal user.details, @profile.to_json
+  end
+
+  test "Should generate random nickname" do
+    @profile[:name] = nil
+    user_name = register(@profile)['details']['name']
+    assert_not_nil user_name
   end
 
 end
