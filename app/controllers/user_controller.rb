@@ -8,7 +8,7 @@ before_filter :check_credentials, :except => [:new]
 def new
   json_body = JSON.parse(request.body.read)
   user = User.new
-  if (json_body["name"] == nil)
+  if ((json_body["name"] == nil) or (json_body["name"].length == 0))
     name = Utils.make_nickname
     tries = 0
     while ((User.find_by_name(name) != nil) and (tries < 20))
