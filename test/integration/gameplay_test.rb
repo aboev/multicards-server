@@ -122,7 +122,7 @@ class GameplayTest < ActionDispatch::IntegrationTest
       player_answer(@@socket1, 0, [])
       update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
       update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
-      sleep(0.1)
+      sleep(0.3)
     end
 
     @@sock1_msg_list = []
