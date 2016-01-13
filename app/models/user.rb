@@ -1,4 +1,6 @@
 require 'constants'
+require 'utils'
+
 class User < ActiveRecord::Base
   @@name = ""
   @@phone = ""
@@ -31,6 +33,31 @@ class User < ActiveRecord::Base
     details = JSON.parse(self.details)
     details[Constants::JSON_USER_ID] = self.id
     return details
+  end
+
+  def init
+    details = JSON.parse(self.details)
+    
+    if ((details["name"] == nil) or (details["name"].length == 0))
+      name = Utils.make_nickname
+      tries = 0
+      while ((User.find_by_name(name) != nil) and (tries < 20))
+        name = Utils.make_nickname
+        tries = tries + 1
+      end
+      if tries < 20
+        details["name"] = name
+      end
+    end
+
+    if ((details["avatar"] == nil) or (details["avatar"].length == 0))
+      avatar_prefix = APP_CONFIG['avatar_prefix']
+      index = rand(1 .. 20)
+      avatar_url = "%s/%s/%s%02d.png" % [APP_CONFIG['server_prefix'], "uploads", APP_CONFIG['avatar_prefix'], rand(1 .. 20)]
+      details["avatar"] = avatar_url
+    end
+    
+    self.details = details.to_json
   end
 
   def self.find_by_name(name)
