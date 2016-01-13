@@ -12,6 +12,8 @@ defaults: &defaults
   smsc_login: [login for smsc.ru]
   smsc_pw: [password for smsc.ru]
 
+  avatar_prefix: Summer_512px-
+
 development:
   <<: *defaults
 
