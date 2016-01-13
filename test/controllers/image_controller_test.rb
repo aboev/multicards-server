@@ -38,8 +38,10 @@ class UserControllerTest < ActionController::TestCase
     @controller = UploadController.new
     @request.headers[Constants::HEADER_USERID] = user_id
     @request.headers[Constants::HEADER_SOCKETID] = @@socket.session_id 
-    image = fixture_file_upload @image_filename
-    post :upload, { name: @image_filename, image: image, uri_local: @image_filename }
+    
+    file = fixture_file_upload(@image_filename, 'image/png')
+
+    post :upload, { name: @image_filename, image: file}
     assert_equal JSON.parse(@response.body)['result'], Constants::RESULT_OK
     image_url = JSON.parse(@response.body)['data']
 
