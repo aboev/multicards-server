@@ -1,6 +1,9 @@
 class UploadController < ApplicationController
 skip_before_filter :verify_authenticity_token
 
+MEDIUM_WIDTH = 600
+SMALL_WIDTH = 200
+
 def upload
   server_prefix = APP_CONFIG['server_prefix']
 
@@ -27,22 +30,23 @@ def upload
   name_medium = img_id + "_medium" + File.extname(name)
   filepath_medium = Rails.root.join('public', 'uploads', name_medium) 
   url_medium = server_prefix + "/uploads/" + name_medium
-  medium_height = Image::MEDIUM_WIDTH * aspect_ratio
-  image_medium = image_original.resize_to_fit(Image::MEDIUM_WIDTH, medium_height)
+  medium_height = MEDIUM_WIDTH * aspect_ratio
+  image_medium = image_original.resize_to_fit(MEDIUM_WIDTH, medium_height)
   image_medium.write( filepath_medium ){self.quality=100}
 
   # Processing small thumbnail
   name_small = img_id + "_small" + File.extname(name)
   filepath_small = Rails.root.join('public', 'uploads', name_small)
   url_small = server_prefix + "/uploads/" + name_small
-  small_height = Image::SMALL_WIDTH * aspect_ratio
-  image_small = image_original.resize_to_fit(Image::SMALL_WIDTH, small_height)
+  small_height = SMALL_WIDTH * aspect_ratio
+  image_small = image_original.resize_to_fit(SMALL_WIDTH, small_height)
   image_small.write( filepath_small ){self.quality=100}
 
   # Storing ActiveRecord
   
-
-  @user.details[Constants::JSON_USER_AVATAR] = url_small 
+  details = @user.get_details
+  details[Constants::JSON_USER_AVATAR] = url_small
+  @user.details = details.to_json
   @user.save
 
   msg = { :result => "OK", :data => url_small }
