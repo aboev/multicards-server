@@ -58,6 +58,7 @@ class User < ActiveRecord::Base
     end
     
     self.details = details.to_json
+    self.save
   end
 
   def self.find_by_name(name)
