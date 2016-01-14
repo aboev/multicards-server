@@ -85,6 +85,19 @@ class Protocol
     end
   end
 
+  def self.msg_check_name(id_from, msg_type, msg_body)
+    user = User.find_by_name(msg_body)
+
+    msg_to = [id_from]
+    msg_type = Constants::SOCK_MSG_TYPE_CHECK_NAME
+    name_avail = false
+    if ((user == nil) or (user.socket_id == id_from))
+      name_avail = true
+    end
+    message = Protocol.make_msg(msg_to, msg_type, name_avail)
+    $redis.publish Constants::SOCK_CHANNEL, message
+  end
+
   def self.parse_msg(msg_json)
     id_from = msg_json[Constants::JSON_SOCK_MSG_FROM]
     msg_type = msg_json[Constants::JSON_SOCK_MSG_TYPE]
@@ -107,6 +120,8 @@ class Protocol
       self.msg_user_answered(id_from, msg_type, msg_body)
     elsif (msg_type == Constants::SOCK_MSG_TYPE_ANNOUNCE_USERID)
       self.msg_announce_userid(id_from, msg_type, msg_body)
+    elsif (msg_type == Constants::SOCK_MSG_TYPE_CHECK_NAME)
+      self.msg_check_name(id_from, msg_type, msg_body)
     end
   
     res = { :result => Constants::RESULT_OK }

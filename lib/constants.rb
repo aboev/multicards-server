@@ -12,6 +12,7 @@ class Constants
   SOCK_MSG_TYPE_ANNOUNCE_USERID	="announce_userid"
   SOCK_MSG_TYPE_ANSWER_ACCEPTED	="answer_accepted"
   SOCK_MSG_TYPE_ANSWER_REJECTED	="answer_rejected"
+  SOCK_MSG_TYPE_CHECK_NAME	="check_name"
 
   JSON_GAME_ID		=	"game_id"
   JSON_GAME_STATUS	=	"status"

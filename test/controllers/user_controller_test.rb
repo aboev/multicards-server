@@ -13,6 +13,7 @@ class UserControllerTest < ActionController::TestCase
     @contact = "111111"
     @profile = {:email => "test@test.com", :phone => @contact, :name => "alex", :avatar => "http://google.com"}
     @profile2 = {:email => "test2@test.com", :phone => @contact2, :name => "alex2", :avatar => "http://google.com"}
+    @@sock1_msg_list = []
   end
 
   def teardown
@@ -89,6 +90,48 @@ class UserControllerTest < ActionController::TestCase
     get :get
     assert_equal user_id2, JSON.parse(@response.body)['data']['id']
     assert_equal @profile2[:name], JSON.parse(@response.body)['data']['name']
+  end
+
+  test "Should check name availability" do
+    userid = register(@profile)['id']
+    register(@profile2)
+
+    # Announce socket id
+    @request.headers[Constants::HEADER_USERID] = userid
+    @request.headers[Constants::HEADER_SOCKETID] = @@socket.session_id
+    get :get
+    
+    # Check available name
+    msg_type = Constants::SOCK_MSG_TYPE_CHECK_NAME
+    msg_body = "name3"
+    msg = Protocol.make_msg(nil, msg_type, msg_body)
+    @@socket.emit :message, msg    
+    sleep(1)
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).length
+    assert_equal true, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body']
+    @@sock1_msg_list = []
+
+    # Check current name
+    msg_body = @profile[:name]
+    msg = Protocol.make_msg(nil, msg_type, msg_body)
+    @@socket.emit :message, msg    
+    sleep(1)
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).length
+    assert_equal true, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body']
+    @@sock1_msg_list = []
+
+    # Check existing name
+    msg_body = @profile2[:name]
+    msg = Protocol.make_msg(nil, msg_type, msg_body)
+    @@socket.emit :message, msg
+    sleep(1)
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).length
+    assert_equal false, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body']
+  end
+
+  @@socket.on :event do |msg|
+    msg_json = JSON.parse(msg)
+    @@sock1_msg_list << msg_json
   end
 
 end
