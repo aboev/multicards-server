@@ -31,4 +31,25 @@ def update
   end
 end
 
+def get
+  userid = request.headers[Constants::HEADER_USERID]
+  username = request.headers[Constants::HEADER_USERNAME]
+  
+  msg = { }
+  user = User.where(:id => userid).first
+  if (username != nil)
+    user = User.find_by_name(username)
+  end
+  
+  if (user != nil)
+    msg = { :result => Constants::RESULT_OK, :data => user.to_json }   
+  else
+    msg = { :result => Constants::RESULT_ERROR }
+  end
+
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
 end

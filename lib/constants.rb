@@ -60,6 +60,7 @@ class Constants
   MSG_NAME_EXISTS	=	"Name already exists"
 
   HEADER_USERID         =       "id"
+  HEADER_USERNAME       =       "name"
   HEADER_SOCKETID       =       "socketid"
   HEADER_SETID		=       "setid"
   HEADER_QUERY	        =       "query"

@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
   post 'user' => 'user#new'
   put 'user' => 'user#update'
+  get 'user' => 'user#get'
   post 'game' => 'game#new'
   post 'event' => 'event#new'
   post 'image' => 'upload#upload'

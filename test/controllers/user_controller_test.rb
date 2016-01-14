@@ -73,4 +73,22 @@ class UserControllerTest < ActionController::TestCase
     assert_equal Constants::RESULT_ERROR, JSON.parse(@response.body)['result']
   end
 
+  test "Should return user by id" do
+    user_id = register(@profile)['id']
+    @request.headers[Constants::HEADER_USERID] = user_id
+    get :get
+    assert_equal user_id, JSON.parse(@response.body)['data']['id']
+    assert_equal @profile[:name], JSON.parse(@response.body)['data']['name']
+  end
+
+  test "Should return user by name" do
+    user_id1 = register(@profile)['id']
+    user_id2 = register(@profile2)['id']
+    @request.headers[Constants::HEADER_USERID] = user_id1
+    @request.headers[Constants::HEADER_USERNAME] = @profile2[:name]
+    get :get
+    assert_equal user_id2, JSON.parse(@response.body)['data']['id']
+    assert_equal @profile2[:name], JSON.parse(@response.body)['data']['name']
+  end
+
 end
