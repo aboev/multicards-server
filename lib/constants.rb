@@ -56,6 +56,8 @@ class Constants
   MSG_BODY_FORMAT       =       "Missing required argument in body"
   ERROR_NOT_FOUND       =       103
   MSG_NOT_FOUND         =       "Entry not found"
+  ERROR_NAME_EXISTS	=	104
+  MSG_NAME_EXISTS	=	"Name already exists"
 
   HEADER_USERID         =       "id"
   HEADER_SOCKETID       =       "socketid"

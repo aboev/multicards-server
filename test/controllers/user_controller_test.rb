@@ -4,12 +4,15 @@ require 'test_helper'
 
 class UserControllerTest < ActionController::TestCase
 
+  @@socket = SocketIO::Client::Simple.connect 'http://localhost:5002'
+
   def setup
-    @socket = SocketIO::Client::Simple.connect 'http://localhost:5001'
     @request.headers["Content-Type"] = "application/json"
     @request.headers["Accept"] = "*/*"
+    @request.headers[Constants::HEADER_SOCKETID] = @@socket.session_id
     @contact = "111111"
     @profile = {:email => "test@test.com", :phone => @contact, :name => "alex", :avatar => "http://google.com"}
+    @profile2 = {:email => "test2@test.com", :phone => @contact2, :name => "alex2", :avatar => "http://google.com"}
   end
 
   def teardown
@@ -24,6 +27,13 @@ class UserControllerTest < ActionController::TestCase
     post :new, profile.to_json, @headers
     assert_response :success
     user_id = JSON.parse(@response.body)['data']['id']
+    return JSON.parse(@response.body)['data']
+  end
+
+  def update(profile, userid)
+    @controller = UserController.new
+    @request.headers[Constants::HEADER_USERID] = userid
+    put :update, profile.to_json
     return JSON.parse(@response.body)['data']
   end
 
@@ -46,6 +56,21 @@ class UserControllerTest < ActionController::TestCase
     avatar = register(@profile)['avatar']
     assert_not_nil avatar
     assert avatar.length > 0
+  end
+
+  test "Should update name" do
+    user_id = register(@profile)['id']
+    @profile[:name] = "name2"
+    assert_equal @profile[:name], update(@profile, user_id)['name']
+  end
+
+  test "Should prevent duplicate names" do
+    user_id1 = register(@profile)['id']
+    user_id2 = register(@profile2)['id']
+    @profile[:name] = @profile2[:name]
+    update(@profile, user_id1)
+    
+    assert_equal Constants::RESULT_ERROR, JSON.parse(@response.body)['result']
   end
 
 end

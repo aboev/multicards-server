@@ -19,9 +19,13 @@ end
 
 def update
   new_details = JSON.parse(request.body.read)
-  @user.update(new_details)
-  @user.save
-  msg = { :result => "OK"}
+  msg = { }
+  if @user.update(new_details)
+    @user.save
+    msg = { :result => Constants::RESULT_OK, :data => @user.to_json }
+  else
+    msg = { :result => Constants::RESULT_ERROR }  
+  end
   respond_to do |format|
     format.json  { render :json => msg }
   end

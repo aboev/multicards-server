@@ -23,10 +23,16 @@ class User < ActiveRecord::Base
       cur_details = JSON.parse(self.details)
     end
 
+    if ((cur_details['name'] != nil) and (cur_details['name'].length > 0))
+      ex_user = User.find_by_name(json_body['name'])
+      return false if ((ex_user != nil) and (ex_user.id != self.id))
+    end
+
     json_body.each do |key, value|
         cur_details[key] = value
     end
     self.details = cur_details.to_json
+    return true
   end
 
   def get_details
