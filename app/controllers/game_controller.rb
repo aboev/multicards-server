@@ -10,8 +10,10 @@ def new
 
   if gid == nil
     ret_error
+    return
   elsif Utils.get_qcardset(gid) == nil
     ret_error
+    return
   end
 
   setid = Utils.parse_gid(gid)[1]
@@ -20,21 +22,26 @@ def new
     if game_public != nil
       join_and_start(game_public, @user)
       ret_ok(JSON.parse(game_public.details))
+      return
     else
       game_public = init_and_join(setid, true, @user)
       ret_ok(JSON.parse(game_public.details))
+      return
     end
   elsif (opponent_name == "-1")
     game_private = init_and_join(setid, false, @user)
     ret_ok(JSON.parse(game_private.details))
+    return
   else
     opponent = User.find_by_name(opponent_name)
     if opponent != nil
       game_private = Game.find_by_socket_id(opponent.socket_id, Game::STATUS_WAITING_OPPONENT).first
       join_and_start(game_private, @user)
       ret_ok(JSON.parse(game_private.details))
+      return
     else
       ret_error
+      return
     end
   end
 end

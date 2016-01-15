@@ -20,6 +20,7 @@ def search
 
   res = CardsetDescriptor.from_qcardset_list(qcardset_list)
   ret_ok(res)
+  return
 end
 
 def get
