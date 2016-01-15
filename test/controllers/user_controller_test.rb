@@ -17,10 +17,7 @@ class UserControllerTest < ActionController::TestCase
   end
 
   def teardown
-    Game.delete_all
-    User.delete_all
-    Card.delete_all
-    Cardset.delete_all
+    clear_db
   end
 
   def register(profile)

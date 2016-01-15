@@ -11,6 +11,16 @@ class ActiveSupport::TestCase
   self.use_transactional_fixtures = false
   # Add more helper methods to be used by all tests here...
 
+  def clear_db
+    Game.delete_all
+    User.delete_all
+    Card.delete_all
+    Cardset.delete_all
+    Qcardset.delete_all
+    Qcard.delete_all
+    TagDescriptor.delete_all
+  end
+
   def register(profile)
     post '/user', profile.to_json, @headers
     assert_response :success
@@ -20,6 +30,7 @@ class ActiveSupport::TestCase
   def new_game(userid, socketid)
     @headers[Constants::HEADER_USERID] = userid
     @headers[Constants::HEADER_SOCKETID] = socketid
+    @headers[Constants::HEADER_SETID] = "quizlet_415"
     if (socketid == nil)
       puts "socketid = nil"
     end
@@ -64,6 +75,15 @@ class ActiveSupport::TestCase
       end
     end
     return res
+  end
+
+  def filter_wait(list, msg_type)
+    sl = 0
+    while ((filter(list, msg_type).first == nil) and (sl < 40)) do
+      sleep (0.1)
+      sl = sl + 1
+    end
+    return filter(list, msg_type)
   end
 
 end

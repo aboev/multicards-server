@@ -21,10 +21,7 @@ class GameplayTest < ActionDispatch::IntegrationTest
   end
 
   def teardown
-    Game.delete_all
-    User.delete_all
-    Card.delete_all
-    Cardset.delete_all
+    clear_db
   end
 
   test "Should start new game" do
@@ -118,13 +115,12 @@ class GameplayTest < ActionDispatch::IntegrationTest
     user_id2 = register(@profile2)
     new_game(user_id1, @@socket1.session_id)
     new_game(user_id2, @@socket2.session_id)
-    sleep(1)
     
     for i in 0..(Game::QUESTIONS_PER_GAME-2)
+      msg_list = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)
       player_answer(@@socket1, 0, [])
       update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
       update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
-      sleep(0.3)
     end
 
     @@sock1_msg_list = []
@@ -133,9 +129,10 @@ class GameplayTest < ActionDispatch::IntegrationTest
     update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
     update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
 
-    sleep(2)
-    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).length
-    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).length
+    msg_list_1 = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END)
+    msg_list_2 = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_END)
+    assert_equal 1, msg_list_1.length
+    assert_equal 1, msg_list_2.length
   end
 
   test "Should deliver answer to second player" do

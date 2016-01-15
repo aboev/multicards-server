@@ -1,9 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  tag_id: MyString
-  tag_name: MyString
+  tag_id: 1
+  tag_name: history
 
 two:
-  tag_id: MyString
-  tag_name: MyString
+  tag_id: 2
+  tag_name: literature
+
+three:
+  tag_id: 3
+  tag_name: foreign
