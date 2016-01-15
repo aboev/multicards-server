@@ -64,8 +64,11 @@ class Constants
   HEADER_USERNAME       =       "name"
   HEADER_SOCKETID       =       "socketid"
   HEADER_SETID		=       "setid"
+  HEADER_TAGID		=       "tagid"
   HEADER_QUERY	        =       "query"
   HEADER_OPPONENTNAME   =       "opponentname"
+  HEADER_OFFSET 	=       "offset"
+  HEADER_LIMIT		=       "limit"
 
   SOCK_CHANNEL          =       "events"
 
