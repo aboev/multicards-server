@@ -103,30 +103,30 @@ class UserControllerTest < ActionController::TestCase
     
     # Check available name
     msg_type = Constants::SOCK_MSG_TYPE_CHECK_NAME
-    msg_body = "name3"
-    msg = Protocol.make_msg(nil, msg_type, msg_body)
+    name = "name3"
+    msg = Protocol.make_msg(nil, msg_type, name)
     @@socket.emit :message, msg    
     sleep(1)
     assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).length
-    assert_equal true, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body']
+    assert_equal true, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body'][name]
     @@sock1_msg_list = []
 
     # Check current name
-    msg_body = @profile[:name]
-    msg = Protocol.make_msg(nil, msg_type, msg_body)
+    name = @profile[:name]
+    msg = Protocol.make_msg(nil, msg_type, name)
     @@socket.emit :message, msg    
     sleep(1)
     assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).length
-    assert_equal true, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body']
+    assert_equal true, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body'][name]
     @@sock1_msg_list = []
 
     # Check existing name
-    msg_body = @profile2[:name]
-    msg = Protocol.make_msg(nil, msg_type, msg_body)
+    name = @profile2[:name]
+    msg = Protocol.make_msg(nil, msg_type, name)
     @@socket.emit :message, msg
     sleep(1)
     assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).length
-    assert_equal false, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body']
+    assert_equal false, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body'][name]
   end
 
   @@socket.on :event do |msg|

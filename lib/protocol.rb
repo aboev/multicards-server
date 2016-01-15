@@ -85,8 +85,8 @@ class Protocol
     end
   end
 
-  def self.msg_check_name(id_from, msg_type, msg_body)
-    user = User.find_by_name(msg_body)
+  def self.msg_check_name(id_from, msg_type, name)
+    user = User.find_by_name(name)
 
     msg_to = [id_from]
     msg_type = Constants::SOCK_MSG_TYPE_CHECK_NAME
@@ -94,7 +94,9 @@ class Protocol
     if ((user == nil) or (user.socket_id == id_from))
       name_avail = true
     end
-    message = Protocol.make_msg(msg_to, msg_type, name_avail)
+    
+    msg_body = {name => name_avail}
+    message = Protocol.make_msg(msg_to, msg_type, msg_body)
     $redis.publish Constants::SOCK_CHANNEL, message
   end
 
