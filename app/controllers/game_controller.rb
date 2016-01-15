@@ -8,11 +8,12 @@ def new
   gid = request.headers[Constants::HEADER_SETID]
   opponent_name = request.headers[Constants::HEADER_OPPONENTNAME]
 
-  if gid == nil
-    ret_error
+
+  if ((gid == nil) and ((opponent_name == "-1") or (opponent_name == null)))
+    ret_error()
     return
-  elsif Utils.get_qcardset(gid) == nil
-    ret_error
+  elsif ((gid != nil) and (gid.length > 0) and (Utils.get_qcardset(gid) == nil))
+    ret_error()
     return
   end
 
@@ -46,15 +47,15 @@ def new
   end
 end
 
-def ret_error
-  msg = { :result => Constants::RESULT_ERROR }
+def ret_ok (data)
+  msg = { :result => Constants::RESULT_OK, :data => data }
   respond_to do |format|
     format.json  { render :json => msg }
   end
 end
 
-def ret_ok (data)
-  msg = { :result => Constants::RESULT_OK, :data => data }
+def ret_error
+  msg = { :result => Constants::RESULT_ERROR }
   respond_to do |format|
     format.json  { render :json => msg }
   end
