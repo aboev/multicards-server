@@ -18,6 +18,13 @@ module Utils
     return Cardset.where(:gid => gid).first
   end
 
+  def self.get_qcardset(gid)
+    setid = parse_gid(gid)[1]
+    cardset = Qcardset.where(:cardset_id => setid).first
+    import_qcardset(gid) if (cardset == nil)
+    return Qcardset.where(:cardset_id => setid).first
+  end
+
   def self.import_qcardset(gid)
     set_id = parse_gid(gid)[1]
     provider = parse_gid(gid)[0]
@@ -121,6 +128,38 @@ module Utils
       if ((cardset.count > 0) and (cardset.first.likes.include?(userid.to_s)))
         cardset.remove_like(userid.to_s)
         cardset.save
+        return true
+      end
+    end
+    return false
+  end
+
+  def self.tag(gid, tagid)
+    set_id = parse_gid(gid)[1]
+    provider = parse_gid(gid)[0]
+    if provider == "quizlet"
+      if ((Qcardset.where(:cardset_id => set_id).count > 0) or (import_qcardset(gid) == true))
+        cardset = Qcardset.where(:cardset_id => set_id).first
+        tag = TagDescriptor.where(:tag_id => tagid).first
+        if ((!cardset.tags.include?(tagid.to_s)) and (tag != nil))
+          cardset.add_tag(tagid.to_s)
+          cardset.save
+          return true
+        end
+      end
+    end
+    return false
+  end
+
+  def self.untag(gid, tagid)
+    set_id = parse_gid(gid)[1]
+    provider = parse_gid(gid)[0]
+    if provider == "quizlet"
+      cardset = Qcardset.where(:cardset_id => set_id)
+      tag = TagDescriptor.where(:tag_id => tagid).first
+      if ((cardset.count > 0) and (cardset.first.tags.include?(tagid.to_s)) and (tag != nil))
+        cardset.first.remove_tag(tagid.to_s)
+        cardset.first.save
         return true
       end
     end
