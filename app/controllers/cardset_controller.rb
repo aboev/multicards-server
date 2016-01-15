@@ -6,17 +6,34 @@ class CardsetController < ApplicationController
 skip_before_filter :verify_authenticity_token
 before_filter :check_credentials
 
+def search
+  offset = request.headers[Constants::HEADER_OFFSET]
+  limit = request.headers[Constants::HEADER_LIMIT]
+  tag_ids = request.headers[Constants::HEADER_TAGID]
+  query = request.headers[Constants::HEADER_QUERY]
+  limit = 50
+  tags = tag_ids.split(",")
+  qcardset_list = Qcardset.where('? = ANY(tags)', tags[0]).limit(limit)
+  tags.each do |tagid|
+    qcardset_list = qcardset_list.where('? = ANY(tags)', tagid)
+  end
+
+  res = CardsetDescriptor.from_qcardset_list(qcardset_list)
+  ret_ok(res)
+end
+
 def get
+  gid = request.headers[Constants::HEADER_SETID]
   json_body = JSON.parse(request.body.read)
   cardsets = Cardset.all
   msg = { :result => Constants::RESULT_OK, :data => cardsets.to_json }
   respond_to do |format|
     format.json  { render :json => msg }
-  end    
+  end
 end
 
 def import
-  gid = request.headers['setid']
+  gid = request.headers[Constants::HEADER_SETID]
   msg = { :result => Constants::RESULT_OK }
   if Utils.import_qcardset(gid) == false
     msg = { :result => Constants::RESULT_ERROR }
@@ -37,7 +54,7 @@ def popular
 end
 
 def like
-  gid = request.headers['setid']
+  gid = request.headers[Constants::HEADER_SETID]
   Utils.like(gid, @user.id)
   msg = { :result => Constants::RESULT_OK }
   respond_to do |format|
@@ -46,9 +63,41 @@ def like
 end
 
 def unlike
-  gid = request.headers['setid']
+  gid = request.headers[Constants::HEADER_SETID]
   Utils.unlike(gid, @user.id)
   msg = { :result => Constants::RESULT_OK }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
+def put_tag
+  gid = request.headers[Constants::HEADER_SETID]
+  tagids = request.headers[Constants::HEADER_TAGID]
+  tagids.split(",").each do |tagid|
+    Utils.tag(gid, tagid)
+  end
+
+  msg = { :result => Constants::RESULT_OK }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
+def drop_tag
+  gid = request.headers[Constants::HEADER_SETID]
+  tagids = request.headers[Constants::HEADER_TAGID]
+  tagids.split(",").each do |tagid|
+    Utils.untag(gid, tagid)
+  end
+  msg = { :result => Constants::RESULT_OK }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
+def ret_ok (data)
+  msg = { :result => Constants::RESULT_OK, :data => data }
   respond_to do |format|
     format.json  { render :json => msg }
   end

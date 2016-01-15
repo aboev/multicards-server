@@ -10,4 +10,12 @@ class Qcardset < ActiveRecord::Base
     self.like_count = self.like_count - 1
   end
 
+  def add_tag(tagid)
+    update_attributes tags: tags + [ tagid ]
+  end
+
+  def remove_tag(tagid)
+    update_attributes tags: tags - [ tagid ]
+  end
+
 end

@@ -2,16 +2,20 @@
 
 one:
   cardset_id: 1
-  term_id: 1
-  term: MyText
-  definition: MyText
-  image: MyText
-  rank: 1
+  term: word1
+  definition: answer1
 
 two:
   cardset_id: 1
-  term_id: 1
-  term: MyText
-  definition: MyText
-  image: MyText
-  rank: 1
+  term: word2
+  definition: answer2
+
+three:
+  cardset_id: 1
+  term: word3
+  definition: answer3
+
+four:
+  cardset_id: 1
+  term: word4
+  definition: answer4
