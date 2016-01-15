@@ -12,14 +12,11 @@ class UserControllerTest < ActionController::TestCase
     @request.headers["Accept"] = "*/*"
     @contact = "111111"
     @profile = {:email => "test@test.com", :phone => @contact, :name => "alex", :avatar => "http://google.com"}
-    @image_filename = "image.png"
+    @img_filename = "/image.png"
   end
 
   def teardown
-    Game.delete_all
-    User.delete_all
-    Card.delete_all
-    Cardset.delete_all
+    clear_db
   end
 
   def register(profile)
@@ -38,10 +35,11 @@ class UserControllerTest < ActionController::TestCase
     @controller = UploadController.new
     @request.headers[Constants::HEADER_USERID] = user_id
     @request.headers[Constants::HEADER_SOCKETID] = @@socket.session_id 
-    
-    file = fixture_file_upload(@image_filename, 'image/png')
+   
+    img_filename = "/image.png" 
+    file = fixture_file_upload(img_filename, 'image/png')
 
-    post :upload, { name: @image_filename, image: file}
+    post :upload, { name: img_filename, image: file}
     assert_equal JSON.parse(@response.body)['result'], Constants::RESULT_OK
     image_url = JSON.parse(@response.body)['data']
 
