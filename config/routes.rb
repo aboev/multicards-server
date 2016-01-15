@@ -7,10 +7,12 @@ Rails.application.routes.draw do
   post 'event' => 'event#new'
   post 'image' => 'upload#upload'
   get 'import' => 'cardset#import'
-  get 'search' => 'search#search'
+  get 'search' => 'cardset#search'
   get 'popular' => 'cardset#popular'
   post 'like' => 'cardset#like'
   post 'unlike' => 'cardset#unlike'
+  post 'tag' => 'cardset#put_tag'
+  post 'untag' => 'cardset#drop_tag'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
