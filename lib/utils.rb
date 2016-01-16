@@ -26,6 +26,7 @@ module Utils
   end
 
   def self.import_qcardset(gid)
+    puts "Importing " + gid.to_s
     set_id = parse_gid(gid)[1]
     provider = parse_gid(gid)[0]
     if provider == "quizlet"
@@ -58,10 +59,10 @@ module Utils
           card = Qcard.new
           card.cardset_id = cardset.cardset_id
           card.term_id = term['term_id']
-          card.term = term['term']
-          card.definition = term['definition']
-          card.image = term['image']
-          card.rank = term['rank']
+          card.term = term['term'].to_s
+          card.definition = term['definition'].to_s
+          card.image = term['image'].to_s
+          card.rank = term['rank'].to_s
           card.save
         end
         return true
