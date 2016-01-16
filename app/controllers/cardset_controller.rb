@@ -74,6 +74,10 @@ end
 
 def get_tags
   tags = TagDescriptor.all
+  tags.each do |tag|
+    tag_name_json = JSON.parse(tag.tag_name)
+    tag.tag_name = tag_name_json
+  end
   msg = { :result => Constants::RESULT_OK, :data => tags }
   respond_to do |format|
     format.json  { render :json => msg.to_json }
