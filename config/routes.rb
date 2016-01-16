@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   post 'unlike' => 'cardset#unlike'
   post 'tag' => 'cardset#put_tag'
   post 'untag' => 'cardset#drop_tag'
+  get 'tags' => 'cardset#get_tags'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

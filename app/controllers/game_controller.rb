@@ -8,7 +8,6 @@ def new
   gid = request.headers[Constants::HEADER_SETID]
   opponent_name = request.headers[Constants::HEADER_OPPONENTNAME]
 
-
   if ((gid == nil) and ((opponent_name == "-1") or (opponent_name == null)))
     ret_error()
     return

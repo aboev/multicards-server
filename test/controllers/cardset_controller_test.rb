@@ -150,4 +150,12 @@ class CardsetControllerTest < ActionController::TestCase
 
   end
 
+  test "Should return tags" do
+    @controller = CardsetController.new
+    get :get_tags, nil, @headers
+    res_json = JSON.parse(response.body)
+    assert_response :success
+    assert_equal 3, res_json['data'].length
+  end
+
 end

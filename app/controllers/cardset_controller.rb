@@ -72,6 +72,14 @@ def unlike
   end
 end
 
+def get_tags
+  tags = TagDescriptor.all
+  msg = { :result => Constants::RESULT_OK, :data => tags }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
 def put_tag
   gid = request.headers[Constants::HEADER_SETID]
   tagids = request.headers[Constants::HEADER_TAGID]
