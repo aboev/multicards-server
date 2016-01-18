@@ -2,12 +2,12 @@
 
 one:
   tag_id: 1
-  tag_name: history
+  tag_name: '{"en":"history"}'
 
 two:
   tag_id: 2
-  tag_name: literature
+  tag_name: '{"en":"literature"}'
 
 three:
   tag_id: 3
-  tag_name: foreign
+  tag_name: '{"en":"foreign"}'

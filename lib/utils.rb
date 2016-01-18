@@ -26,7 +26,6 @@ module Utils
   end
 
   def self.import_qcardset(gid)
-    puts "Importing " + gid.to_s
     set_id = parse_gid(gid)[1]
     provider = parse_gid(gid)[0]
     if provider == "quizlet"
