@@ -116,8 +116,9 @@ class GameplayTest < ActionDispatch::IntegrationTest
     new_game(user_id1, @@socket1.session_id)
     new_game(user_id2, @@socket2.session_id)
     
-    for i in 0..(Game::QUESTIONS_PER_GAME)
+    for i in 0..(Game::QUESTIONS_PER_GAME - 2)
       msg_list = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)
+      @@sock1_msg_list = []
       player_answer(@@socket1, 0, [])
       update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
       update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
