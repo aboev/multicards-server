@@ -48,7 +48,7 @@ class Protocol
     question_status = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS]
     question_id = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ID]
     answer_accepted = true
-    if ((question_status == Question::QSTATUS_RIGHT_ANSWER) and (user_answer == correct_answer))
+    if ((question_status == Question::QSTATUS_RIGHT_ANSWER) and (user_answer.to_s == correct_answer.to_s))
       # Question already answered correctly -> reject correct answer
       msg_to = [id_from]
       msg_type = Constants::SOCK_MSG_TYPE_ANSWER_REJECTED
