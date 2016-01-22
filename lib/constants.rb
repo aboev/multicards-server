@@ -59,6 +59,10 @@ class Constants
   MSG_NOT_FOUND         =       "Entry not found"
   ERROR_NAME_EXISTS	=	104
   MSG_NAME_EXISTS	=	"Name already exists"
+  ERROR_USER_NOT_FOUND  =       105
+  MSG_USER_NOT_FOUND    =       "User not found"
+  ERROR_GAME_NOT_FOUND  =       106
+  MSG_GAME_NOT_FOUND    =       "Game not found"
 
   HEADER_USERID         =       "id"
   HEADER_USERNAME       =       "name"

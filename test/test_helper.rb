@@ -43,7 +43,10 @@ class ActiveSupport::TestCase
     @headers[Constants::HEADER_SOCKETID] = socketid
     @headers[Constants::HEADER_OPPONENTNAME] = opponent_name
     post '/game', nil, @headers
-    game_id = JSON.parse(@response.body)['data']['id']
+    if JSON.parse(@response.body)[:result] == Constants::RESULT_OK
+      game_id = JSON.parse(@response.body)['data']['id']
+      return game_id
+    end
   end
 
   def update_client_status(socket, status)

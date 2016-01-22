@@ -152,7 +152,7 @@ class GameplayTest < ActionDispatch::IntegrationTest
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_PLAYER_ANSWERED).length
   end
 
-  test "Should accept single answer" do
+  test "Should accept single correct answer" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
     new_game(user_id1, @@socket1.session_id)
@@ -162,8 +162,8 @@ class GameplayTest < ActionDispatch::IntegrationTest
     answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
     @@sock2_msg_list = []
     @@sock1_msg_list = []
-    player_answer(@@socket1, answer_id, [])
-    player_answer(@@socket2, answer_id, [])
+    player_answer(@@socket1, answer_id.to_s, [])
+    player_answer(@@socket2, answer_id.to_s, [])
 
     sleep(1)
     accepted_cnt_1 = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
@@ -172,6 +172,45 @@ class GameplayTest < ActionDispatch::IntegrationTest
     rejected_cnt_2 = filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
     assert_equal 1, (accepted_cnt_1 + accepted_cnt_2)
     assert_equal 1, (rejected_cnt_1 + rejected_cnt_2)
+    
+    update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+    update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
+
+    answer_id = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
+    @@sock1_msg_list = []
+    @@sock2_msg_list = []
+    player_answer(@@socket1, answer_id + 1, [])
+    player_answer(@@socket2, answer_id, [])
+
+    accepted_cnt_1 = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
+    accepted_cnt_2 = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
+    rejected_cnt_1 = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
+    rejected_cnt_2 = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
+    assert_equal 1, (accepted_cnt_1 + accepted_cnt_2) # Should be reconsidered
+    assert_equal 0, (rejected_cnt_1 + rejected_cnt_2)
+    
+  end
+
+  test "Should accept both wrong answers" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
+
+    answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
+    @@sock2_msg_list = []
+    @@sock1_msg_list = []
+    player_answer(@@socket1, answer_id + 1, [])
+    player_answer(@@socket2, answer_id + 1, [])
+
+    sleep(1)
+    accepted_cnt_1 = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
+    accepted_cnt_2 = filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
+    rejected_cnt_1 = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
+    rejected_cnt_2 = filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
+    assert_equal 2, (accepted_cnt_1 + accepted_cnt_2)
+    assert_equal 0, (rejected_cnt_1 + rejected_cnt_2)
   end
 
   test "Should start game with opponent by invitation" do
@@ -192,6 +231,15 @@ class GameplayTest < ActionDispatch::IntegrationTest
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
     assert_equal 2, @@sock1_msg_list.length
     assert_equal 2, @@sock2_msg_list.length
+  end
+
+  test "Should error for non-existing opponent" do
+    user_id1 = register(@profile1)
+    @headers[Constants::HEADER_SETID] = "quizlet_415"
+    new_game_with_opponent(user_id1, @@socket1.session_id, @profile2[:name])
+
+    assert_response :success
+    assert_equal Constants::ERROR_USER_NOT_FOUND, JSON.parse(response.body)['code']
   end
 
   @@socket1.on :event do |msg|

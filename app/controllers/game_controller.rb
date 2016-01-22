@@ -8,7 +8,7 @@ def new
   gid = request.headers[Constants::HEADER_SETID]
   opponent_name = request.headers[Constants::HEADER_OPPONENTNAME]
 
-  if ((gid == nil) and ((opponent_name == "-1") or (opponent_name == null)))
+  if ((gid == nil) and ((opponent_name == "-1") or (opponent_name == nil)))
     ret_error()
     return
   elsif ((gid != nil) and (gid.length > 0) and (Utils.get_qcardset(gid) == nil))
@@ -40,7 +40,7 @@ def new
       ret_ok(JSON.parse(game_private.details))
       return
     else
-      ret_error
+      ret_error(Constants::ERROR_USER_NOT_FOUND, Constants::MSG_USER_NOT_FOUND)
       return
     end
   end
@@ -55,6 +55,13 @@ end
 
 def ret_error
   msg = { :result => Constants::RESULT_ERROR }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
+def ret_error(err_code, err_msg)
+  msg = { :result => Constants::RESULT_ERROR, :code => err_code, :msg => err_msg }
   respond_to do |format|
     format.json  { render :json => msg }
   end
