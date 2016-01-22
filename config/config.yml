@@ -1,6 +1,9 @@
 defaults: &defaults
   server_prefix: http://multicards.snufan.com
 
+  server_version: 1
+  min_client_version: 1
+
   s3_access_key_id: [aws s3 access key id]
   s3_secret_access_key: [aws s3 secret access key]
   s3_region: [aws s3 region name]
