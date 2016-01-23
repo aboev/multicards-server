@@ -186,7 +186,7 @@ class GameplayTest < ActionDispatch::IntegrationTest
     accepted_cnt_2 = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
     rejected_cnt_1 = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
     rejected_cnt_2 = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
-    assert_equal 1, (accepted_cnt_1 + accepted_cnt_2) # Should be reconsidered
+    assert_equal 2, (accepted_cnt_1 + accepted_cnt_2) # Should be reconsidered
     assert_equal 0, (rejected_cnt_1 + rejected_cnt_2)
     
   end

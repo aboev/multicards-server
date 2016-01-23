@@ -115,6 +115,44 @@ class ScoreTest < ActionDispatch::IntegrationTest
     assert_equal @profile1[:email], filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["winner"]["email"]
   end
 
+  test "Should increase winner score" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
+
+    for i in 0..(Game::QUESTIONS_PER_GAME-2)
+      sl = 0
+      while filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first == nil do
+        sleep (0.1)
+        sl = sl + 1
+        if (sl % 10 == 0)
+          puts "Waiting for " + sl.to_s
+        end
+      end
+      answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
+      @@sock1_msg_list = []
+      @@sock2_msg_list = []
+      player_answer(@@socket1, answer_id, [])
+      sleep(0.1)
+      update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+      update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
+      sleep(0.3)
+    end
+
+    answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
+    @@sock1_msg_list = []
+    @@sock2_msg_list = []
+    player_answer(@@socket1, answer_id, [])
+    update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+    update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
+
+    sleep(2)
+    assert_equal Constants::SCORE_PER_WIN, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["scores"][@@socket1.session_id]
+    assert_equal 0, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["scores"][@@socket2.session_id]
+  end
+
   @@socket1.on :event do |msg|
     msg_json = JSON.parse(msg)
     @@sock1_msg_list << msg_json
