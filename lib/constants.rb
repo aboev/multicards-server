@@ -13,6 +13,7 @@ class Constants
   SOCK_MSG_TYPE_ANSWER_ACCEPTED	="answer_accepted"
   SOCK_MSG_TYPE_ANSWER_REJECTED	="answer_rejected"
   SOCK_MSG_TYPE_CHECK_NAME	="check_name"
+  SOCK_MSG_TYPE_CHECK_NETWORK	="check_network"
 
   JSON_GAME_ID		=	"game_id"
   JSON_GAME_STATUS	=	"status"
@@ -78,4 +79,11 @@ class Constants
 
   SOCK_EV_NEW_GAME      =       "game_start"
 
+  DB_FLAG_INVERT	=	1
+  DB_FLAG_EMPTY		=	2
+  DB_FLAG_INAPPROP	=	3
+  DB_FLAG_MISTAKE	=	4
+
+  SCORE_PER_WIN		=	5
+  SCORE_PER_GAME	=	2
 end
