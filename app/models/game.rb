@@ -101,8 +101,26 @@ class Game < ActiveRecord::Base
     players = details[Constants::JSON_GAME_PLAYERS]
     message_to = players.keys
 
-    winner_details = (get_winner != nil) ? get_winner.get_details : nil
-    msg_body = {:id => self.id, :winner => winner_details}
+    winner_details = nil
+    scores = {}
+    winner = get_winner
+    if (winner != nil)
+      winner_details = winner.get_details
+      winner_socket_id = winner.socket_id
+      self.get_scores.each do |socket_id, score|
+        player = User.where(:socket_id => socket_id).first
+        if player != nil
+          if player.socket_id == winner_socket_id
+            player.score = player.score + Constants::SCORE_PER_WIN
+            player.save
+          end
+          scores[socket_id] = player.score
+        else
+          scores[socket_id] = nil
+        end
+      end
+    end
+    msg_body = {:id => self.id, :winner => winner_details, :scores => scores}
  
     message = {Constants::JSON_SOCK_MSG_TO => message_to, Constants::JSON_SOCK_MSG_TYPE => Constants::SOCK_MSG_TYPE_GAME_END, Constants::JSON_SOCK_MSG_BODY => msg_body}.to_json
     $redis.publish Constants::SOCK_CHANNEL, message
