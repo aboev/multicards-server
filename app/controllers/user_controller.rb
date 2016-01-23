@@ -9,6 +9,7 @@ def new
   json_body = JSON.parse(request.body.read)
   user = User.new
   user.details = json_body.to_json
+  user.score = 0
   user.save
   user.init
   msg = { :result => Constants::RESULT_OK, :data => user.to_json }
