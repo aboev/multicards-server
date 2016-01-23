@@ -37,9 +37,11 @@ def get
   username = request.headers[Constants::HEADER_USERNAME]
   
   msg = { }
-  user = User.where(:id => userid).first
+  user = {}
   if (username != nil)
     user = User.find_by_name(username)
+  elsif (userid != nil)
+    user = User.where(:id => userid).first
   end
   
   if (user != nil)
