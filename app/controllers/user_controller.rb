@@ -53,4 +53,23 @@ def get
   end
 end
 
+def list
+  ids = request.headers[Constants::HEADER_IDS]
+
+  res = []
+  id_list = ids.split(",")
+  id_list.each do |id|
+    user = User.where(:id => id).first
+    if user != nil
+      res << user.get_details
+    end
+  end
+
+  msg = { :result => Constants::RESULT_OK, :data => res }
+
+  respond_to do |format|
+    format.json  { render :json => msg.to_json }
+  end
+end
+
 end

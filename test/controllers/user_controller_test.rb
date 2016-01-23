@@ -126,6 +126,15 @@ class UserControllerTest < ActionController::TestCase
     assert_equal false, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CHECK_NAME).first['msg_body'][name]
   end
 
+  test "Should list user profiles by id" do
+    user_id1 = register(@profile)['id']
+    user_id2 = register(@profile2)['id']
+    @request.headers[Constants::HEADER_USERID] = user_id1
+    @request.headers[Constants::HEADER_IDS] = user_id1.to_s + "," + user_id2.to_s
+    get :list
+    assert_equal 2, JSON.parse(@response.body)['data'].length
+  end
+
   @@socket.on :event do |msg|
     msg_json = JSON.parse(msg)
     @@sock1_msg_list << msg_json

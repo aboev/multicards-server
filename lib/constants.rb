@@ -74,6 +74,7 @@ class Constants
   HEADER_OPPONENTNAME   =       "opponentname"
   HEADER_OFFSET 	=       "offset"
   HEADER_LIMIT		=       "limit"
+  HEADER_IDS		=       "ids"
 
   SOCK_CHANNEL          =       "events"
 
