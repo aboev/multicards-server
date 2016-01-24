@@ -47,22 +47,15 @@ class Protocol
     correct_answer = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ANSWER_ID]
     question_status = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS]
     question_id = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ID]
+
     answer_accepted = true
+    msg_type = Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED
     if ((question_status == Question::QSTATUS_RIGHT_ANSWER) and (user_answer.to_s == correct_answer.to_s))
       # Question already answered correctly -> reject correct answer
-      msg_to = [id_from]
       msg_type = Constants::SOCK_MSG_TYPE_ANSWER_REJECTED
-      msg_body = question_id
-      message = Protocol.make_msg(msg_to, msg_type, msg_body)
-      $redis.publish Constants::SOCK_CHANNEL, message
       answer_accepted = false
-    elsif (question_status != Question::QSTATUS_RIGHT_ANSWER)
+    else
       # Question not answered correctly yet -> accept any answer
-      msg_to = [id_from]
-      msg_type = Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED
-      msg_body = question_id
-      message = Protocol.make_msg(msg_to, msg_type, msg_body)
-      $redis.publish Constants::SOCK_CHANNEL, message
       if (user_answer.to_s == correct_answer.to_s)
         game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS] = Question::QSTATUS_RIGHT_ANSWER
         game_details[Constants::JSON_GAME_SCORES] = game.increase_player_score(id_from)
@@ -70,6 +63,10 @@ class Protocol
         game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS] = Question::QSTATUS_WRONG_ANSWER
       end
     end
+    msg_to = [id_from]
+    msg_body = question_id
+    message = Protocol.make_msg(msg_to, msg_type, msg_body)
+    $redis.publish Constants::SOCK_CHANNEL, message
 
     game_details[Constants::JSON_GAME_PLAYERS][id_from] = Game::PLAYER_STATUS_ANSWERED
     game.details = game_details.to_json
