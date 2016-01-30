@@ -46,7 +46,7 @@ class Protocol
     user_answer = msg_body
     correct_answer = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ANSWER_ID]
     question_status = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_STATUS]
-    question_id = game_details[Constants::JSON_GAME_CURQUESTION][Constants::JSON_QST_ID]
+    question_id = game_details[Constants::JSON_GAME_QUESTIONCNT]
 
     answer_accepted = true
     msg_type = Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED
