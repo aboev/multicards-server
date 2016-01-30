@@ -37,6 +37,7 @@ class GameplayData
     @questions = []
     question_count = [terms.size, Constants::GAMEPLAY_Q_PER_G].min
     term_ids = random_nums(question_count, question_count, -1)
+    i = 0
     term_ids.each do |term_id|
       question_data = {}
       
@@ -45,19 +46,21 @@ class GameplayData
 
       option_ids = random_nums(Constants::GAMEPLAY_O_PER_Q - 1, terms.size, term_id)
       answer_id = rand(Constants::GAMEPLAY_O_PER_Q)
-      i = 0
+      j = 0
       option_ids.each do |option_id|
-        options << definitions[term_id] if (i == answer_id)
+        options << definitions[term_id] if (j == answer_id)
         options << definitions[option_id]
-        i = i + 1
+        j = j + 1
       end
       options << definitions[term_id] if (answer_id == Constants::GAMEPLAY_O_PER_Q - 1)
 
       question_data[Constants::JSON_QST_QUESTION] = question
       question_data[Constants::JSON_QST_OPTIONS] = options
       question_data[Constants::JSON_QST_ANSWER_ID] = answer_id
+      question_data[Constants::JSON_QST_ID] = i
 
       @questions << question_data
+      i = i + 1
     end
   end
 

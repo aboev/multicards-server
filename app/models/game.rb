@@ -80,7 +80,7 @@ class Game < ActiveRecord::Base
       msg_extra = self.get_scores
       message = Protocol.make_msg_extra(msg_to, msg_type, msg_body, msg_extra)
       details[Constants::JSON_GAME_CURQUESTION] = question
-      details[Constants::JSON_GAME_QUESTIONCNT] = details[Constants::JSON_GAME_QUESTIONCNT] + 1
+      details[Constants::JSON_GAME_QUESTIONCNT] = question_id
 
       Hash.new.merge(details[Constants::JSON_GAME_PLAYERS]).keys.each do |player_id|
         details[Constants::JSON_GAME_PLAYERS][player_id] = PLAYER_STATUS_THINKING
