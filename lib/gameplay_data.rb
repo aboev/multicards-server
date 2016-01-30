@@ -11,7 +11,7 @@ class GameplayData
   @answers = {}
 
   def random_nums(count, range, except)
-    ((0...range).to_a - [except]).shuffle
+    ((0...range).to_a - [except]).shuffle.first(count)
   end
 
   def new_gameplay()
@@ -45,11 +45,13 @@ class GameplayData
 
       option_ids = random_nums(Constants::GAMEPLAY_O_PER_Q - 1, terms.size, term_id)
       answer_id = rand(Constants::GAMEPLAY_O_PER_Q)
+      i = 0
       option_ids.each do |option_id|
-        options << definitions[term_id] if (option_id == answer_id)
+        options << definitions[term_id] if (i == answer_id)
         options << definitions[option_id]
+        i = i + 1
       end
-      options << definitions[option_ids[answer_id]] if (answer_id == Constants::GAMEPLAY_O_PER_Q)
+      options << definitions[term_id] if (answer_id == Constants::GAMEPLAY_O_PER_Q - 1)
 
       question_data[Constants::JSON_QST_QUESTION] = question
       question_data[Constants::JSON_QST_OPTIONS] = options

@@ -67,10 +67,10 @@ class Game < ActiveRecord::Base
     question_id = details[Constants::JSON_GAME_QUESTIONCNT] + 1
     if ( (game_status == Game::STATUS_IN_PROGRESS) and ( ready_players == total_players ) )
 
-      question = Question.make_random(Question::QTYPE_MULTI_CHOICE, self.setid, question_id)
-      if ( rand(100) > 110 )
-        question = Question.make_random(Question::QTYPE_DIRECT_INPUT, self.setid, question_id)
-      end
+      #question = Question.make_random(Question::QTYPE_MULTI_CHOICE, self.setid, question_id)
+      #if ( rand(100) > 110 )
+      #  question = Question.make_random(Question::QTYPE_DIRECT_INPUT, self.setid, question_id)
+      #end
 
       question = details[Constants::JSON_GAME_GAMEPLAYDATA]['questions'][question_id - 1]
 

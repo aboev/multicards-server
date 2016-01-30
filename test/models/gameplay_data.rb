@@ -17,6 +17,7 @@ class GameplayDataTest < ActiveSupport::TestCase
     questions = gameplay.to_json[:questions].map { |item| item[Constants::JSON_QST_QUESTION] }
     assert_equal Constants::GAMEPLAY_Q_PER_G, questions.length
     assert_equal questions.size, questions.uniq.size
+    assert_equal Constants::GAMEPLAY_O_PER_Q, gameplay.to_json[:questions][0][Constants::JSON_QST_OPTIONS].length
   end
 
 end
