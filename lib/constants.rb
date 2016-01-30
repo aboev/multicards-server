@@ -14,6 +14,7 @@ class Constants
   SOCK_MSG_TYPE_ANSWER_REJECTED	="answer_rejected"
   SOCK_MSG_TYPE_CHECK_NAME	="check_name"
   SOCK_MSG_TYPE_CHECK_NETWORK	="check_network"
+  SOCK_MSG_TYPE_ON_CONNECTED	="connected"
 
   JSON_GAME_ID		=	"game_id"
   JSON_GAME_STATUS	=	"status"
@@ -25,6 +26,7 @@ class Constants
   JSON_GAME_SETID	=	"setid"
   JSON_GAME_OPPONENTID	=	"opponentid"
   JSON_GAME_PREVQST	=	"prev_questions"
+  JSON_GAME_GAMEPLAYDATA=	"gameplay_data"
 
   JSON_USER_SOCKETID	=	"socketid"
   JSON_USER_ID		=	"id"
@@ -64,6 +66,8 @@ class Constants
   MSG_USER_NOT_FOUND    =       "User not found"
   ERROR_GAME_NOT_FOUND  =       106
   MSG_GAME_NOT_FOUND    =       "Game not found"
+  ERROR_CARDSET_EMPTY   =       107
+  MSG_CARDSET_EMPTY     =       "Cardset is empty or too small"
 
   HEADER_USERID         =       "id"
   HEADER_USERNAME       =       "name"
@@ -87,4 +91,9 @@ class Constants
 
   SCORE_PER_WIN		=	5
   SCORE_PER_GAME	=	2
+
+  GAMEPLAY_Q_PER_G	=	25
+  GAMEPLAY_O_PER_Q	=	4
+
+  FLAG_INVERTED		=	0
 end

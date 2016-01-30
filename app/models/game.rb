@@ -1,4 +1,5 @@
 require 'protocol'
+require 'gameplay_data'
 
 class Game < ActiveRecord::Base
 
@@ -18,12 +19,14 @@ class Game < ActiveRecord::Base
     if rnd_opp == false
       status = Game::STATUS_WAITING_OPPONENT
     end
+    gameplay_data = GameplayData.new(setid)
     game_details = {Constants::JSON_GAME_STATUS => status,
 	Constants::JSON_GAME_QUESTIONCNT => 0,
 	Constants::JSON_GAME_PROFILES => {},
 	Constants::JSON_GAME_PLAYERS => {},
 	Constants::JSON_GAME_SCORES => {},
-	Constants::JSON_GAME_PREVQST => {}}
+	Constants::JSON_GAME_PREVQST => {},
+        Constants::JSON_GAME_GAMEPLAYDATA => gameplay_data.to_json}
     self.status = status
     self.details = game_details.to_json
     self.setid = setid
@@ -68,6 +71,8 @@ class Game < ActiveRecord::Base
       if ( rand(100) > 110 )
         question = Question.make_random(Question::QTYPE_DIRECT_INPUT, self.setid, question_id)
       end
+
+      question = details[Constants::JSON_GAME_GAMEPLAYDATA]['questions'][question_id - 1]
 
       msg_to = details[Constants::JSON_GAME_PLAYERS].keys
       msg_type = Constants::SOCK_MSG_TYPE_NEW_QUESTION
