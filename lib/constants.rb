@@ -101,4 +101,5 @@ class Constants
   KEY_MIN_CLIENT_VERSION=	"min_client"
   KEY_LATEST_APK_URL	=	"latest_apk"
   KEY_LATEST_APK_VER	=	"latest_ver"
+  KEY_PUSHID		=	"pushid"
 end

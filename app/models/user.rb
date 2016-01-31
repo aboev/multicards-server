@@ -29,7 +29,11 @@ class User < ActiveRecord::Base
     end
 
     json_body.each do |key, value|
+      if key == Constants::KEY_PUSHID
+        self.pushid = value
+      else
         cur_details[key] = value
+      end
     end
     self.details = cur_details.to_json
     return true
