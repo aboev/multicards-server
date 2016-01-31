@@ -96,4 +96,9 @@ class Constants
   GAMEPLAY_O_PER_Q	=	4
 
   FLAG_INVERTED		=	0
+
+  KEY_SERVER_VERSION	=	"version"
+  KEY_MIN_CLIENT_VERSION=	"min_client"
+  KEY_LATEST_APK_URL	=	"latest_apk"
+  KEY_LATEST_APK_VER	=	"latest_ver"
 end
