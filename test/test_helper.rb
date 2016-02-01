@@ -88,7 +88,7 @@ class ActiveSupport::TestCase
       sl = sl + 1
     end
     if (sl == lim)
-      puts "Failed to wait for " + msg_type.to_s
+      #puts "Failed to wait for " + msg_type.to_s
     end
     return filter(list, msg_type)
   end
