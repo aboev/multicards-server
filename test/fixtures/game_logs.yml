@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  game_id: 1
+  player1: 1
+  player2: 1
+  gid: MyString
+  winner: 1
+  result: MyString
+  details: MyString
+
+two:
+  game_id: 1
+  player1: 1
+  player2: 1
+  gid: MyString
+  winner: 1
+  result: MyString
+  details: MyString

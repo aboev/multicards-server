@@ -18,10 +18,9 @@ class GameplayTest < ActionDispatch::IntegrationTest
     @profile3 = {:email => "test3@test.com", :phone => @contact3, :name => "alex3", :avatar => "http://google.com"}
     @@sock1_msg_list = []
     @@sock2_msg_list = []
-    @@sock1_msg_list_tmp = []
-    @@sock2_msg_list_tmp = []
-    filter_wait(@@sock1_msg_list_tmp, Constants::SOCK_MSG_TYPE_ON_CONNECTED)
-    filter_wait(@@sock2_msg_list_tmp, Constants::SOCK_MSG_TYPE_ON_CONNECTED)
+
+    socket_wait(@@socket1)
+    socket_wait(@@socket2)
   end
 
   def teardown
@@ -254,16 +253,6 @@ class GameplayTest < ActionDispatch::IntegrationTest
   @@socket2.on :event do |msg|
     msg_json = JSON.parse(msg)
     @@sock2_msg_list << msg_json
-  end
-
-  @@socket1.on :connect do |msg|
-    msg = Protocol.make_msg(nil, Constants::SOCK_MSG_TYPE_ON_CONNECTED, nil)
-    @@sock1_msg_list_tmp << msg
-  end
-
-  @@socket2.on :connect do |msg|
-    msg = Protocol.make_msg(nil, Constants::SOCK_MSG_TYPE_ON_CONNECTED, nil)
-    @@sock2_msg_list_tmp << msg
   end
 
 end
