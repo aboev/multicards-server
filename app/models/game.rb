@@ -26,7 +26,8 @@ class Game < ActiveRecord::Base
 	Constants::JSON_GAME_PLAYERS => {},
 	Constants::JSON_GAME_SCORES => {},
 	Constants::JSON_GAME_PREVQST => {},
-        Constants::JSON_GAME_GAMEPLAYDATA => gameplay_data.to_json}
+        Constants::JSON_GAME_GAMEPLAYDATA => gameplay_data.to_json,
+        Constants::JSON_GAME_BONUSES => {}}
     self.status = status
     self.details = game_details.to_json
     self.setid = setid
@@ -55,6 +56,7 @@ class Game < ActiveRecord::Base
     details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
     details_json[Constants::JSON_GAME_PLAYERS][user.socket_id] = Game::PLAYER_STATUS_WAITING
     details_json[Constants::JSON_GAME_SCORES][user.socket_id] = 0
+    details_json[Constants::JSON_GAME_BONUSES][user.socket_id] = []
     self.details = details_json.to_json
     self.save
   end
@@ -106,29 +108,38 @@ class Game < ActiveRecord::Base
     players = details[Constants::JSON_GAME_PLAYERS]
     message_to = players.keys
 
+    winner_details, scores_before, scores, bonuses = gen_stats
+    msg_body = {:id => self.id, :winner => winner_details, :scores_before => scores_before, :scores => scores, :bonuses => bonuses}
+ 
+    message = {Constants::JSON_SOCK_MSG_TO => message_to, Constants::JSON_SOCK_MSG_TYPE => Constants::SOCK_MSG_TYPE_GAME_END, Constants::JSON_SOCK_MSG_BODY => msg_body}.to_json
+    $redis.publish Constants::SOCK_CHANNEL, message
+  end
+
+  def gen_stats
+    game_details = JSON.parse(self.details)
     winner_details = nil
-    scores = {}
+    scores_before = {}
+    scores = self.get_scores
+    bonuses = game_details[Constants::JSON_GAME_BONUSES]
     winner = get_winner
     if (winner != nil)
       winner_details = winner.get_details
       winner_socket_id = winner.socket_id
-      self.get_scores.each do |socket_id, score|
+      scores.each do |socket_id, score|
         player = User.where(:socket_id => socket_id).first
         if player != nil
+          scores_before[socket_id] = player.score
+          player.score = player.score + score
           if player.socket_id == winner_socket_id
-            player.score = player.score + Constants::SCORE_PER_WIN
-            player.save
+            player.score = player.score + Constants::BONUS_WINNER[:bonus]
+            bonuses[player.socket_id] << Constants::BONUS_WINNER
           end
+          player.save
           scores[socket_id] = player.score
-        else
-          scores[socket_id] = nil
         end
       end
     end
-    msg_body = {:id => self.id, :winner => winner_details, :scores => scores}
- 
-    message = {Constants::JSON_SOCK_MSG_TO => message_to, Constants::JSON_SOCK_MSG_TYPE => Constants::SOCK_MSG_TYPE_GAME_END, Constants::JSON_SOCK_MSG_BODY => msg_body}.to_json
-    $redis.publish Constants::SOCK_CHANNEL, message
+    return winner_details, scores_before, scores, bonuses
   end
 
   def self.find_by_socket_id(socket_id, status)

@@ -12,7 +12,7 @@ class Protocol
 
     questions_count = game_details[Constants::JSON_GAME_QUESTIONCNT]
     if (game.get_players_count() == game.get_ready_players_count())
-      if (questions_count >= Game::QUESTIONS_PER_GAME)
+      if (questions_count >= Constants::GAMEPLAY_Q_PER_G)
         game.end_game
         game.destroy
       else

@@ -82,11 +82,27 @@ class ActiveSupport::TestCase
 
   def filter_wait(list, msg_type)
     sl = 0
-    while ((filter(list, msg_type).first == nil) and (sl < 40)) do
+    lim = 40
+    while ((filter(list, msg_type).first == nil) and (sl < lim)) do
       sleep (0.1)
       sl = sl + 1
     end
+    if (sl == lim)
+      puts "Failed to wait for " + msg_type.to_s
+    end
     return filter(list, msg_type)
+  end
+
+  def socket_wait(socket)
+    lim = 20
+    i = 0
+    while ((socket.state.to_s != "connect".to_s) and (i < lim)) do
+      i = i + 1
+      sleep(0.1)
+    end
+    if i == lim
+      puts "Socket failed to connect"
+    end
   end
 
 end

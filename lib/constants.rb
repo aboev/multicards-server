@@ -10,6 +10,7 @@ class Constants
   SOCK_MSG_TYPE_QUIT_GAME	="quit_game"
   SOCK_MSG_TYPE_GAME_START	="game_start"
   SOCK_MSG_TYPE_ANNOUNCE_USERID	="announce_userid"
+  SOCK_MSG_TYPE_ANNOUNCE_SOCKID	="socket_id_announce"
   SOCK_MSG_TYPE_ANSWER_ACCEPTED	="answer_accepted"
   SOCK_MSG_TYPE_ANSWER_REJECTED	="answer_rejected"
   SOCK_MSG_TYPE_CHECK_NAME	="check_name"
@@ -27,6 +28,7 @@ class Constants
   JSON_GAME_OPPONENTID	=	"opponentid"
   JSON_GAME_PREVQST	=	"prev_questions"
   JSON_GAME_GAMEPLAYDATA=	"gameplay_data"
+  JSON_GAME_BONUSES	=	"bonuses"
 
   JSON_USER_SOCKETID	=	"socketid"
   JSON_USER_ID		=	"id"
@@ -102,4 +104,7 @@ class Constants
   KEY_LATEST_APK_URL	=	"latest_apk"
   KEY_LATEST_APK_VER	=	"latest_ver"
   KEY_PUSHID		=	"pushid"
+
+  BONUS_WINNER		=	{:title_en => "Winner bonus", :title_ru => "Бонус победителя", :bonus => 50, :bonus_id => 2}
+  BONUS_DISCOVERER	=	{:title_en => "Discoverer bonus", :title_ru => "Бонус первооткрывателя", :bonus => 10, :bonus_id => 1}
 end
