@@ -18,6 +18,7 @@ class Constants
   SOCK_MSG_TYPE_ON_CONNECTED	="connected"
 
   JSON_GAME_ID		=	"game_id"
+  JSON_GAME_GID		=	"game_gid"
   JSON_GAME_STATUS	=	"status"
   JSON_GAME_PLAYERS	=	"players"
   JSON_GAME_SCORES	=	"scores"
