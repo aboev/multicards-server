@@ -106,6 +106,6 @@ class Constants
   KEY_LATEST_APK_VER	=	"latest_ver"
   KEY_PUSHID		=	"pushid"
 
-  BONUS_WINNER		=	{:title_en => "Winner bonus", :title_ru => "Бонус победителя", :bonus => 50, :bonus_id => 2}
-  BONUS_DISCOVERER	=	{:title_en => "Discoverer bonus", :title_ru => "Бонус первооткрывателя", :bonus => 10, :bonus_id => 1}
+  BONUS_WINNER		=	{:bonus_title => {:en => "Winner bonus", :ru => "Бонус победителя"}, :bonus => 50, :bonus_id => 2}
+  BONUS_DISCOVERER	=	{:bonus_title => {:en => "Discoverer bonus", :ru => "Бонус первооткрывателя"}, :bonus => 10, :bonus_id => 1}
 end
