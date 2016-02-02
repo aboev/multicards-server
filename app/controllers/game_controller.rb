@@ -20,7 +20,7 @@ def new
   if (opponent_name == nil)
     game_public = Game.where(status: Game::STATUS_SEARCHING_PLAYERS, setid: setid).first
     if game_public != nil
-      join_and_start(game_public, @user)
+      join_and_start(game_public, @user, gid)
       ret_ok(JSON.parse(game_public.details))
       return
     else
@@ -36,7 +36,7 @@ def new
     opponent = User.find_by_name(opponent_name)
     if opponent != nil
       game_private = Game.find_by_socket_id(opponent.socket_id, Game::STATUS_WAITING_OPPONENT).first
-      join_and_start(game_private, @user)
+      join_and_start(game_private, @user, gid)
       ret_ok(JSON.parse(game_private.details))
       return
     else
@@ -67,9 +67,10 @@ def ret_error(err_code, err_msg)
   end
 end
 
-def join_and_start(game, user)
+def join_and_start(game, user, gid)
   game.join_player(user)
   game.start_game
+  GameLog.log(game, gid)
 end
 
 def init_and_join(setid, rnd_opp, user)
