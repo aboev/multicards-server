@@ -30,11 +30,13 @@ class GameLogTest < ActionDispatch::IntegrationTest
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
     new_game(user_id1, @@socket1.session_id)
+    log = GameLog.where(:gid => "quizlet_415").first
+    assert_equal Game::STATUS_SEARCHING_PLAYERS, log.status
     new_game(user_id2, @@socket2.session_id)
     sleep(1)
     
     log = GameLog.where(:gid => "quizlet_415").first
-    assert_not_nil log
+    assert_equal Game::STATUS_IN_PROGRESS, log.status
 
     for i in 0..(Constants::GAMEPLAY_Q_PER_G-2)
       sl = 0
@@ -62,8 +64,10 @@ class GameLogTest < ActionDispatch::IntegrationTest
     update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
     update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
 
-    sleep(2)
-    assert_equal @profile1[:email], filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["winner"]["email"]
+    assert_equal @profile1[:email], filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["winner"]["email"]
+    log = GameLog.where(:gid => "quizlet_415").first
+    assert_equal Game::STATUS_COMPLETED, log.status
+
   end
 
   @@socket1.on :event do |msg|

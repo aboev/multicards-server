@@ -1,5 +1,6 @@
 require 'protocol'
 require 'gameplay_data'
+require 'utils'
 
 class Game < ActiveRecord::Base
 
@@ -7,6 +8,7 @@ class Game < ActiveRecord::Base
   STATUS_WAITING_OPPONENT = 1
   STATUS_IN_PROGRESS = 2
   STATUS_COMPLETED = 3
+  STATUS_INTERRUPTED = 4
 
   PLAYER_STATUS_WAITING = "player_waiting"
   PLAYER_STATUS_THINKING = "player_thinking"
@@ -14,13 +16,15 @@ class Game < ActiveRecord::Base
 
   QUESTIONS_PER_GAME = 25
 
-  def init(setid, rnd_opp)
+  def init(gid, rnd_opp)
+    setid = Utils.parse_gid(gid)[1]
     status = Game::STATUS_SEARCHING_PLAYERS
     if rnd_opp == false
       status = Game::STATUS_WAITING_OPPONENT
     end
     gameplay_data = GameplayData.new(setid)
     game_details = {Constants::JSON_GAME_STATUS => status,
+	Constants::JSON_GAME_GID => gid,
 	Constants::JSON_GAME_QUESTIONCNT => 0,
 	Constants::JSON_GAME_PROFILES => {},
 	Constants::JSON_GAME_PLAYERS => {},
@@ -97,6 +101,11 @@ class Game < ActiveRecord::Base
 
   def stop_game
     details = JSON.parse(self.details)
+
+    self.status = STATUS_INTERRUPTED
+    self.save
+    GameLog.log(self)
+
     players = details[Constants::JSON_GAME_PLAYERS]
     message_to = players.keys
     message = {Constants::JSON_SOCK_MSG_TO => message_to, Constants::JSON_SOCK_MSG_TYPE => Constants::SOCK_MSG_TYPE_GAME_STOP, Constants::JSON_SOCK_MSG_BODY => self.id}.to_json
@@ -106,10 +115,15 @@ class Game < ActiveRecord::Base
   def end_game
     details = JSON.parse(self.details)
     players = details[Constants::JSON_GAME_PLAYERS]
+    gid = details[Constants::JSON_GAME_GID]
     message_to = players.keys
 
     winner_details, scores_before, scores, bonuses = gen_stats
     msg_body = {:id => self.id, :winner => winner_details, :scores_before => scores_before, :scores => scores, :bonuses => bonuses}
+
+    self.status = STATUS_COMPLETED
+    self.save
+    GameLog.log(self)
  
     message = {Constants::JSON_SOCK_MSG_TO => message_to, Constants::JSON_SOCK_MSG_TYPE => Constants::SOCK_MSG_TYPE_GAME_END, Constants::JSON_SOCK_MSG_BODY => msg_body}.to_json
     $redis.publish Constants::SOCK_CHANNEL, message

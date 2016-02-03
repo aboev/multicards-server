@@ -2,12 +2,13 @@ class GameLog < ActiveRecord::Base
 
   self.table_name = "game_log"
 
-  def self.log(game, gid)
+  def self.log(game)
     details_json = JSON.parse(game.details)
-    log = GameLog.new
+    log = GameLog.where(:game_id => game.id).first
+    log = GameLog.new if log == nil
     log.game_id = game.id
-    log.gid = gid
-    log.status = details_json[Constants::JSON_GAME_STATUS]
+    log.status = game.status
+    log.gid = details_json[Constants::JSON_GAME_GID]
     players = details_json[Constants::JSON_GAME_PLAYERS]
     player1_id = -1
     player2_id = -1

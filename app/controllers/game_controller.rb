@@ -24,12 +24,12 @@ def new
       ret_ok(JSON.parse(game_public.details))
       return
     else
-      game_public = init_and_join(setid, true, @user)
+      game_public = init_and_join(gid, true, @user)
       ret_ok(JSON.parse(game_public.details))
       return
     end
   elsif (opponent_name == "-1")
-    game_private = init_and_join(setid, false, @user)
+    game_private = init_and_join(gid, false, @user)
     ret_ok(JSON.parse(game_private.details))
     return
   else
@@ -70,13 +70,14 @@ end
 def join_and_start(game, user, gid)
   game.join_player(user)
   game.start_game
-  GameLog.log(game, gid)
+  GameLog.log(game)
 end
 
-def init_and_join(setid, rnd_opp, user)
+def init_and_join(gid, rnd_opp, user)
   game = Game.new
-  game.init(setid, rnd_opp)
+  game.init(gid, rnd_opp)
   game.join_player(user)
+  GameLog.log(game)
   return game
 end
 
