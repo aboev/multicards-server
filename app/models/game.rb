@@ -30,10 +30,10 @@ class Game < ActiveRecord::Base
 	Constants::JSON_GAME_PLAYERS => {},
 	Constants::JSON_GAME_SCORES => {},
 	Constants::JSON_GAME_PREVQST => {},
-        Constants::JSON_GAME_GAMEPLAYDATA => gameplay_data.to_json,
         Constants::JSON_GAME_BONUSES => {}}
     self.status = status
     self.details = game_details.to_json
+    self.gameplay_data = gameplay_data.to_json.to_json
     self.setid = setid
     self.save
   end
@@ -67,6 +67,7 @@ class Game < ActiveRecord::Base
 
   def next_question
     details = JSON.parse(self.details)
+    gameplay_data = JSON.parse(self.gameplay_data)
     ready_players = self.get_ready_players_count
     total_players = details[Constants::JSON_GAME_PLAYERS].length
     game_status = details[Constants::JSON_GAME_STATUS]
@@ -78,7 +79,7 @@ class Game < ActiveRecord::Base
       #  question = Question.make_random(Question::QTYPE_DIRECT_INPUT, self.setid, question_id)
       #end
 
-      question = details[Constants::JSON_GAME_GAMEPLAYDATA]['questions'][question_id - 1]
+      question = gameplay_data['questions'][question_id - 1]
 
       msg_to = details[Constants::JSON_GAME_PLAYERS].keys
       msg_type = Constants::SOCK_MSG_TYPE_NEW_QUESTION
