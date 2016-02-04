@@ -1,5 +1,6 @@
 require 'protocol'
 require 'gameplay_data'
+require 'gameplay_manager'
 require 'utils'
 
 class Game < ActiveRecord::Base
@@ -46,6 +47,8 @@ class Game < ActiveRecord::Base
       self.details = details_json.to_json
       self.save
 
+      GameplayManager.start_game(self)
+
       msg_to = details_json[Constants::JSON_GAME_PLAYERS].keys
       msg_type = Constants::SOCK_MSG_TYPE_GAME_START
       msg_body = details_json
@@ -57,6 +60,10 @@ class Game < ActiveRecord::Base
 
   def join_player(user)
     details_json = JSON.parse(self.details)
+    if (details_json[Constants::JSON_GAME_PLAYERS].length == 0)
+      self.player1_socketid = user.socket_id
+      self.player1_id = user.id
+    end
     details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
     details_json[Constants::JSON_GAME_PLAYERS][user.socket_id] = Game::PLAYER_STATUS_WAITING
     details_json[Constants::JSON_GAME_SCORES][user.socket_id] = 0
@@ -222,6 +229,13 @@ class Game < ActiveRecord::Base
       end
     end
     winner = User.where(:socket_id => winner_id).first
+  end
+
+  def give_bonus(socket_id, bonus)
+    game_details = JSON.parse(self.details)
+    game_details[Constants::JSON_GAME_BONUSES][socket_id] << bonus
+    self.details = game_details.to_json
+    self.save
   end
 
 end

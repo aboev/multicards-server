@@ -18,4 +18,12 @@ class Qcardset < ActiveRecord::Base
     update_attributes tags: tags - [ tagid ]
   end
 
+  def add_flag(flagid)
+    update_attributes flags: flags + [ flagid ]
+  end
+
+  def remove_flag(flagid)
+    update_attributes flags: flags - [ flagid ]
+  end
+
 end

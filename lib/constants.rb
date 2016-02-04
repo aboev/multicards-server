@@ -99,6 +99,7 @@ class Constants
   GAMEPLAY_O_PER_Q	=	4
 
   FLAG_INVERTED		=	0
+  FLAG_DISCOVERED	=	1
 
   KEY_SERVER_VERSION	=	"version"
   KEY_MIN_CLIENT_VERSION=	"min_client"
