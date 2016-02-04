@@ -19,11 +19,15 @@ class Qcardset < ActiveRecord::Base
   end
 
   def add_flag(flagid)
-    update_attributes flags: flags + [ flagid ]
+    if !flags.include?(flagid.to_s)
+      update_attributes flags: flags + [ flagid ]
+    end
   end
 
   def remove_flag(flagid)
-    update_attributes flags: flags - [ flagid ]
+    if flags.include?(flagid.to_s)
+      update_attributes flags: flags - [ flagid ]
+    end
   end
 
 end

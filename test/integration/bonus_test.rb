@@ -64,8 +64,83 @@ class BonusTest < ActionDispatch::IntegrationTest
     player1_bonuses = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["bonuses"][@@socket1.session_id]
     player2_bonuses = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["bonuses"][@@socket2.session_id]
     assert_equal 2, player1_bonuses.length
-    assert_equal 1, player1_bonuses[0]["bonus_id"]
-    assert_equal 2, player1_bonuses[1]["bonus_id"]
+    assert_equal true, has_bonus(player1_bonuses, 1)
+    assert_equal true, has_bonus(player1_bonuses, 2)
+    assert_equal 0, player2_bonuses.length
+  end
+
+  test "Should not give discoverer bonus twice" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
+
+    for i in 0..(Constants::GAMEPLAY_Q_PER_G-2)
+      sl = 0
+      while filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first == nil do
+        sleep (0.1)
+        sl = sl + 1
+        if (sl % 10 == 0)
+          puts "Waiting for " + sl.to_s
+        end
+      end
+      answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
+      @@sock1_msg_list = []
+      @@sock2_msg_list = []
+      player_answer(@@socket1, answer_id, [])
+      sleep(0.1)
+      update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+      update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
+      sleep(0.3)
+    end
+
+    answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
+    @@sock1_msg_list = []
+    @@sock2_msg_list = []
+    player_answer(@@socket1, answer_id, [])
+    update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+    update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
+
+    filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END)
+
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
+
+    for i in 0..(Constants::GAMEPLAY_Q_PER_G-2)
+      sl = 0
+      while filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first == nil do
+        sleep (0.1)
+        sl = sl + 1
+        if (sl % 10 == 0)
+          puts "Waiting for " + sl.to_s
+        end
+      end
+      answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
+      @@sock1_msg_list = []
+      @@sock2_msg_list = []
+      player_answer(@@socket1, answer_id, [])
+      sleep(0.1)
+      update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+      update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
+      sleep(0.3)
+    end
+
+    answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
+    @@sock1_msg_list = []
+    @@sock2_msg_list = []
+    player_answer(@@socket1, answer_id, [])
+    update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+    update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
+
+    filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END)
+
+    player1_bonuses = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["bonuses"][@@socket1.session_id]
+    player2_bonuses = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["bonuses"][@@socket2.session_id]
+    assert_equal 1, player1_bonuses.length
+    assert_equal false, has_bonus(player1_bonuses, 1)
+    assert_equal true, has_bonus(player1_bonuses, 2)
     assert_equal 0, player2_bonuses.length
   end
 

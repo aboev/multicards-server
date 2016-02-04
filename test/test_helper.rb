@@ -106,4 +106,15 @@ class ActiveSupport::TestCase
     end
   end
 
+  def has_bonus(bonus_list, bonus_id)
+    res = false
+    bonus_list.each do |bonus|
+      if bonus["bonus_id"] == bonus_id
+        res = true
+        break
+      end
+    end
+    return res
+  end
+
 end
