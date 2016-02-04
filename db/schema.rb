@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160204095719) do
+ActiveRecord::Schema.define(version: 20160204101253) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,10 @@ ActiveRecord::Schema.define(version: 20160204095719) do
     t.integer  "status"
     t.integer  "setid"
     t.text     "gameplay_data"
+    t.string   "player1_socketid"
+    t.string   "player2_socketid"
+    t.integer  "player1_id"
+    t.integer  "player2_id"
   end
 
   create_table "qcards", force: true do |t|
