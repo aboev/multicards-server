@@ -116,8 +116,8 @@ class GameplayTest < ActionDispatch::IntegrationTest
   test "Should stop game after N turns" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
-    new_game(user_id1, @@socket1.session_id)
-    new_game(user_id2, @@socket2.session_id)
+    new_game(user_id1, @@socket1.session_id, gid)
+    new_game(user_id2, @@socket2.session_id, gid)
     
     for i in 0..(Game::QUESTIONS_PER_GAME - 2)
       msg_list = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)

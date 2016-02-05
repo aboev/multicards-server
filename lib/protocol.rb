@@ -6,13 +6,14 @@ class Protocol
     Rails.logger.info("Player status update request")
     game = Game.find_by_socket_id(id_from, Game::STATUS_IN_PROGRESS).first
     game_details = JSON.parse(game.details)
+    gameplay_data = JSON.parse(game.gameplay_data)
 
     new_status = msg_body
     game.set_player_status(id_from, new_status)
 
     questions_count = game_details[Constants::JSON_GAME_QUESTIONCNT]
     if (game.get_players_count() == game.get_ready_players_count())
-      if (questions_count >= Constants::GAMEPLAY_Q_PER_G)
+      if ((questions_count >= Constants::GAMEPLAY_Q_PER_G) or (questions_count == (gameplay_data['questions'].length)))
         game.end_game
         game.destroy
       else

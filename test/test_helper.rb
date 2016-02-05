@@ -39,6 +39,17 @@ class ActiveSupport::TestCase
     game_id = JSON.parse(@response.body)['data']['id']
   end
 
+  def new_game_with_gid(userid, socketid, gid)
+    @headers[Constants::HEADER_USERID] = userid
+    @headers[Constants::HEADER_SOCKETID] = socketid
+    @headers[Constants::HEADER_SETID] = gid
+    if (socketid == nil)
+      puts "socketid = nil"
+    end
+    post '/game', nil, @headers
+    game_id = JSON.parse(@response.body)['data']['id']
+  end
+
   def new_game_with_opponent(userid, socketid, opponent_name)
     @headers[Constants::HEADER_USERID] = userid
     @headers[Constants::HEADER_SOCKETID] = socketid
