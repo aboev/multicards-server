@@ -109,6 +109,31 @@ def drop_tag
   end
 end
 
+def put_flag
+  gid = request.headers[Constants::HEADER_SETID]
+  flagids = request.headers[Constants::HEADER_FLAGID]
+  flagids.split(",").each do |flagid|
+    Utils.flag(gid, flagid)
+  end
+
+  msg = { :result => Constants::RESULT_OK }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
+def drop_flag
+  gid = request.headers[Constants::HEADER_SETID]
+  flagids = request.headers[Constants::HEADER_FLAGID]
+  flagids.split(",").each do |flagid|
+    Utils.unflag(gid, flagid)
+  end
+  msg = { :result => Constants::RESULT_OK }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
 def ret_ok (data)
   msg = { :result => Constants::RESULT_OK, :data => data }
   respond_to do |format|

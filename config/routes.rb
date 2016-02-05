@@ -14,6 +14,8 @@ Rails.application.routes.draw do
   post 'unlike' => 'cardset#unlike'
   post 'tag' => 'cardset#put_tag'
   post 'untag' => 'cardset#drop_tag'
+  post 'flag' => 'cardset#put_flag'
+  post 'unflag' => 'cardset#drop_flag'
   get 'tags' => 'cardset#get_tags'
   get 'info' => 'application#info'
 

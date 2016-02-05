@@ -166,6 +166,36 @@ module Utils
     return false
   end
 
+  def self.flag(gid, flagid)
+    set_id = parse_gid(gid)[1]
+    provider = parse_gid(gid)[0]
+    if provider == "quizlet"
+      if ((Qcardset.where(:cardset_id => set_id).count > 0) or (import_qcardset(gid) == true))
+        cardset = Qcardset.where(:cardset_id => set_id).first
+        if ((!cardset.flags.include?(flagid.to_s)) and (flag != nil))
+          cardset.add_flag(flagid.to_s)
+          cardset.save
+          return true
+        end
+      end
+    end
+    return false
+  end
+
+  def self.unflag(gid, flagid)
+    set_id = parse_gid(gid)[1]
+    provider = parse_gid(gid)[0]
+    if provider == "quizlet"
+      cardset = Qcardset.where(:cardset_id => set_id).first
+      if ((cardset != nil) and (cardset.flags.include?(flagid.to_s)) and (flag != nil))
+        cardset.remove_flag(flagid.to_s)
+        cardset.save
+        return true
+      end
+    end
+    return false
+  end
+
   def self.make_nickname
     Nicknames.haikunate
   end

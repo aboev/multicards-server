@@ -77,6 +77,7 @@ class Constants
   HEADER_SOCKETID       =       "socketid"
   HEADER_SETID		=       "setid"
   HEADER_TAGID		=       "tagid"
+  HEADER_FLAGID		=       "flagid"
   HEADER_QUERY	        =       "query"
   HEADER_OPPONENTNAME   =       "opponentname"
   HEADER_OFFSET 	=       "offset"
