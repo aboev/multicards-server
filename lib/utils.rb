@@ -172,7 +172,7 @@ module Utils
     if provider == "quizlet"
       if ((Qcardset.where(:cardset_id => set_id).count > 0) or (import_qcardset(gid) == true))
         cardset = Qcardset.where(:cardset_id => set_id).first
-        if ((!cardset.flags.include?(flagid.to_s)) and (flag != nil))
+        if ((cardset != nil) and (!cardset.flags.include?(flagid.to_s)))
           cardset.add_flag(flagid.to_s)
           cardset.save
           return true
@@ -187,7 +187,7 @@ module Utils
     provider = parse_gid(gid)[0]
     if provider == "quizlet"
       cardset = Qcardset.where(:cardset_id => set_id).first
-      if ((cardset != nil) and (cardset.flags.include?(flagid.to_s)) and (flag != nil))
+      if ((cardset != nil) and (cardset.flags.include?(flagid.to_s)))
         cardset.remove_flag(flagid.to_s)
         cardset.save
         return true
