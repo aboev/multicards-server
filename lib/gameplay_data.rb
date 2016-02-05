@@ -18,7 +18,7 @@ class GameplayData
     cardset = Qcardset.where(:cardset_id => @set_id).first
     return if cardset == nil
     inverted = false
-    inverted = true if (cardset.tags.include?(Constants::FLAG_INVERTED.to_s))
+    inverted = true if (cardset.flags.include?(Constants::FLAG_INVERTED.to_s))
     cards = Qcard.where(:cardset_id => @set_id).first(Constants::GAMEPLAY_Q_PER_G)
     return if (cards.size < Constants::GAMEPLAY_O_PER_Q)
 
