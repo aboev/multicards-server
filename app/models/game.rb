@@ -43,6 +43,7 @@ class Game < ActiveRecord::Base
     details_json = JSON.parse(self.details)
     if (details_json[Constants::JSON_GAME_PLAYERS].length > 1 )
       details_json[Constants::JSON_GAME_STATUS] = STATUS_IN_PROGRESS
+      details_json[Constants::JSON_GAME_ID] = self.id
       self.status = STATUS_IN_PROGRESS
       self.details = details_json.to_json
       self.save

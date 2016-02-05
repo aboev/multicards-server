@@ -68,7 +68,9 @@ class Protocol
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
     $redis.publish Constants::SOCK_CHANNEL, message
 
-    game_details[Constants::JSON_GAME_PLAYERS][id_from] = Game::PLAYER_STATUS_ANSWERED
+    if (game_details[Constants::JSON_GAME_PLAYERS][id_from] != Game::PLAYER_STATUS_WAITING)
+      game_details[Constants::JSON_GAME_PLAYERS][id_from] = Game::PLAYER_STATUS_ANSWERED
+    end
     game.details = game_details.to_json
     game.save
 
