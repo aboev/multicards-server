@@ -121,8 +121,9 @@ class GameplayTest < ActionDispatch::IntegrationTest
     
     for i in 0..(Game::QUESTIONS_PER_GAME - 2)
       msg_list = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)
+      answer_id = msg_list.first["msg_body"][Constants::JSON_QST_ANSWER_ID]
       @@sock1_msg_list = []
-      player_answer(@@socket1, 0, [])
+      player_answer(@@socket1, answer_id, [])
       update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
       update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
     end
