@@ -34,6 +34,8 @@ class GameplayData
       end
     end
 
+    udefinitions, termDefMap = filter_unique(terms, definitions)
+
     @questions = []
     question_count = [terms.size, Constants::GAMEPLAY_Q_PER_G].min
     term_ids = random_nums(question_count, question_count, -1)
@@ -44,15 +46,16 @@ class GameplayData
       question = terms[term_id]
       options = []
 
-      option_ids = random_nums(Constants::GAMEPLAY_O_PER_Q - 1, terms.size, term_id)
+      except = termDefMap[term_id]
+      option_ids = random_nums(Constants::GAMEPLAY_O_PER_Q - 1, udefinitions.size, except)
       answer_id = rand(Constants::GAMEPLAY_O_PER_Q)
       j = 0
       option_ids.each do |option_id|
-        options << definitions[term_id] if (j == answer_id)
-        options << definitions[option_id]
+        options << udefinitions[termDefMap[term_id]] if (j == answer_id)
+        options << udefinitions[option_id]
         j = j + 1
       end
-      options << definitions[term_id] if (answer_id == Constants::GAMEPLAY_O_PER_Q - 1)
+      options << udefinitions[termDefMap[term_id]] if (answer_id == Constants::GAMEPLAY_O_PER_Q - 1)
 
       question_data[Constants::JSON_QST_QUESTION] = question
       question_data[Constants::JSON_QST_OPTIONS] = options
@@ -62,6 +65,24 @@ class GameplayData
       @questions << question_data
       i = i + 1
     end
+  end
+
+  def filter_unique(terms, definitions)
+    set = {}
+    map = {}
+    udefinitions = []
+    termDefinitionMap = []
+    for i in 0..terms.length
+      term = terms[i]
+      definition = definitions[i]
+      if set[definition] == nil
+        udefinitions << definition
+        map[definition] = udefinitions.length - 1
+        set[definition] = 1
+      end
+      termDefinitionMap[i] = map[definition]
+    end
+    return udefinitions, termDefinitionMap 
   end
 
   def initialize(set_id)
