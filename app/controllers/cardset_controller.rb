@@ -29,7 +29,7 @@ def get
   provider = Utils.parse_gid(gid)[0]
   cardset = Qcardset.where(:cardset_id => set_id).first
   if ((provider == "quizlet") and (cardset != nil))
-    ret_ok(cardset)
+    ret_ok([cardset])
   else
     ret_error(Constants::ERROR_CARDSET_NOT_FOUND, Constants::MSG_CARDSET_NOT_FOUND)
   end
