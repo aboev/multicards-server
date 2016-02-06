@@ -38,6 +38,7 @@ class GameplayData
 
     @questions = []
     question_count = [terms.size, Constants::GAMEPLAY_Q_PER_G].min
+    option_count = [Constants::GAMEPLAY_O_PER_Q, udefinitions.size].min
     term_ids = random_nums(question_count, question_count, -1)
     i = 0
     term_ids.each do |term_id|
@@ -47,9 +48,10 @@ class GameplayData
       options = []
 
       except = termDefMap[term_id]
-      option_ids = random_nums(Constants::GAMEPLAY_O_PER_Q - 1, udefinitions.size, except)
-      answer_id = rand(Constants::GAMEPLAY_O_PER_Q)
+      option_ids = random_nums(option_count - 1, udefinitions.size, except)
+      answer_id = rand(option_count)
       j = 0
+
       option_ids.each do |option_id|
         options << udefinitions[termDefMap[term_id]] if (j == answer_id)
         options << udefinitions[option_id]
@@ -72,9 +74,10 @@ class GameplayData
     map = {}
     udefinitions = []
     termDefinitionMap = []
-    for i in 0..terms.length
+    for i in 0...terms.length
       term = terms[i]
       definition = definitions[i]
+
       if set[definition] == nil
         udefinitions << definition
         map[definition] = udefinitions.length - 1
