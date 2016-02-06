@@ -25,11 +25,13 @@ end
 
 def get
   gid = request.headers[Constants::HEADER_SETID]
-  json_body = JSON.parse(request.body.read)
-  cardsets = Cardset.all
-  msg = { :result => Constants::RESULT_OK, :data => cardsets.to_json }
-  respond_to do |format|
-    format.json  { render :json => msg }
+  set_id = Utils.parse_gid(gid)[1]
+  provider = Utils.parse_gid(gid)[0]
+  cardset = Qcardset.where(:cardset_id => set_id).first
+  if ((provider == "quizlet") and (cardset != nil))
+    ret_ok(cardset)
+  else
+    ret_error(Constants::ERROR_CARDSET_NOT_FOUND, Constants::MSG_CARDSET_NOT_FOUND)
   end
 end
 
@@ -136,6 +138,13 @@ end
 
 def ret_ok (data)
   msg = { :result => Constants::RESULT_OK, :data => data }
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
+def ret_error(err_code, err_msg)
+  msg = { :result => Constants::RESULT_ERROR, :code => err_code, :msg => err_msg }
   respond_to do |format|
     format.json  { render :json => msg }
   end

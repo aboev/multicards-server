@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   post 'unflag' => 'cardset#drop_flag'
   get 'tags' => 'cardset#get_tags'
   get 'info' => 'application#info'
+  get 'cardset' => 'cardset#get'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

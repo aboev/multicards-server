@@ -158,4 +158,18 @@ class CardsetControllerTest < ActionController::TestCase
     assert_equal 3, res_json['data'].length
   end
 
+  test "Should return cardset data" do
+    test_cardset = "quizlet_415"
+    @controller = CardsetController.new
+    # Import cardset 415
+    @request.headers["setid"] = test_cardset
+    get :import, nil, @headers
+
+    @request.headers["setid"] = test_cardset
+    get :get, nil, @headers
+    res_json = JSON.parse(response.body)
+    assert_equal Constants::RESULT_OK, res_json['result']
+    assert_equal Utils.parse_gid(test_cardset)[1].to_s, res_json['data']['cardset_id'].to_s
+  end
+
 end

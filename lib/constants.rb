@@ -71,6 +71,8 @@ class Constants
   MSG_GAME_NOT_FOUND    =       "Game not found"
   ERROR_CARDSET_EMPTY   =       107
   MSG_CARDSET_EMPTY     =       "Cardset is empty or too small"
+  ERROR_CARDSET_NOT_FOUND=       108
+  MSG_CARDSET_NOT_FOUND =       "Cardset not found"
 
   HEADER_USERID         =       "id"
   HEADER_USERNAME       =       "name"
