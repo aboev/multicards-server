@@ -156,4 +156,13 @@ class Protocol
 	Constants::JSON_QST_STATUS => Question::QSTATUS_NO_ANSWER}
   end
 
+  def self.make_question_with_images(question, options, answer_id, question_id, images)
+    question = {Constants::JSON_QST_QUESTION => question,
+        Constants::JSON_QST_OPTIONS => options,
+        Constants::JSON_QST_IMAGES => images,
+        Constants::JSON_QST_ANSWER_ID => answer_id,
+        Constants::JSON_QST_ID => question_id,
+        Constants::JSON_QST_STATUS => Question::QSTATUS_NO_ANSWER}
+  end
+
 end
