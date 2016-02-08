@@ -46,6 +46,11 @@ def new
   end
 end
 
+def get
+  games_public = Game.where(status: Game::STATUS_SEARCHING_PLAYERS)
+  ret_ok(games_public)
+end
+
 def ret_ok (data)
   msg = { :result => Constants::RESULT_OK, :data => data }
   respond_to do |format|
