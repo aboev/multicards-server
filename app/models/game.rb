@@ -11,7 +11,7 @@ class Game < ActiveRecord::Base
   STATUS_COMPLETED = 3
   STATUS_INTERRUPTED = 4
 
-  PLAYER_STATUS_READY = "player_ready"
+  PLAYER_STATUS_PENDING = "player_pending"
   PLAYER_STATUS_WAITING = "player_waiting"
   PLAYER_STATUS_THINKING = "player_thinking"
   PLAYER_STATUS_ANSWERED = "player_answered"
