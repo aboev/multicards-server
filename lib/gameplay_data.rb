@@ -57,7 +57,7 @@ class GameplayData
         options << udefinitions[option_id]
         j = j + 1
       end
-      options << udefinitions[termDefMap[term_id]] if (answer_id == Constants::GAMEPLAY_O_PER_Q - 1)
+      options << udefinitions[termDefMap[term_id]] if (answer_id == option_count - 1)
 
       question_data[Constants::JSON_QST_QUESTION] = question
       question_data[Constants::JSON_QST_OPTIONS] = options
