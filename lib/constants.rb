@@ -16,6 +16,7 @@ class Constants
   SOCK_MSG_TYPE_CHECK_NAME	="check_name"
   SOCK_MSG_TYPE_CHECK_NETWORK	="check_network"
   SOCK_MSG_TYPE_ON_CONNECTED	="connected"
+  SOCK_MSG_TYPE_NEW_BONUS	="new_bonus"
 
   JSON_GAME_ID		=	"game_id"
   JSON_GAME_GID		=	"game_gid"
@@ -113,6 +114,7 @@ class Constants
 
   BONUS_WINNER		=	{:bonus_title => {:en => "Winner bonus", :ru => "Бонус победителя"}, :bonus => 50, :bonus_id => 2, :description => {:en => "Bonus for the player with most correct answers", :ru => "Бонус игрока с максимальным количество правильных ответов"}}
   BONUS_DISCOVERER	=	{:bonus_title => {:en => "Discoverer bonus", :ru => "Бонус первооткрывателя"}, :bonus => 10, :bonus_id => 1, :description => {:en => "Bonus for the first discoverer of the cardset", :ru => "Бонус первооткрывателю набора"}}
+  BONUS_MODERATOR	=	{:bonus_title => {:en => "Moderator bonus", :ru => "Бонус модератора"}, :bonus => 10, :bonus_id => 3, :description => {:en => "Bonus for moderating the cardset", :ru => "Бонус за модерирование набора"}}
 
   TAG_APPLY_THRESHOLD	=	2
   FLAG_APPLY_THRESHOLD	=	2
