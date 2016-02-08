@@ -88,6 +88,7 @@ class Constants
   HEADER_OFFSET 	=       "offset"
   HEADER_LIMIT		=       "limit"
   HEADER_IDS		=       "ids"
+  HEADER_MULTIPLAYER_TYPE=       "multiplayer_type"
 
   SOCK_CHANNEL          =       "events"
 
@@ -122,5 +123,8 @@ class Constants
 
   STATUS_ONLINE		=	1
   STATUS_OFFLINE	=	2
+
+  MULTIPLAYER_TYPE_JOIN	=	0
+  MULTIPLAYER_TYPE_NEW	=	1
 end
 

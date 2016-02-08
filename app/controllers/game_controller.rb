@@ -7,6 +7,7 @@ skip_before_filter :verify_authenticity_token
 def new
   gid = request.headers[Constants::HEADER_SETID]
   opponent_name = request.headers[Constants::HEADER_OPPONENTNAME]
+  multiplayer_type = request.headers[Constants::HEADER_MULTIPLAYER_TYPE]
 
   if ((gid == nil) and ((opponent_name == "-1") or (opponent_name == nil)))
     ret_error()
