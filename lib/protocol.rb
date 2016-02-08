@@ -31,6 +31,11 @@ class Protocol
       game.stop_game
       game.destroy
     end
+    user = User.find_by_socket_id(socket_id)
+    if user != nil
+      user.status = Constants::STATUS_OFFLINE
+      user.save
+    end
   end
 
   def self.msg_announce_userid(id_from, msg_type, msg_body)
