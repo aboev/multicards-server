@@ -4,7 +4,7 @@ require 'game'
 require 'socket.io-client-simple'
 require 'protocol'
 
-class GameLogTest < ActionDispatch::IntegrationTest
+class LogTest < ActionDispatch::IntegrationTest
 
   @@socket1 = SocketIO::Client::Simple.connect 'http://localhost:5002'
   @@socket2 = SocketIO::Client::Simple.connect 'http://localhost:5002'
