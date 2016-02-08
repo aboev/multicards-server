@@ -142,12 +142,22 @@ class CardsetControllerTest < ActionController::TestCase
     gid3 = "quizlet_" + setid3.to_s
     @controller = CardsetController.new
 
-    tag(tag_id1, gid1)
+    Utils.import_qcardset(gid1)
+    Utils.import_qcardset(gid2)
+    Utils.import_qcardset(gid3)
 
-    tag(tag_id2, gid2)
+    cardset = Qcardset.where(:cardset_id => setid1).first
+    cardset.add_tag(tag_id1)
+    cardset.save
 
-    tag(tag_id2, gid3)
-    tag(tag_id3, gid3)
+    cardset = Qcardset.where(:cardset_id => setid2).first
+    cardset.add_tag(tag_id2)
+    cardset.save
+
+    cardset = Qcardset.where(:cardset_id => setid3).first
+    cardset.add_tag(tag_id2)
+    cardset.add_tag(tag_id3)
+    cardset.save
     tag_ids = tag_id2 + "," + tag_id3
 
     @request.headers[Constants::HEADER_TAGID] = tag_ids
