@@ -9,6 +9,7 @@ class Constants
   SOCK_MSG_TYPE_GAME_STOP	="game_stop"
   SOCK_MSG_TYPE_QUIT_GAME	="quit_game"
   SOCK_MSG_TYPE_GAME_START	="game_start"
+  SOCK_MSG_TYPE_GAME_INVITE	="game_invite"
   SOCK_MSG_TYPE_ANNOUNCE_USERID	="announce_userid"
   SOCK_MSG_TYPE_ANNOUNCE_SOCKID	="socket_id_announce"
   SOCK_MSG_TYPE_ANSWER_ACCEPTED	="answer_accepted"
@@ -118,5 +119,8 @@ class Constants
 
   TAG_APPLY_THRESHOLD	=	2
   FLAG_APPLY_THRESHOLD	=	2
+
+  STATUS_ONLINE		=	1
+  STATUS_OFFLINE	=	2
 end
 
