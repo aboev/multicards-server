@@ -89,6 +89,7 @@ class Constants
   HEADER_LIMIT		=       "limit"
   HEADER_IDS		=       "ids"
   HEADER_MULTIPLAYER_TYPE=       "multiplayer_type"
+  HEADER_GAMEID		=       "gameid"
 
   SOCK_CHANNEL          =       "events"
 
