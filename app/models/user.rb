@@ -82,7 +82,7 @@ class User < ActiveRecord::Base
     return nil
   end
 
-  def self.find_by_socketid(socketid)
+  def self.find_by_socket_id(socketid)
     user = User.where(:socket_id => socketid).first
     return user
   end
