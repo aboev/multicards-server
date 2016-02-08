@@ -107,6 +107,23 @@ class ActiveSupport::TestCase
     return filter(list, msg_type)
   end
 
+  def filter_wait_multi(list, msg_types)
+    sl = 0
+    lim = 40
+    r = false
+    while (r == false and (sl < lim)) do
+      msg_types.each do |type|
+        r = true if filter(list, msg_type).first != nil
+      end
+      sleep (0.1)
+      sl = sl + 1
+    end
+    if (sl == lim)
+      #puts "Failed to wait for " + msg_type.to_s
+    end
+    return filter(list, msg_type)
+  end
+
   def socket_wait(socket)
     lim = 20
     i = 0
