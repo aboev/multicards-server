@@ -20,6 +20,8 @@ class ActiveSupport::TestCase
     Qcard.delete_all
     TagDescriptor.delete_all
     GameLog.delete_all
+    TagLog.delete_all
+    FlagLog.delete_all
   end
 
   def register(profile)

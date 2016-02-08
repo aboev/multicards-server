@@ -13,6 +13,19 @@ class CardsetControllerTest < ActionController::TestCase
     user_id = JSON.parse(@response.body)['data']['id']
   end
 
+  def tag(tag_id, gid)
+    for i in 1..Constants::TAG_APPLY_THRESHOLD
+      @profile[:name] = "name" + i.to_s
+      @userid = register(@profile)
+      @controller = CardsetController.new
+      @request.headers[Constants::HEADER_USERID] = @userid
+      @request.headers[Constants::HEADER_SOCKETID] = @@socket.session_id
+      @request.headers[Constants::HEADER_SETID] = gid
+      @request.headers[Constants::HEADER_TAGID] = tag_id
+      post :put_tag, nil, @headers
+    end
+  end
+
   def setup
     @request.headers["Content-Type"] = "application/json"
     @request.headers["Accept"] = "*/*"
@@ -78,18 +91,28 @@ class CardsetControllerTest < ActionController::TestCase
     assert_equal test_cardset2, res_json['data'][0]['gid']
   end
 
-  test "Should put tag on cardset" do
+  test "Should put tag on cardset only after reaching threshold" do
     tag_id = "1"
     setid = 12048314
     gid = "quizlet_" + setid.to_s
-    @controller = CardsetController.new
-    @request.headers[Constants::HEADER_SETID] = gid
-    @request.headers[Constants::HEADER_TAGID] = tag_id
-    post :put_tag, nil, @headers
-    assert_response :success
-    cardsets = Qcardset.where('? = ANY(tags)', tag_id)
-    assert_equal 1, cardsets.count
-    assert_equal setid, cardsets.first.cardset_id
+    for i in 1..Constants::TAG_APPLY_THRESHOLD
+      @profile[:name] = "name" + i.to_s
+      @userid = register(@profile)
+      @controller = CardsetController.new
+      @request.headers[Constants::HEADER_USERID] = @userid
+      @request.headers[Constants::HEADER_SOCKETID] = @@socket.session_id
+      @request.headers[Constants::HEADER_SETID] = gid
+      @request.headers[Constants::HEADER_TAGID] = tag_id
+      post :put_tag, nil, @headers
+      assert_response :success
+      cardsets = Qcardset.where('? = ANY(tags)', tag_id)
+      if i < Constants::TAG_APPLY_THRESHOLD
+        assert_equal 0, cardsets.count
+      else
+        assert_equal 1, cardsets.count
+        assert_equal setid, cardsets.first.cardset_id
+      end
+    end
   end
 
   test "Should remove tag from cardset" do
@@ -119,21 +142,13 @@ class CardsetControllerTest < ActionController::TestCase
     gid3 = "quizlet_" + setid3.to_s
     @controller = CardsetController.new
 
-    @request.headers[Constants::HEADER_SETID] = gid1
-    @request.headers[Constants::HEADER_TAGID] = tag_id1
-    post :put_tag, nil, @headers
-    assert_response :success
+    tag(tag_id1, gid1)
 
-    @request.headers[Constants::HEADER_SETID] = gid2
-    @request.headers[Constants::HEADER_TAGID] = tag_id2
-    post :put_tag, nil, @headers
-    assert_response :success
+    tag(tag_id2, gid2)
 
+    tag(tag_id2, gid3)
+    tag(tag_id3, gid3)
     tag_ids = tag_id2 + "," + tag_id3
-    @request.headers[Constants::HEADER_SETID] = gid3
-    @request.headers[Constants::HEADER_TAGID] = tag_ids
-    post :put_tag, nil, @headers
-    assert_response :success
 
     @request.headers[Constants::HEADER_TAGID] = tag_ids
     get :search, nil, @headers
@@ -147,7 +162,6 @@ class CardsetControllerTest < ActionController::TestCase
     res_json = JSON.parse(response.body)
     assert_response :success
     assert_equal 2, res_json['data'].length
-
   end
 
   test "Should return tags" do

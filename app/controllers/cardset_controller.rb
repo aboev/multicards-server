@@ -90,7 +90,7 @@ def put_tag
   gid = request.headers[Constants::HEADER_SETID]
   tagids = request.headers[Constants::HEADER_TAGID]
   tagids.split(",").each do |tagid|
-    Utils.tag(gid, tagid)
+    Utils.tag(gid, tagid, @user.id)
   end
 
   msg = { :result => Constants::RESULT_OK }

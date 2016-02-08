@@ -134,21 +134,41 @@ module Utils
     return false
   end
 
-  def self.tag(gid, tagid)
-    set_id = parse_gid(gid)[1]
-    provider = parse_gid(gid)[0]
-    if provider == "quizlet"
-      if ((Qcardset.where(:cardset_id => set_id).count > 0) or (import_qcardset(gid) == true))
-        cardset = Qcardset.where(:cardset_id => set_id).first
-        tag = TagDescriptor.where(:tag_id => tagid).first
-        if ((!cardset.tags.include?(tagid.to_s)) and (tag != nil))
-          cardset.add_tag(tagid.to_s)
-          cardset.save
-          return true
+  def self.tag(gid, tagid, userid)
+    res = false
+
+    tag_log = TagLog.where(:user_id => userid, :gid => gid, :tag_id => tagid, :commit => false).first
+    if tag_log == nil
+      tag_new = TagLog.new
+      tag_new.user_id = userid if userid != nil
+      tag_new.gid = gid
+      tag_new.tag_id = tagid.to_s
+      tag_new.commit = false
+      tag_new.save
+    end
+
+    tag_log = TagLog.where(:gid => gid, :tag_id => tagid, :commit => false)
+    if tag_log.count >= Constants::TAG_APPLY_THRESHOLD
+      set_id = parse_gid(gid)[1]
+      provider = parse_gid(gid)[0]
+      if provider == "quizlet"
+        if ((Qcardset.where(:cardset_id => set_id).count > 0) or (import_qcardset(gid) == true))
+          cardset = Qcardset.where(:cardset_id => set_id).first
+          tag = TagDescriptor.where(:tag_id => tagid).first
+          if ((!cardset.tags.include?(tagid.to_s)) and (tag != nil))
+            cardset.add_tag(tagid.to_s)
+            cardset.save
+            res = true
+          end
         end
       end
+      
+      tag_log.each do |tag_item|
+        tag_item.commit = true
+        tag_item.save
+      end
     end
-    return false
+    return res
   end
 
   def self.untag(gid, tagid)
@@ -167,19 +187,40 @@ module Utils
   end
 
   def self.flag(gid, flagid)
-    set_id = parse_gid(gid)[1]
-    provider = parse_gid(gid)[0]
-    if provider == "quizlet"
-      if ((Qcardset.where(:cardset_id => set_id).count > 0) or (import_qcardset(gid) == true))
-        cardset = Qcardset.where(:cardset_id => set_id).first
-        if ((cardset != nil) and (!cardset.flags.include?(flagid.to_s)))
-          cardset.add_flag(flagid.to_s)
-          cardset.save
-          return true
+    res = false
+
+    flag_log = FlagLog.where(:user_id => userid, :gid => gid, :flag_id => flagid, :commit => false).first
+    if flag_log == nil
+      flag_new = FlagLog.new
+      flag_new.user_id = userid if userid != nil
+      flag_new.gid = gid
+      flag_new.flag_id = flagid.to_s
+      flag_new.commit = false
+      flag_new.save
+    end
+
+    flag_log = FlagLog.where(:gid => gid, :flag_id => flagid, :commit => false)
+    if flag_log.count >= Constants::FLAG_APPLY_THRESHOLD
+      set_id = parse_gid(gid)[1]
+      provider = parse_gid(gid)[0]
+      if provider == "quizlet"
+        if ((Qcardset.where(:cardset_id => set_id).count > 0) or (import_qcardset(gid) == true))
+          cardset = Qcardset.where(:cardset_id => set_id).first
+          if ((cardset != nil) and (!cardset.flags.include?(flagid.to_s)))
+            cardset.add_flag(flagid.to_s)
+            cardset.save
+            res = true
+          end
         end
       end
+
+      flag_log.each do |flag_item|
+        flag_item.commit = true
+        flag_item.save
+      end
+
     end
-    return false
+    return res
   end
 
   def self.unflag(gid, flagid)
