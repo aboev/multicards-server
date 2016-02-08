@@ -74,6 +74,20 @@ class Game < ActiveRecord::Base
     self.save
   end
 
+  def join_player_wit_status(user, status)
+    details_json = JSON.parse(self.details)
+    if (details_json[Constants::JSON_GAME_PLAYERS].length == 0)
+      self.player1_socketid = user.socket_id
+      self.player1_id = user.id
+    end
+    details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
+    details_json[Constants::JSON_GAME_PLAYERS][user.socket_id] = status
+    details_json[Constants::JSON_GAME_SCORES][user.socket_id] = 0
+    details_json[Constants::JSON_GAME_BONUSES][user.socket_id] = []
+    self.details = details_json.to_json
+    self.save
+  end
+
   def next_question
     details = JSON.parse(self.details)
     gameplay_data = JSON.parse(self.gameplay_data)
