@@ -18,7 +18,7 @@ class GameplayManager
 
   def self.invite_user(id_from, opponent_name, game_id)
     user_from = User.find_by_name(opponent_name)
-    game = Game.where(:id => game_id).first
+    game = Game.where(:id => game_id.to_i).first
     cardset = Qcardset.where(:cardset_id => game.setid).first
     return if ((game == nil) or (user_from == nil) or (cardset == nil))
     game_details = JSON.parse(game.details)
