@@ -16,8 +16,8 @@ class GameplayManager
     end
   end
 
-  def self.invite_user(id_from, id_to, game_id)
-    user_from = User.where(:id => id_from).first
+  def self.invite_user(id_from, opponent_name, game_id)
+    user_from = User.find_by_name(opponent_name)
     game = Game.where(:id => game_id).first
     cardset = Qcardset.where(:cardset_id => game.setid).first
     return if ((game == nil) or (user_from == nil) or (cardset == nil))

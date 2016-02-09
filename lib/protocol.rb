@@ -91,8 +91,8 @@ class Protocol
     $redis.publish Constants::SOCK_CHANNEL, message
   end
 
-  def self.msg_game_invite(id_from, id_to, game_id)
-    GameplayManager.invite_user(id_from, id_to, game_id)
+  def self.msg_game_invite(id_from, opponent_name, game_id)
+    GameplayManager.invite_user(id_from, opponent_name, game_id)
   end
 
   def self.msg_invite_accepted(id_from, game_id)
