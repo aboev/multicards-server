@@ -38,6 +38,10 @@ class Game < ActiveRecord::Base
     self.gameplay_data = gameplay_data.to_json.to_json
     self.setid = setid
     self.save
+
+    game_details[Constants::JSON_GAME_ID] = self.id
+    self.details = details.to_json
+    self.save
   end
 
   def start_game
