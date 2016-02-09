@@ -40,7 +40,7 @@ class Game < ActiveRecord::Base
     self.save
 
     game_details[Constants::JSON_GAME_ID] = self.id
-    self.details = details.to_json
+    self.details = game_details.to_json
     self.save
   end
 
