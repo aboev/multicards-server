@@ -19,23 +19,29 @@ class GameplayManager
   def self.invite_user(id_from, id_to, game_id)
     user_from = User.where(:id => id_from).first
     game = Game.where(:id => game_id).first
-    return if ((game == nil) or (user_from == nil))
+    cardset = Qcardset.where(:cardset_id => game.setid).first
+    return if ((game == nil) or (user_from == nil) or (cardset == nil))
+    game_details = JSON.parse(game.details)
+    user_details = JSON.parse(user_from.details)
     msg_to = [id_to]
     msg_type = Constants::SOCK_MSG_TYPE_GAME_INVITE
-    msg_body = JSON.parse(game.details)
-    msg_extra = JSON.parse(user_from.details)
-    message = Protocol.make_msg_extra(msg_to, msg_type, msg_body, msg_extra)
+    msg_body = {Constants::JSON_INVITATION_USER => user_details,
+		Constants::JSON_INVITATION_GAME => game_details,
+		Constants::JSON_INVITATION_CARDSET => cardset}
+    message = Protocol.make_msg(msg_to, msg_type, msg_body)
     $redis.publish Constants::SOCK_CHANNEL, message
   end
 
-  def self.invitation_accepted(user_from, game_id)
+  def self.accept_invitation(user_from, game_id)
     game = Game.where(:id => game_id).first
-    return if game == nil
+    user = User.where(:id => id_from).first
+    return if ((game == nil) or (user == nil))
     msg_to = game.player1_socketid
     msg_type = Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED
     msg_body = game_id
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
     $redis.publish Constants::SOCK_CHANNEL, message
+    game.join_player(user, nil)
   end
 
   def self.status_update(user_from, status)

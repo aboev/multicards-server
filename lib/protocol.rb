@@ -95,6 +95,10 @@ class Protocol
     GameplayManager.invite_user(id_from, id_to, game_id)
   end
 
+  def self.msg_invite_accepted(id_from, game_id)
+    GameplayManager.accept_invitation(id_from, game_id)
+  end
+
   def self.msg_check_network(id_from, msg_type, msg_body)
     msg_to = [id_from]
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
@@ -130,6 +134,8 @@ class Protocol
       self.msg_check_network(id_from, msg_type, msg_body)
     elsif (msg_type == Constants::SOCK_MSG_TYPE_GAME_INVITE)
       self.msg_game_invite(id_from, msg_body, msg_extra)
+    elsif (msg_type == Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED)
+      self.msg_invite_accepted(id_from, msg_body)
     end
   
     res = { :result => Constants::RESULT_OK }

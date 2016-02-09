@@ -38,6 +38,10 @@ class Constants
   JSON_USER_ID		=	"id"
   JSON_USER_AVATAR	=	"avatar"
 
+  JSON_INVITATION_USER	=	"user"
+  JSON_INVITATION_GAME	=	"game"
+  JSON_INVITATION_CARDSET=	"cardset"
+
   JSON_SOCK_MSG_TO	=	"id_to"
   JSON_SOCK_MSG_FROM	=	"id_from"
   JSON_SOCK_MSG_BODY	=	"msg_body"
