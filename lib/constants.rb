@@ -93,7 +93,7 @@ class Constants
   HEADER_OFFSET 	=       "offset"
   HEADER_LIMIT		=       "limit"
   HEADER_IDS		=       "ids"
-  HEADER_MULTIPLAYER_TYPE=       "multiplayer_type"
+  HEADER_MULTIPLAYER_TYPE=       "multiplayerType"
   HEADER_GAMEID		=       "gameid"
 
   SOCK_CHANNEL          =       "events"
