@@ -25,6 +25,10 @@ class ApplicationController < ActionController::Base
     else
       @user_details = JSON.parse(@user.details)  
     end
+    if @user.status != Constants::STATUS_ONLINE
+      @user.status = Constants::STATUS_ONLINE
+      @user.save
+    end
   end
 
   def info
