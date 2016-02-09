@@ -10,6 +10,7 @@ class Constants
   SOCK_MSG_TYPE_QUIT_GAME	="quit_game"
   SOCK_MSG_TYPE_GAME_START	="game_start"
   SOCK_MSG_TYPE_GAME_INVITE	="game_invite"
+  SOCK_MSG_TYPE_INVITE_ACCEPTED	="invite_accepted"
   SOCK_MSG_TYPE_ANNOUNCE_USERID	="announce_userid"
   SOCK_MSG_TYPE_ANNOUNCE_SOCKID	="socket_id_announce"
   SOCK_MSG_TYPE_ANSWER_ACCEPTED	="answer_accepted"

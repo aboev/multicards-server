@@ -1,5 +1,6 @@
 require 'constants'
 require 'utils'
+require 'gameplay_manager'
 
 class GameController < ApplicationController
 skip_before_filter :verify_authenticity_token
@@ -25,12 +26,12 @@ def new
       ret_ok(JSON.parse(game_public.details))
       return
     else
-      game_public = init_and_join(gid, true, @user)
+      game_public = init_and_join(gid, true, @user, nil)
       ret_ok(JSON.parse(game_public.details))
       return
     end
   elsif (opponent_name == "-1")
-    game_private = init_and_join(gid, false, @user)
+    game_private = init_and_join(gid, false, @user, nil)
     ret_ok(JSON.parse(game_private.details))
     return
   else
@@ -45,6 +46,41 @@ def new
       return
     end
   end
+end
+
+def new_v2
+  gid = request.headers[Constants::HEADER_SETID]
+  opponent_name = request.headers[Constants::HEADER_OPPONENTNAME]
+  multiplayer_type = request.headers[Constants::HEADER_MULTIPLAYER_TYPE]
+
+  if (multiplayer_type == nil)
+    ret_error()
+    return
+  end
+
+  if (multiplayer_type == Constants::MULTIPLAYER_TYPE_NEW)
+    if ((gid == nil) or (Utils.get_qcardset(gid) == nil))
+      ret_error()
+      return
+    end
+    rnd_opp = (opponent_name == nil)
+    game = init_and_join(gid, rnd_opp, @user, Game::PLAYER_STATUS_PENDING)
+    ret_ok(JSON.parse(game.details))
+    return
+  elsif (multiplayer_type == Constants::MULTIPLAYER_TYPE_JOIN)
+    if ((opponent_name == nil) or ((opponent = User.find_by_name(opponent_name)) == nil))
+      ret_error()
+      return
+    end
+    game = Game.where(:player1_id => opponent.id).first
+    if game == nil
+      ret_error()
+      return
+    end
+    game.join_player(@user, Game::PLAYER_STATUS_PENDING)
+    ret_ok(JSON.parse(game.details))
+  end
+
 end
 
 def get
@@ -74,15 +110,15 @@ def ret_error(err_code, err_msg)
 end
 
 def join_and_start(game, user, gid)
-  game.join_player(user)
+  game.join_player(user, nil)
   game.start_game
   GameLog.log(game)
 end
 
-def init_and_join(gid, rnd_opp, user)
+def init_and_join(gid, rnd_opp, user, status)
   game = Game.new
   game.init(gid, rnd_opp)
-  game.join_player(user)
+  game.join_player(user, status)
   GameLog.log(game)
   return game
 end

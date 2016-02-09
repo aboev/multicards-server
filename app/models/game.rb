@@ -57,6 +57,8 @@ class Game < ActiveRecord::Base
       message = Protocol.make_msg(msg_to, msg_type, msg_body)
       $redis.publish Constants::SOCK_CHANNEL, message
       next_question
+
+      GameLog.log(self)
     end
   end
 

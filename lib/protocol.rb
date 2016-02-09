@@ -1,25 +1,11 @@
 require 'question'
+require 'gameplay_manager'
 
 class Protocol
 
   def self.msg_user_status_update(id_from, msg_type, msg_body)
-    Rails.logger.info("Player status update request")
-    game = Game.find_by_socket_id(id_from, Game::STATUS_IN_PROGRESS).first
-    game_details = JSON.parse(game.details)
-    gameplay_data = JSON.parse(game.gameplay_data)
-
-    new_status = msg_body
-    game.set_player_status(id_from, new_status)
-
-    questions_count = game_details[Constants::JSON_GAME_QUESTIONCNT]
-    if (game.get_players_count() == game.get_ready_players_count())
-      if ((questions_count >= Constants::GAMEPLAY_Q_PER_G) or (questions_count == (gameplay_data['questions'].length)))
-        game.end_game
-        game.destroy
-      else
-        game.next_question
-      end
-    end
+    status = msg_body
+    GameplayManager.status_update(id_from, status)
   end
 
   def self.msg_socket_close(id_from, msg_type, msg_body)
@@ -105,6 +91,10 @@ class Protocol
     $redis.publish Constants::SOCK_CHANNEL, message
   end
 
+  def self.msg_game_invite(id_from, id_to, game_id)
+    GameplayManager.invite_user(id_from, id_to, game_id)
+  end
+
   def self.msg_check_network(id_from, msg_type, msg_body)
     msg_to = [id_from]
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
@@ -115,6 +105,7 @@ class Protocol
     id_from = msg_json[Constants::JSON_SOCK_MSG_FROM]
     msg_type = msg_json[Constants::JSON_SOCK_MSG_TYPE]
     msg_body = msg_json[Constants::JSON_SOCK_MSG_BODY]
+    msg_extra = msg_json[Constants::JSON_SOCK_MSG_EXTRA]
 
     if (msg_body == nil)
       res = {   :result => Constants::RESULT_ERROR,
@@ -137,6 +128,8 @@ class Protocol
       self.msg_check_name(id_from, msg_type, msg_body)
     elsif (msg_type == Constants::SOCK_MSG_TYPE_CHECK_NETWORK)
       self.msg_check_network(id_from, msg_type, msg_body)
+    elsif (msg_type == Constants::SOCK_MSG_TYPE_GAME_INVITE)
+      self.msg_game_invite(id_from, msg_body, msg_extra)
     end
   
     res = { :result => Constants::RESULT_OK }
