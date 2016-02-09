@@ -17,10 +17,12 @@ class GameplayManager
   end
 
   def self.invite_user(id_from, opponent_name, game_id)
-    user_from = User.find_by_name(opponent_name)
+    user_from = User.where(:socket_id => id_from)
+    user_to = User.find_by_name(opponent_name)
+    id_to = user_to.socket_id if user_to != nil
     game = Game.where(:id => game_id.to_i).first
     cardset = Qcardset.where(:cardset_id => game.setid).first
-    return if ((game == nil) or (user_from == nil) or (cardset == nil))
+    return if ((game == nil) or (user_from == nil) or (cardset == nil) or (id_to == nil))
     game_details = JSON.parse(game.details)
     user_details = JSON.parse(user_from.details)
     msg_to = [id_to]
