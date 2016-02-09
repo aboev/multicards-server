@@ -68,6 +68,9 @@ class Game < ActiveRecord::Base
     if (details_json[Constants::JSON_GAME_PLAYERS].length == 0)
       self.player1_socketid = user.socket_id
       self.player1_id = user.id
+    else
+      self.player2_socketid = user.socket_id
+      self.player2_id = user.id
     end
     details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
     details_json[Constants::JSON_GAME_PLAYERS][user.socket_id] = status
