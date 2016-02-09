@@ -1,2 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+one:
+  id: 1
+  details: '{game_id:1,game_gid:"quizlet_2",status:0,setid:2,gameplay_data:"{}"}'
+  setid: 2
+  gameplay_data: "{}"
+  status: 0
+
+two:
+  id: 2
+  details: '{game_id:2,game_gid:"quizlet_2",status:1,setid:2,gameplay_data:"{}"}'
+  setid: 2
+  gameplay_data: "{}"
+  status: 1

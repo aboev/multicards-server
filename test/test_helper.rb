@@ -63,6 +63,17 @@ class ActiveSupport::TestCase
     end
   end
 
+  def start_game(userid, socketid, gid, gameid, opponent, multiplayer_type)
+    @headers[Constants::HEADER_USERID] = userid
+    @headers[Constants::HEADER_SOCKETID] = socketid
+    @headers[Constants::HEADER_SETID] = gid
+    @headers[Constants::HEADER_OPPONENTNAME] = opponent
+    @headers[Constants::HEADER_MULTIPLAYER_TYPE] = multiplayer_type
+    @headers[Constants::HEADER_GAMEID] = gameid
+    post '/game/new', nil, @headers
+    game_id = JSON.parse(@response.body)['data']['id']
+  end
+
   def update_client_status(socket, status)
     msg_type = Constants::SOCK_MSG_TYPE_PLAYER_STATUS_UPDATE
     msg_body = status

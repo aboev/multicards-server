@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   get 'user' => 'user#get'
   get 'users' => 'user#list'
   post 'game' => 'game#new'
+  post 'game/new' => 'game#start'
   get 'game' => 'game#get'
   post 'event' => 'event#new'
   post 'image' => 'upload#upload'

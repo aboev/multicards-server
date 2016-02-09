@@ -48,7 +48,7 @@ def new
   end
 end
 
-def new_v2
+def start
   gid = request.headers[Constants::HEADER_SETID]
   opponent_name = request.headers[Constants::HEADER_OPPONENTNAME]
   multiplayer_type = request.headers[Constants::HEADER_MULTIPLAYER_TYPE]
