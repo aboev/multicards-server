@@ -15,8 +15,11 @@ class GameLog < ActiveRecord::Base
     players.each do |socket_id, status|
       player = User.where(:socket_id => socket_id).first
       if (player != nil)
-        player1_id = player.id if player1_id == -1
-        player2_id = player.id if player1_id != -1
+        if player1_id == -1
+          player1_id = player.id
+        else
+          player2_id = player.id
+        end
         break if ((player1_id != -1) and (player2_id != -1))
       end
     end
