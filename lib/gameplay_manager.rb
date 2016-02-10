@@ -17,7 +17,7 @@ class GameplayManager
   end
 
   def self.invite_user(id_from, opponent_name, game_id)
-    user_from = User.where(:socket_id => id_from)
+    user_from = User.where(:socket_id => id_from).first
     user_to = User.find_by_name(opponent_name)
     id_to = user_to.socket_id if user_to != nil
     game = Game.where(:id => game_id.to_i).first
@@ -34,16 +34,16 @@ class GameplayManager
     $redis.publish Constants::SOCK_CHANNEL, message
   end
 
-  def self.accept_invitation(user_from, game_id)
+  def self.accept_invitation(id_from, game_id)
     game = Game.where(:id => game_id).first
-    user = User.where(:id => id_from).first
-    return if ((game == nil) or (user == nil))
-    msg_to = game.player1_socketid
+    user_from = User.where(:socket_id => id_from).first
+    return if ((game == nil) or (user_from == nil))
+    game.join_player(user_from, Game::PLAYER_STATUS_PENDING)
+    msg_to = [game.player1_socketid]
     msg_type = Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED
     msg_body = game_id
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
     $redis.publish Constants::SOCK_CHANNEL, message
-    game.join_player(user, nil)
   end
 
   def self.status_update(user_from, status)

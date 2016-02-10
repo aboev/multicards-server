@@ -65,16 +65,17 @@ def start
     end
     rnd_opp = (opponent_name == nil)
     game = init_and_join(gid, rnd_opp, @user, Game::PLAYER_STATUS_PENDING)
+    GameplayManager.invite_user(@user.socket_id, opponent_name, game.id) if opponent_name != nil
     ret_ok(JSON.parse(game.details))
     return
   elsif (multiplayer_type == Constants::MULTIPLAYER_TYPE_JOIN)
     if ((opponent_name == nil) or ((opponent = User.find_by_name(opponent_name)) == nil))
-      ret_error()
+      ret_error(Constants::ERROR_USER_NOT_FOUND, Constants::MSG_USER_NOT_FOUND)
       return
     end
     game = Game.where(:player1_id => opponent.id).first
     if game == nil
-      ret_error()
+      ret_error(Constants::ERROR_GAME_NOT_FOUND, Constants::MSG_GAME_NOT_FOUND)
       return
     end
     game.join_player(@user, Game::PLAYER_STATUS_PENDING)
