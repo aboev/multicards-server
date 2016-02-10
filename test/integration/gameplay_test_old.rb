@@ -3,7 +3,7 @@ require 'rubygems'
 require 'game'
 require 'socket.io-client-simple'
 
-class GameplayTest < ActionDispatch::IntegrationTest
+class GameplayTestOld < ActionDispatch::IntegrationTest
 
   @@socket1 = SocketIO::Client::Simple.connect 'http://localhost:5002'
   @@socket2 = SocketIO::Client::Simple.connect 'http://localhost:5002'
@@ -19,8 +19,6 @@ class GameplayTest < ActionDispatch::IntegrationTest
     @@sock1_msg_list = []
     @@sock2_msg_list = []
 
-    @gid = "quizlet_415"
-
     socket_wait(@@socket1)
     socket_wait(@@socket2)
   end
@@ -29,28 +27,51 @@ class GameplayTest < ActionDispatch::IntegrationTest
     clear_db
   end
 
+  test "Should start new game" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_START).length
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_START).length
+    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 2, @@sock1_msg_list.length
+    assert_equal 2, @@sock2_msg_list.length
+  end
+
+  test "Should not start new game" do
+    user_id1 = register(@profile1)
+    sleep(1)
+    game_id = new_game(user_id1, @@socket1.session_id)
+    sleep(1)
+    assert_equal 0, @@sock1_msg_list.length
+  end
+
   test "Should cleanup game entries after quit" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
-    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
-
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
     quit_game(@@socket1)
-
-    assert_equal 1, filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_STOP).length
+    sleep(1)
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_STOP).length 
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_STOP).length
-    assert_equal 4, @@sock1_msg_list.length
-    assert_equal 4, @@sock2_msg_list.length
+    assert_equal 3, @@sock1_msg_list.length
+    assert_equal 3, @@sock2_msg_list.length
     game_cnt1 = Game.where(:status => Game::STATUS_SEARCHING_PLAYERS).length
     game_cnt2 = Game.where(:status => Game::STATUS_IN_PROGRESS).length
-    game_cnt3 = Game.where(:status => Game::STATUS_WAITING_OPPONENT).length
-    assert_equal 0, (game_cnt1 + game_cnt2 + game_cnt3)
+    assert_equal 0, (game_cnt1 + game_cnt2)
   end
 
   test "Should send valid question" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
-    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
-
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
     question_msg = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)[0][Constants::JSON_SOCK_MSG_BODY]
     question_type = question_msg[Constants::JSON_QST_TYPE]
     question = question_msg[Constants::JSON_QST_QUESTION]
@@ -58,7 +79,7 @@ class GameplayTest < ActionDispatch::IntegrationTest
       options = question_msg[Constants::JSON_QST_OPTIONS]
       answer_id = question_msg[Constants::JSON_QST_ANSWER_ID]
       answer = options[answer_id]
-      assert_equal true, (question.length > 0)
+      assert_equal true, (question.length > 0) 
       assert_equal true, (options.length > 1)
       card = Card.where(:front => question, :back => answer).first
       assert_not_nil card
@@ -74,14 +95,16 @@ class GameplayTest < ActionDispatch::IntegrationTest
   test "Should send new question after user answer" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
-    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
 
     @@sock2_msg_list = []
     @@sock1_msg_list = []
     player_answer(@@socket1, 0, [])
     update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
     update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
-
+   
     sleep(1)
     assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
@@ -93,8 +116,9 @@ class GameplayTest < ActionDispatch::IntegrationTest
   test "Should stop game after N turns" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
-    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
-
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    
     for i in 0..(Game::QUESTIONS_PER_GAME - 2)
       msg_list = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)
       answer_id = msg_list.first["msg_body"][Constants::JSON_QST_ANSWER_ID]
@@ -120,7 +144,9 @@ class GameplayTest < ActionDispatch::IntegrationTest
   test "Should deliver answer to second player" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
-    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
 
     @@sock2_msg_list = []
     @@sock1_msg_list = []
@@ -133,7 +159,9 @@ class GameplayTest < ActionDispatch::IntegrationTest
   test "Should accept single correct answer" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
-    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
 
     answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
     @@sock2_msg_list = []
@@ -141,13 +169,14 @@ class GameplayTest < ActionDispatch::IntegrationTest
     player_answer(@@socket1, answer_id.to_s, [])
     player_answer(@@socket2, answer_id.to_s, [])
 
-    accepted_cnt_1 = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
+    sleep(1)
+    accepted_cnt_1 = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
     accepted_cnt_2 = filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_ACCEPTED).length
     rejected_cnt_1 = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
     rejected_cnt_2 = filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
     assert_equal 1, (accepted_cnt_1 + accepted_cnt_2)
     assert_equal 1, (rejected_cnt_1 + rejected_cnt_2)
-
+    
     update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
     update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
 
@@ -163,13 +192,15 @@ class GameplayTest < ActionDispatch::IntegrationTest
     rejected_cnt_2 = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_ANSWER_REJECTED).length
     assert_equal 2, (accepted_cnt_1 + accepted_cnt_2) # Should be reconsidered
     assert_equal 0, (rejected_cnt_1 + rejected_cnt_2)
-
+    
   end
 
   test "Should accept both wrong answers" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
-    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
+    new_game(user_id1, @@socket1.session_id)
+    new_game(user_id2, @@socket2.session_id)
+    sleep(1)
 
     answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
     @@sock2_msg_list = []
@@ -186,10 +217,40 @@ class GameplayTest < ActionDispatch::IntegrationTest
     assert_equal 0, (rejected_cnt_1 + rejected_cnt_2)
   end
 
-  test "Should generate question without duplicate options" do
-    gid = "quizlet_10342218"
+  test "Should start game with opponent by invitation" do
+    @@socket3 = SocketIO::Client::Simple.connect 'http://localhost:5002'
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
+    user_id3 = register(@profile3)
+    new_game(user_id3, @@socket3.session_id)
+    sleep(0.1)
+    new_game_with_opponent(user_id1, @@socket1.session_id, "-1")
+    sleep(0.1)
+    new_game_with_opponent(user_id2, @@socket2.session_id, @profile1[:name])
+
+    sleep(1)
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_START).length
+    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_START).length
+    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 2, @@sock1_msg_list.length
+    assert_equal 2, @@sock2_msg_list.length
+  end
+
+  test "Should error for non-existing opponent" do
+    user_id1 = register(@profile1)
+    @headers[Constants::HEADER_SETID] = "quizlet_415"
+    new_game_with_opponent(user_id1, @@socket1.session_id, @profile2[:name])
+
+    assert_response :success
+    assert_equal Constants::ERROR_USER_NOT_FOUND, JSON.parse(response.body)['code']
+  end
+
+  test "Should generate question without duplicate options" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    gid = "quizlet_10342218"
+
     Utils.import_qcardset(gid)
 
     setid = Utils.parse_gid(gid)[1]
@@ -197,7 +258,8 @@ class GameplayTest < ActionDispatch::IntegrationTest
     cardset.add_flag(Constants::FLAG_INVERTED)
     cardset.save
 
-    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, gid, user_id2, @@socket2, @@sock2_msg_list)
+    new_game_with_gid(user_id1, @@socket1.session_id, gid)
+    new_game_with_gid(user_id2, @@socket2.session_id, gid)
 
     for i in 0..(Game::QUESTIONS_PER_GAME - 1)
       msg_list = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)

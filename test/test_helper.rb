@@ -30,6 +30,13 @@ class ActiveSupport::TestCase
     user_id = JSON.parse(@response.body)['data']['id']
   end
 
+  def announce_userid(socket, userid)
+    msg_type = Constants::SOCK_MSG_TYPE_ANNOUNCE_USERID
+    msg_body = userid
+    msg = Protocol.make_msg(nil, msg_type, msg_body)
+    socket.emit :message, msg
+  end
+
   def new_game(userid, socketid)
     @headers[Constants::HEADER_USERID] = userid
     @headers[Constants::HEADER_SOCKETID] = socketid
@@ -63,15 +70,38 @@ class ActiveSupport::TestCase
     end
   end
 
-  def start_game(userid, socketid, gid, gameid, opponent, multiplayer_type)
+  def new_game_v2(userid, socketid, new_game, gid, opponent_name)
+    multiplayer_type = Constants::MULTIPLAYER_TYPE_NEW
+    multiplayer_type = Constants::MULTIPLAYER_TYPE_JOIN if (new_game == false) 
     @headers[Constants::HEADER_USERID] = userid
     @headers[Constants::HEADER_SOCKETID] = socketid
-    @headers[Constants::HEADER_SETID] = gid
-    @headers[Constants::HEADER_OPPONENTNAME] = opponent
+    @headers[Constants::HEADER_OPPONENTNAME] = opponent_name
     @headers[Constants::HEADER_MULTIPLAYER_TYPE] = multiplayer_type
-    @headers[Constants::HEADER_GAMEID] = gameid
+    @headers[Constants::HEADER_SETID] = gid
     post '/game/new', nil, @headers
-    game_id = JSON.parse(@response.body)['data']['id']
+    if JSON.parse(@response.body)['result'] == Constants::RESULT_OK
+      game_id = JSON.parse(@response.body)['data'][Constants::JSON_GAME_ID]
+      return game_id
+    end
+  end
+
+  def start_game_v2(userid1, socket1, sock1_msg_list, gid, userid2, socket2, sock2_msg_list)
+    user = User.where(:id => userid1).first
+    name = JSON.parse(user.details)["name"]
+    game_id = new_game_v2(userid1, socket1.session_id, true, gid, nil)
+    new_game_v2(userid2, socket2.session_id, false, nil, name)
+    game_id = JSON.parse(@response.body)['data'][Constants::JSON_GAME_ID]
+    update_client_status(socket1, Game::PLAYER_STATUS_WAITING)
+    update_client_status(socket2, Game::PLAYER_STATUS_WAITING)
+    assert_equal 1, filter_wait(sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_START).length
+  end
+
+  def get_games(userid, socketid)
+    @headers[Constants::HEADER_USERID] = userid
+    @headers[Constants::HEADER_SOCKETID] = socketid
+    @controller = GameController.new
+    get '/game', nil, @headers
+    games = JSON.parse(@response.body)['data']
   end
 
   def update_client_status(socket, status)
@@ -91,6 +121,13 @@ class ActiveSupport::TestCase
   def quit_game(socket)
     msg_type = Constants::SOCK_MSG_TYPE_QUIT_GAME
     msg_body = socket.session_id
+    msg = Protocol.make_msg(nil, msg_type, msg_body)
+    socket.emit :message, msg
+  end
+
+  def accept_invite(socket, game_id)
+    msg_type = Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED
+    msg_body = game_id
     msg = Protocol.make_msg(nil, msg_type, msg_body)
     socket.emit :message, msg
   end
