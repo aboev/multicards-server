@@ -1,89 +1,16 @@
-lFeV5_1cQJrSgyMYAAAA connected
-OALp9jX0hY3ZjBuyAAAB connected
-got message from reids for lFeV5_1cQJrSgyMYAAAA
-got message from reids for lFeV5_1cQJrSgyMYAAAA
-got message from reids for lFeV5_1cQJrSgyMYAAAA
-got message from reids for lFeV5_1cQJrSgyMYAAAA
-LKGmPWCACzytJjeyAAAC connected
-got message from reids for LKGmPWCACzytJjeyAAAC
-got message from reids for LKGmPWCACzytJjeyAAAC
-got message from reids for LKGmPWCACzytJjeyAAAC
-Sqvt3oRKtY8r6j1QAAAD connected
-got message from reids for Sqvt3oRKtY8r6j1QAAAD
-got message from reids for Sqvt3oRKtY8r6j1QAAAD
-got message from reids for Sqvt3oRKtY8r6j1QAAAD
-got message from reids for Sqvt3oRKtY8r6j1QAAAD
-1ErfI1OCpaqhC3eMAAAE connected
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-got message from reids for 1ErfI1OCpaqhC3eMAAAE
-V-Nm_SRedUadJfVqAAAF connected
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-got message from reids for jbhvgV-Nm_SRedUadJfVqAAAF
-OiuAHO7E9qsERsELAAAG connected
-got message from reids for OiuAHO7E9qsERsELAAAG
-got message from reids for OiuAHO7E9qsERsELAAAG
-got message from reids for OiuAHO7E9qsERsELAAAG
-got message from reids for OiuAHO7E9qsERsELAAAG
-got message from reids for OiuAHO7E9qsERsELAAAG
-got message from reids for OiuAHO7E9qsERsELAAAG
-got message from reids for OiuAHO7E9qsERsELAAAG
-FM8rtrUXVxWXrZuRAAAH connected
-l1QZrWmY-SIXQ0PqAAAI connected
-got message from reids for l1QZrWmY-SIXQ0PqAAAI
-got message from reids for l1QZrWmY-SIXQ0PqAAAI
-got message from reids for l1QZrWmY-SIXQ0PqAAAI
-got message from reids for l1QZrWmY-SIXQ0PqAAAI
-got message from reids for l1QZrWmY-SIXQ0PqAAAI
-got message from reids for l1QZrWmY-SIXQ0PqAAAI
-got message from reids for l1QZrWmY-SIXQ0PqAAAI
-got message from reids for l1QZrWmY-SIXQ0PqAAAI
-got message from reids for l1QZrWmY-SIXQ0PqAAAI
-UcG9GmBYSXnXEhNRAAAJ connected
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-got message from reids for UcG9GmBYSXnXEhNRAAAJ
-hrTA_1ZdIUEUMhKqAAAK connected
-(node) warning: possible EventEmitter memory leak detected. 11 listeners added. Use emitter.setMaxListeners() to increase limit.
-Trace
-    at RedisClient.addListener (events.js:160:15)
-    at Namespace.<anonymous> (/data/projects/memorizer/realtime/realtime.js:24:9)
-    at Namespace.emit (events.js:95:17)
-    at Namespace.emit (/data/projects/memorizer/realtime/node_modules/socket.io/lib/namespace.js:205:10)
-    at /data/projects/memorizer/realtime/node_modules/socket.io/lib/namespace.js:172:14
-    at process._tickCallback (node.js:419:13)
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
-got message from reids for hrTA_1ZdIUEUMhKqAAAK
+CFIl5k8Jwz4g8pqOAAAA connected
+xaqf5aiXPJxQQjoiAAAB connected
+got redis message {"id_to":["xaqf5aiXPJxQQjoiAAAB","CFIl5k8Jwz4g8pqOAAAA"],"msg_type":"new_event","msg_body":{"event":"game_start","data":{"players":{"xaqf5aiXPJxQQjoiAAAB":"player_waiting","CFIl5k8Jwz4g8pqOAAAA":"player_waiting"},"status":1}}}
+sending message to xaqf5aiXPJxQQjoiAAAB
+sending message to CFIl5k8Jwz4g8pqOAAAA
+got redis message {"id_to":["xaqf5aiXPJxQQjoiAAAB","CFIl5k8Jwz4g8pqOAAAA"],"msg_type":"new_question","msg_body":{"question":"mock","options":["учреждение","щепка","насмехаться/осмеяние","проигрывать"],"answer_id":2}}
+sending message to xaqf5aiXPJxQQjoiAAAB
+sending message to CFIl5k8Jwz4g8pqOAAAA
+1Mkj4HZ4EXTdDMb7AAAC connected
+M7iXG9FgrE-UTm04AAAD connected
+got redis message {"id_to":["M7iXG9FgrE-UTm04AAAD","1Mkj4HZ4EXTdDMb7AAAC"],"msg_type":"new_event","msg_body":{"event":"game_start","data":{"players":{"M7iXG9FgrE-UTm04AAAD":"player_waiting","1Mkj4HZ4EXTdDMb7AAAC":"player_waiting"},"status":1}}}
+sending message to M7iXG9FgrE-UTm04AAAD
+sending message to 1Mkj4HZ4EXTdDMb7AAAC
+got redis message {"id_to":["M7iXG9FgrE-UTm04AAAD","1Mkj4HZ4EXTdDMb7AAAC"],"msg_type":"new_question","msg_body":{"question":"range","options":["гонорар","сфера","принимать","среди"],"answer_id":1}}
+sending message to M7iXG9FgrE-UTm04AAAD
+sending message to 1Mkj4HZ4EXTdDMb7AAAC
