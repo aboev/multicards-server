@@ -94,6 +94,18 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     assert_equal 1, filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
   end
 
+  test "Should hide private games from list" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    user_id3 = register(@profile3)
+    @@socket3 = SocketIO::Client::Simple.connect 'http://localhost:5002'
+    game_id1 = new_game_v2(user_id1, @@socket1.session_id, true, @gid, nil)
+    game_id2 = new_game_v2(user_id1, @@socket1.session_id, true, @gid, @profile1[:name])
+    list = get_games(user_id3, @@socket3.session_id)
+    assert_equal 1, list.length
+    assert_equal game_id1, list[0]["id"]
+  end
+
   @@socket1.on :event do |msg|
     msg_json = JSON.parse(msg)
     @@sock1_msg_list << msg_json
