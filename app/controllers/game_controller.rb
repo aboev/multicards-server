@@ -60,7 +60,7 @@ def start
 
   if (multiplayer_type == Constants::MULTIPLAYER_TYPE_NEW)
     if ((gid == nil) or (Utils.get_qcardset(gid) == nil))
-      ret_error()
+      ret_error(Constants::ERROR_CARDSET_NOT_FOUND, Constants::MSG_CARDSET_NOT_FOUND)
       return
     end
     rnd_opp = (opponent_name == nil)
@@ -74,7 +74,7 @@ def start
       return
     end
     game = Game.where(:player1_id => opponent.id).first
-    if game == nil
+    if ((game == nil) or (game.status == Game::STATUS_IN_PROGRESS))
       ret_error(Constants::ERROR_GAME_NOT_FOUND, Constants::MSG_GAME_NOT_FOUND)
       return
     end

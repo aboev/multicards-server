@@ -82,6 +82,8 @@ class ActiveSupport::TestCase
     if JSON.parse(@response.body)['result'] == Constants::RESULT_OK
       game_id = JSON.parse(@response.body)['data'][Constants::JSON_GAME_ID]
       return game_id
+    else
+      return JSON.parse(@response.body)
     end
   end
 

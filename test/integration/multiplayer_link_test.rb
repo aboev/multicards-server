@@ -106,6 +106,21 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     assert_equal game_id1, list[0]["id"]
   end
 
+  test "Should return error for non-existing cardset" do
+    user_id1 = register(@profile1)
+    response = new_game_v2(user_id1, @@socket1.session_id, true, "aaa", "aaa")
+    assert_equal Constants::RESULT_ERROR, response['result']
+    assert_equal Constants::ERROR_CARDSET_NOT_FOUND, response['code']
+  end
+
+  test "Should return error for non-existing user" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    response = new_game_v2(user_id2, @@socket2.session_id, false, "aaa", @profile1[:name])
+    assert_equal Constants::RESULT_ERROR, response['result']
+    assert_equal Constants::ERROR_GAME_NOT_FOUND, response['code']
+  end
+
   @@socket1.on :event do |msg|
     msg_json = JSON.parse(msg)
     @@sock1_msg_list << msg_json
