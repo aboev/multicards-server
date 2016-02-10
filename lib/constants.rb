@@ -19,6 +19,7 @@ class Constants
   SOCK_MSG_TYPE_CHECK_NETWORK	="check_network"
   SOCK_MSG_TYPE_ON_CONNECTED	="connected"
   SOCK_MSG_TYPE_NEW_BONUS	="new_bonus"
+  SOCK_MSG_TYPE_SET_GID		="set_gid"
 
   JSON_GAME_ID		=	"game_id"
   JSON_GAME_GID		=	"game_gid"

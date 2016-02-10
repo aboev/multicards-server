@@ -105,6 +105,12 @@ class Protocol
     $redis.publish Constants::SOCK_CHANNEL, message
   end
 
+  def self.msg_set_gid(id_from, msg_type, msg_body, msg_extra)
+    gid = msg_body
+    game_id = msg_extra
+    GameplayManager.change_gid(id_from, game_id, gid)
+  end
+
   def self.parse_msg(msg_json)
     id_from = msg_json[Constants::JSON_SOCK_MSG_FROM]
     msg_type = msg_json[Constants::JSON_SOCK_MSG_TYPE]
@@ -136,6 +142,8 @@ class Protocol
       self.msg_game_invite(id_from, msg_body, msg_extra)
     elsif (msg_type == Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED)
       self.msg_invite_accepted(id_from, msg_body)
+    elsif (msg_type == Constants::SOCK_MSG_TYPE_SET_GID)
+      self.msg_set_gid(id_from, msg_type, msg_body, msg_extra)
     end
   
     res = { :result => Constants::RESULT_OK }

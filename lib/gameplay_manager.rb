@@ -75,4 +75,25 @@ class GameplayManager
 
   end
 
+  def self.change_gid(socketid, game_id, gid)
+    game = Game.find_by_socket_id(socketid, nil).first
+    return if ((game == nil) or (game.status == Game::STATUS_IN_PROGRESS))
+    setid = Utils.parse_gid(gid)[1]
+    gameplay_data = GameplayData.new(setid)
+    game_details = JSON.parse(game.details)
+    game_details[Constants::JSON_GAME_GID] = gid
+    game.setid = setid
+    game.details = game_details.to_json
+    game.gameplay_data = gameplay_data.to_json.to_json 
+    game.save
+
+    id_to = game_details[Constants::JSON_GAME_PLAYERS].keys
+    msg_to = [id_to]
+    msg_type = Constants::SOCK_MSG_TYPE_SET_GID
+    msg_body = gid
+    msg_extra = game_id
+    message = Protocol.make_msg_extra(msg_to, msg_type, msg_body, msg_extra)
+    $redis.publish Constants::SOCK_CHANNEL, message
+  end
+
 end
