@@ -120,6 +120,13 @@ class ActiveSupport::TestCase
     socket.emit :message, msg
   end
 
+  def player_answer_confirm(socket, answer_id, id_to, msg_id)
+    msg_type = Constants::SOCK_MSG_TYPE_PLAYER_ANSWERED
+    msg_body = answer_id
+    msg = {Constants::JSON_SOCK_MSG_ID => msg_id, Constants::JSON_SOCK_MSG_TO => id_to, Constants::JSON_SOCK_MSG_TYPE => msg_type, Constants::JSON_SOCK_MSG_BODY => msg_body}.to_json
+    socket.emit :message, msg
+  end
+
   def quit_game(socket)
     msg_type = Constants::SOCK_MSG_TYPE_QUIT_GAME
     msg_body = socket.session_id

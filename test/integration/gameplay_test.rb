@@ -82,12 +82,25 @@ class GameplayTest < ActionDispatch::IntegrationTest
     update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
     update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
 
-    sleep(1)
-    assert_equal 1, filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
-    assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 1, filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 1, filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_PLAYER_ANSWERED).length
     assert_equal 2, @@sock1_msg_list.length
     assert_equal 2, @@sock2_msg_list.length
+  end
+
+  test "Should confirm socket message" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
+
+    @@sock2_msg_list = []
+    @@sock1_msg_list = []
+    msg_id = 123
+    player_answer_confirm(@@socket1, 0, [], msg_id)
+
+    msg_confirm = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_CONFIRM).first
+    assert_equal msg_id, msg_confirm[Constants::JSON_SOCK_MSG_BODY]
   end
 
   test "Should stop game after N turns" do

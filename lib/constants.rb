@@ -20,6 +20,7 @@ class Constants
   SOCK_MSG_TYPE_ON_CONNECTED	="connected"
   SOCK_MSG_TYPE_NEW_BONUS	="new_bonus"
   SOCK_MSG_TYPE_SET_GID		="set_gid"
+  SOCK_MSG_TYPE_CONFIRM		="receive_confirm"
 
   JSON_GAME_ID		=	"game_id"
   JSON_GAME_GID		=	"game_gid"
@@ -48,6 +49,7 @@ class Constants
   JSON_SOCK_MSG_BODY	=	"msg_body"
   JSON_SOCK_MSG_TYPE	=	"msg_type"
   JSON_SOCK_MSG_EXTRA	=	"msg_extra"
+  JSON_SOCK_MSG_ID	=	"msg_id"
   JSON_SOCK_MSG_GAMEID	=	"game_id"
   JSON_SOCK_MSG_EVENTTYPE=	"event"
   JSON_SOCK_MSG_DATA	=	"data"
@@ -133,5 +135,7 @@ class Constants
 
   MULTIPLAYER_TYPE_JOIN	=	"0"
   MULTIPLAYER_TYPE_NEW	=	"1"
+
+  ROBOT_NAME		=	"Robot"
 end
 

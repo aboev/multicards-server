@@ -111,11 +111,20 @@ class Protocol
     GameplayManager.change_gid(id_from, game_id, gid)
   end
 
+  def self.msg_confirm(id_to, msg_id)
+    msg_to = [id_to]
+    msg_body = msg_id
+    msg_type = Constants::SOCK_MSG_TYPE_CONFIRM
+    message = Protocol.make_msg(msg_to, msg_type, msg_body)
+    $redis.publish Constants::SOCK_CHANNEL, message
+  end
+
   def self.parse_msg(msg_json)
     id_from = msg_json[Constants::JSON_SOCK_MSG_FROM]
     msg_type = msg_json[Constants::JSON_SOCK_MSG_TYPE]
     msg_body = msg_json[Constants::JSON_SOCK_MSG_BODY]
     msg_extra = msg_json[Constants::JSON_SOCK_MSG_EXTRA]
+    msg_id = msg_json[Constants::JSON_SOCK_MSG_ID]
 
     if (msg_body == nil)
       res = {   :result => Constants::RESULT_ERROR,
@@ -145,6 +154,8 @@ class Protocol
     elsif (msg_type == Constants::SOCK_MSG_TYPE_SET_GID)
       self.msg_set_gid(id_from, msg_type, msg_body, msg_extra)
     end
+
+    self.msg_confirm(id_from, msg_id) if msg_id != nil
   
     res = { :result => Constants::RESULT_OK }
 
