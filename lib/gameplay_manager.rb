@@ -35,7 +35,7 @@ class GameplayManager
   end
 
   def self.accept_invitation(id_from, game_id)
-    game = Game.where(:id => game_id).first
+    game = Game.where(:id => game_id.to_i).first
     user_from = User.where(:socket_id => id_from).first
     return if ((game == nil) or (user_from == nil))
     game.join_player(user_from, Game::PLAYER_STATUS_PENDING)
