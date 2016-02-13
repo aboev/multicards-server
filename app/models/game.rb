@@ -32,7 +32,8 @@ class Game < ActiveRecord::Base
 	Constants::JSON_GAME_PLAYERS => {},
 	Constants::JSON_GAME_SCORES => {},
 	Constants::JSON_GAME_PREVQST => {},
-        Constants::JSON_GAME_BONUSES => {}}
+        Constants::JSON_GAME_BONUSES => {},
+        Constants::JSON_GAME_TOTAL_QUESTIONS => gameplay_data.to_json[:questions].length}
     self.status = status
     self.details = game_details.to_json
     self.gameplay_data = gameplay_data.to_json.to_json
@@ -71,9 +72,11 @@ class Game < ActiveRecord::Base
     details_json = JSON.parse(self.details)
     if (details_json[Constants::JSON_GAME_PLAYERS].length == 0)
       self.player1_socketid = user.socket_id
+      self.player1_status = status
       self.player1_id = user.id
     else
       self.player2_socketid = user.socket_id
+      self.player2_status = status
       self.player2_id = user.id
     end
     details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
@@ -81,6 +84,15 @@ class Game < ActiveRecord::Base
     details_json[Constants::JSON_GAME_SCORES][user.socket_id] = 0
     details_json[Constants::JSON_GAME_BONUSES][user.socket_id] = []
     self.details = details_json.to_json
+    self.save
+  end
+
+  def set_player_status(socket_id, status)
+    self.update(:player1_status => status) if player1_socketid == socket_id
+    self.update(:player2_status => status) if player2_socketid == socket_id
+    game_details = JSON.parse(self.details)
+    game_details[Constants::JSON_GAME_PLAYERS][socket_id] = status
+    self.details = game_details.to_json
     self.save
   end
 
@@ -110,6 +122,7 @@ class Game < ActiveRecord::Base
 
       Hash.new.merge(details[Constants::JSON_GAME_PLAYERS]).keys.each do |player_id|
         details[Constants::JSON_GAME_PLAYERS][player_id] = PLAYER_STATUS_THINKING
+        set_player_status(player_id, PLAYER_STATUS_THINKING)
       end
 
       self.details = details.to_json
@@ -199,13 +212,6 @@ class Game < ActiveRecord::Base
     return game_details[Constants::JSON_GAME_SCORES]
   end
 
-  def set_player_status(socket_id, status)
-    game_details = JSON.parse(self.details)
-    game_details[Constants::JSON_GAME_PLAYERS][socket_id] = status
-    self.details = game_details.to_json
-    self.save
-  end
-
   def get_ready_players_count
     game_details = JSON.parse(self.details)
     players = game_details[Constants::JSON_GAME_PLAYERS]
@@ -215,6 +221,7 @@ class Game < ActiveRecord::Base
         ready_players = ready_players + 1
       end
     end
+    ready_players = 2 if ((player1_status == Game::PLAYER_STATUS_WAITING) and (player2_status == Game::PLAYER_STATUS_WAITING))
     return ready_players
   end
 

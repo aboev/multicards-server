@@ -35,6 +35,7 @@ class Constants
   JSON_GAME_PREVQST	=	"prev_questions"
   JSON_GAME_GAMEPLAYDATA=	"gameplay_data"
   JSON_GAME_BONUSES	=	"bonuses"
+  JSON_GAME_TOTAL_QUESTIONS=	"total_questions"
 
   JSON_USER_SOCKETID	=	"socketid"
   JSON_USER_ID		=	"id"
