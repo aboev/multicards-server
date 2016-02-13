@@ -23,7 +23,7 @@ class GameControllerTest < ActionController::TestCase
     @request.headers[Constants::HEADER_SOCKETID] = @@socket.session_id
 
     game = Game.new
-    game.details = "{'game_id':1,'game_gid':'quizlet_2','status':0,'setid':2,'gameplay_data':'{}'}"
+    game.details = '{"game_id":1,"game_gid":"quizlet_2","status":0,"setid":2,"gameplay_data":"{}"}'
     game.setid = 2
     game.gameplay_data = "{}"
     game.status = 0
@@ -31,7 +31,7 @@ class GameControllerTest < ActionController::TestCase
     @game1 = game
 
     game = Game.new
-    game.details = "{'game_id':2,'game_gid':'quizlet_2','status':1,'setid':2,'gameplay_data':'{}'}"
+    game.details = '{"game_id":2,"game_gid":"quizlet_2","status":1,"setid":2,"gameplay_data":"{}"}'
     game.setid = 2
     game.gameplay_data = "{}"
     game.status = 1
@@ -49,7 +49,7 @@ class GameControllerTest < ActionController::TestCase
     assert_response :success 
     games = JSON.parse(@response.body)['data']
     assert_equal 1, games.length
-    assert_equal @game1.id, games[0]["id"]
+    assert_equal @game1.id, games[0]["game_id"]
   end
 
 end
