@@ -221,7 +221,8 @@ class Game < ActiveRecord::Base
         ready_players = ready_players + 1
       end
     end
-    ready_players = 2 if ((player1_status == Game::PLAYER_STATUS_WAITING) and (player2_status == Game::PLAYER_STATUS_WAITING))
+    game = Game.where(:id => self.id).first
+    ready_players = 2 if ((game.player1_status == Game::PLAYER_STATUS_WAITING) and (game.player2_status == Game::PLAYER_STATUS_WAITING))
     return ready_players
   end
 
