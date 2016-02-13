@@ -40,7 +40,7 @@ class LogTest < ActionDispatch::IntegrationTest
 
     for i in 0..(Constants::GAMEPLAY_Q_PER_G-2)
       sl = 0
-      while filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first == nil do
+      while ((filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first == nil) and (sl < 20)) do
         sleep (0.1)
         sl = sl + 1
         if (sl % 10 == 0)
