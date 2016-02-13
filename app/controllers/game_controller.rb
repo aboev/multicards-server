@@ -85,8 +85,17 @@ def start
 end
 
 def get
+  res = []
   games_public = Game.where(status: Game::STATUS_SEARCHING_PLAYERS)
-  ret_ok(games_public)
+  games_public.each do |game|
+    user = User.where(:id => game.player1_id).first
+    cardset = Qcardset.where(:cardset_id => game.setid).first
+    res_item = game.as_json
+    res_item[:player1] = user
+    res_item[:cardset] = cardset
+    res << res_item
+  end
+  ret_ok(res)
 end
 
 def ret_ok (data)
