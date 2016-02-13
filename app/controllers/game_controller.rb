@@ -91,8 +91,8 @@ def get
     user = User.where(:id => game.player1_id).first
     cardset = Qcardset.where(:cardset_id => game.setid).first
     res_item = game.as_json
-    res_item[:player1] = user
-    res_item[:cardset] = cardset
+    res_item[:player1_details] = user.details if user != nil
+    res_item[:cardset_details] = cardset
     res << res_item
   end
   ret_ok(res)
