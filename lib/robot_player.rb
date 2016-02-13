@@ -33,6 +33,11 @@ class RobotPlayer
     user.status = Constants::STATUS_ONLINE
     user.save
     user.init
+
+    socket.on :event do |msg|
+      msg_json = JSON.parse(msg)
+      @@sock2_msg_list << msg_json
+    end
   end
 
   def self.new_game(user, gid)
