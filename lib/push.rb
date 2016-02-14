@@ -7,10 +7,6 @@ class PushSender
       return
     end
 
-    Resque.after_fork = Proc.new do
-      Rails.logger.auto_flushing = true
-    end
-
     user = User.where(id: id).first
     if ((user == nil) or (user.pushid == nil) or (user.pushid.length == 0))
       return
