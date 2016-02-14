@@ -34,7 +34,6 @@ class BonusTest < ActionDispatch::IntegrationTest
     sleep(1)
 
     msg_list = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_START)
-    puts msg_list
     for i in 0..(Constants::GAMEPLAY_Q_PER_G-2)
       sl = 0
       while ((filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first == nil) and (sl < 20)) do

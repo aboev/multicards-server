@@ -103,7 +103,7 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     game_id2 = new_game_v2(user_id1, @@socket1.session_id, true, @gid, @profile1[:name])
     list = get_games(user_id3, @@socket3.session_id)
     assert_equal 1, list.length
-    assert_equal game_id1, list[0]["id"]
+    assert_equal game_id1, list[0]["game_id"]
   end
 
   test "Should return error for non-existing cardset" do
