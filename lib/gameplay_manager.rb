@@ -32,9 +32,8 @@ class GameplayManager
 		Constants::JSON_INVITATION_GAME => game_details,
 		Constants::JSON_INVITATION_CARDSET => cardset}
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
-    if user_to.status == Constants::STATUS_ONLINE
-      $redis.publish Constants::SOCK_CHANNEL, message
-    elsif ((user_to.pushid != nil) and (user_to.pushid.length > 0))
+    $redis.publish Constants::SOCK_CHANNEL, message
+    if ((user_to.status != Constants::STATUS_ONLINE) and (user_to.pushid != nil) and (user_to.pushid.length > 0))
       PushSender.perform(user_to.id, msg_type, msg_body)
     end
   end
