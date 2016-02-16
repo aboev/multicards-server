@@ -151,9 +151,12 @@ class Game < ActiveRecord::Base
     gid = details[Constants::JSON_GAME_GID]
     message_to = players.keys
 
-    winner_details, scores_before, scores, bonuses = gen_stats
-    msg_body = {:id => self.id, :winner => winner_details, :scores_before => scores_before, :scores => scores, :bonuses => bonuses}
+    winner, scores_before, scores, bonuses = gen_stats
+    msg_body = {:id => self.id, :winner => winner.get_details, :scores_before => scores_before, :scores => scores, :bonuses => bonuses}
 
+    details[Constants::JSON_GAME_WINNER_ID] = winner.id
+
+    self.details = details.to_json
     self.status = STATUS_COMPLETED
     self.save
     GameLog.log(self)
@@ -186,7 +189,7 @@ class Game < ActiveRecord::Base
         end
       end
     end
-    return winner_details, scores_before, scores, bonuses
+    return winner, scores_before, scores, bonuses
   end
 
   def self.find_by_socket_id(socket_id, status)

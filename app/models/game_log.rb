@@ -23,6 +23,10 @@ class GameLog < ActiveRecord::Base
         break if ((player1_id != -1) and (player2_id != -1))
       end
     end
+    if game.status == Game::STATUS_COMPLETED
+      winner_id = details_json[Constants::JSON_GAME_WINNER_ID]
+      log.winner = winner_id 
+    end
     log.player1 = player1_id
     log.player2 = player2_id
     log.save

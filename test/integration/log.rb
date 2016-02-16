@@ -67,6 +67,7 @@ class LogTest < ActionDispatch::IntegrationTest
     assert_equal @profile1[:email], filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_END).first["msg_body"]["winner"]["email"]
     log = GameLog.where(:gid => "quizlet_415").first
     assert_equal Game::STATUS_COMPLETED, log.status
+    assert_equal user_id1, log.winner
 
   end
 
