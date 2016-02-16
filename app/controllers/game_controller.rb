@@ -54,7 +54,7 @@ def start
   multiplayer_type = request.headers[Constants::HEADER_MULTIPLAYER_TYPE]
 
   if (multiplayer_type == nil)
-    ret_error()
+    ret_error(Constants::ERROR_MISSING_HEADER, Constants::MSG_MISSING_HEADER)
     return
   end
 

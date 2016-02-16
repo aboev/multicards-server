@@ -52,4 +52,11 @@ class GameControllerTest < ActionController::TestCase
     assert_equal @game1.id, games[0]["game_id"]
   end
 
+  test "Should error for missing header" do
+    @controller = GameController.new
+    post :start, nil, @headers
+    assert_response :success
+    assert_equal Constants::ERROR_MISSING_HEADER, JSON.parse(response.body)['code']
+  end
+
 end
