@@ -51,7 +51,7 @@ class GameplayTest < ActionDispatch::IntegrationTest
     user_id2 = register(@profile2)
     start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
 
-    question_msg = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)[0][Constants::JSON_SOCK_MSG_BODY]
+    question_msg = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)[0][Constants::JSON_SOCK_MSG_BODY]
     question_type = question_msg[Constants::JSON_QST_TYPE]
     question = question_msg[Constants::JSON_QST_QUESTION]
     if question_type == Question::QTYPE_MULTI_CHOICE
@@ -148,7 +148,7 @@ class GameplayTest < ActionDispatch::IntegrationTest
     user_id2 = register(@profile2)
     start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
 
-    answer_id = filter(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
+    answer_id = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).first["msg_body"][Constants::JSON_QST_ANSWER_ID]
     @@sock2_msg_list = []
     @@sock1_msg_list = []
     player_answer(@@socket1, answer_id.to_s, [])
