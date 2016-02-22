@@ -35,7 +35,7 @@ class ApplicationController < ActionController::Base
     msg = {:result => Constants::RESULT_OK, :data => {
 		Constants::KEY_SERVER_VERSION => APP_CONFIG['server_version'],
 		Constants::KEY_MIN_CLIENT_VERSION => APP_CONFIG['min_client_version'],
-		Constants::KEY_LATEST_APK_VER => 0,
+		Constants::KEY_LATEST_APK_VER => 4,
 		Constants::KEY_LATEST_APK_URL => ""}}
     respond_to do |format|
         format.json  { render :json => msg }
