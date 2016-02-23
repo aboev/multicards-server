@@ -63,7 +63,11 @@ def start
       ret_error(Constants::ERROR_CARDSET_NOT_FOUND, Constants::MSG_CARDSET_NOT_FOUND)
       return
     end
-    rnd_opp = (opponent_name == nil)
+    rnd_opp = ((opponent_name == nil) or (opponent_name.length == 0))
+    if ((rnd_opp == false) and (opponent = User.find_by_name(opponent_name)) == nil)
+      ret_error(Constants::ERROR_USER_NOT_FOUND, Constants::MSG_USER_NOT_FOUND)
+      return
+    end
     game = init_and_join(gid, rnd_opp, @user, Game::PLAYER_STATUS_PENDING)
     GameplayManager.invite_user(@user.socket_id, opponent_name, game.id) if opponent_name != nil
     ret_ok(JSON.parse(game.details))
