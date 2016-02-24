@@ -193,6 +193,18 @@ class ActiveSupport::TestCase
     end
   end
 
+  def socket_wait_disconnect(socket)
+    lim = 20
+    i = 0
+    while ((socket.open?) and (i < lim)) do
+      i = i + 1
+      sleep(0.1)
+    end
+    if i == lim
+      puts "Socket failed to disconnect"
+    end
+  end
+
   def has_bonus(bonus_list, bonus_id)
     res = false
     bonus_list.each do |bonus|
