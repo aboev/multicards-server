@@ -31,6 +31,9 @@ class User < ActiveRecord::Base
     json_body.each do |key, value|
       if key == Constants::KEY_PUSHID
         self.pushid = value
+      elsif key == "name"
+        self.name = value
+        cur_details[key] = value
       else
         cur_details[key] = value
       end
@@ -49,14 +52,14 @@ class User < ActiveRecord::Base
     details = JSON.parse(self.details)
     
     if ((details["name"] == nil) or (details["name"].length == 0))
-      name = Utils.make_nickname
+      username = Utils.make_nickname
       tries = 0
-      while ((User.find_by_name(name) != nil) and (tries < 20))
-        name = Utils.make_nickname
+      while ((User.find_by_name(username) != nil) and (tries < 20))
+        username = Utils.make_nickname
         tries = tries + 1
       end
       if tries < 20
-        details["name"] = name
+        details["name"] = username
       end
     end
 
@@ -67,15 +70,19 @@ class User < ActiveRecord::Base
       details["avatar"] = avatar_url
     end
     
+    self.name = username
     self.details = details.to_json
     self.save
   end
 
   def self.find_by_name(name)
+    user = User.where(:name => name).first
+    return user if user != nil
     users = User.all
     users.each do |user|
       details = user.get_details
       if ((details["name"] != nil) and (details["name"] == name))
+        user.name = name
         return user
       end
     end
