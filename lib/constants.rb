@@ -22,6 +22,7 @@ class Constants
   SOCK_MSG_TYPE_NEW_BONUS	="new_bonus"
   SOCK_MSG_TYPE_SET_GID		="set_gid"
   SOCK_MSG_TYPE_CONFIRM		="receive_confirm"
+  SOCK_MSG_TYPE_CUSTOM		="custom"
 
   JSON_GAME_ID		=	"game_id"
   JSON_GAME_GID		=	"game_gid"
