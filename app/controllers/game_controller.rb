@@ -5,6 +5,46 @@ require 'gameplay_manager'
 class GameController < ApplicationController
 skip_before_filter :verify_authenticity_token
 
+def start
+  gid = request.headers[Constants::HEADER_SETID]
+  opponent_name = request.headers[Constants::HEADER_OPPONENTNAME]
+  multiplayer_type = request.headers[Constants::HEADER_MULTIPLAYER_TYPE]
+
+  if (multiplayer_type == nil)
+    ret_error(Constants::ERROR_MISSING_HEADER, Constants::MSG_MISSING_HEADER)
+    return
+  end
+
+  if (multiplayer_type == Constants::MULTIPLAYER_TYPE_NEW)
+    if ((gid == nil) or (Utils.get_qcardset(gid) == nil))
+      ret_error(Constants::ERROR_CARDSET_NOT_FOUND, Constants::MSG_CARDSET_NOT_FOUND)
+      return
+    end
+    rnd_opp = ((opponent_name == nil) or (opponent_name.length == 0))
+    if ((rnd_opp == false) and (opponent = User.find_by_name(opponent_name)) == nil)
+      ret_error(Constants::ERROR_USER_NOT_FOUND, Constants::MSG_USER_NOT_FOUND)
+      return
+    end
+    game = init_and_join(gid, rnd_opp, @user, Game::PLAYER_STATUS_PENDING)
+    GameplayManager.invite_user(@user.socket_id, opponent_name, game.id) if opponent_name != nil
+    ret_ok(JSON.parse(game.details))
+    return
+  elsif (multiplayer_type == Constants::MULTIPLAYER_TYPE_JOIN)
+    if ((opponent_name == nil) or ((opponent = User.find_by_name(opponent_name)) == nil))
+      ret_error(Constants::ERROR_USER_NOT_FOUND, Constants::MSG_USER_NOT_FOUND)
+      return
+    end
+    game = Game.where(:player1_id => opponent.id).first
+    if ((game == nil) or (game.status == Game::STATUS_IN_PROGRESS))
+      ret_error(Constants::ERROR_GAME_NOT_FOUND, Constants::MSG_GAME_NOT_FOUND)
+      return
+    end
+    game.join_player(@user, Game::PLAYER_STATUS_PENDING)
+    ret_ok(JSON.parse(game.details))
+  end
+
+end
+
 def new
   gid = request.headers[Constants::HEADER_SETID]
   opponent_name = request.headers[Constants::HEADER_OPPONENTNAME]
@@ -46,46 +86,6 @@ def new
       return
     end
   end
-end
-
-def start
-  gid = request.headers[Constants::HEADER_SETID]
-  opponent_name = request.headers[Constants::HEADER_OPPONENTNAME]
-  multiplayer_type = request.headers[Constants::HEADER_MULTIPLAYER_TYPE]
-
-  if (multiplayer_type == nil)
-    ret_error(Constants::ERROR_MISSING_HEADER, Constants::MSG_MISSING_HEADER)
-    return
-  end
-
-  if (multiplayer_type == Constants::MULTIPLAYER_TYPE_NEW)
-    if ((gid == nil) or (Utils.get_qcardset(gid) == nil))
-      ret_error(Constants::ERROR_CARDSET_NOT_FOUND, Constants::MSG_CARDSET_NOT_FOUND)
-      return
-    end
-    rnd_opp = ((opponent_name == nil) or (opponent_name.length == 0))
-    if ((rnd_opp == false) and (opponent = User.find_by_name(opponent_name)) == nil)
-      ret_error(Constants::ERROR_USER_NOT_FOUND, Constants::MSG_USER_NOT_FOUND)
-      return
-    end
-    game = init_and_join(gid, rnd_opp, @user, Game::PLAYER_STATUS_PENDING)
-    GameplayManager.invite_user(@user.socket_id, opponent_name, game.id) if opponent_name != nil
-    ret_ok(JSON.parse(game.details))
-    return
-  elsif (multiplayer_type == Constants::MULTIPLAYER_TYPE_JOIN)
-    if ((opponent_name == nil) or ((opponent = User.find_by_name(opponent_name)) == nil))
-      ret_error(Constants::ERROR_USER_NOT_FOUND, Constants::MSG_USER_NOT_FOUND)
-      return
-    end
-    game = Game.where(:player1_id => opponent.id).first
-    if ((game == nil) or (game.status == Game::STATUS_IN_PROGRESS))
-      ret_error(Constants::ERROR_GAME_NOT_FOUND, Constants::MSG_GAME_NOT_FOUND)
-      return
-    end
-    game.join_player(@user, Game::PLAYER_STATUS_PENDING)
-    ret_ok(JSON.parse(game.details))
-  end
-
 end
 
 def get
