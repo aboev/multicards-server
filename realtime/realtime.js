@@ -2,6 +2,8 @@ var app = require('http').createServer();
 var server;
 if (process.env['ENV'] == 'test')
   server = app.listen(5002);
+else if (process.env['ENV'] == 'development')
+  server = app.listen(5003);
 else
   server = app.listen(5001);
 var io = require('socket.io').listen(server);

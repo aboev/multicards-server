@@ -1,6 +1,7 @@
 exports.SOCK_CHANNEL = "events";
 exports.RAILS_SERVER = "http://localhost:8080/event";
 exports.RAILS_SERVER_TEST = "http://localhost:3000/event";
+exports.RAILS_SERVER_DEVELOPMENT = "http://localhost:8081/event";
 
 exports.JSON_SOCK_MSG_TYPE = "type";
 exports.JSON_SOCK_MSG_BODY = "body";

@@ -4,6 +4,8 @@ http.post = require('http-post');
 var rails_server;
 if (process.env['ENV'] == 'test')
   rails_server = consts.RAILS_SERVER_TEST;
+else if (process.env['ENV'] == 'development')
+  rails_server = consts.RAILS_SERVER_DEVELOPMENT;
 else
   rails_server = consts.RAILS_SERVER;
 
