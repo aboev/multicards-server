@@ -130,6 +130,7 @@ class Protocol
 
   def self.parse_msg(msg_json)
     id_from = msg_json[Constants::JSON_SOCK_MSG_FROM]
+    msg_to = msg_json[Constants::JSON_SOCK_MSG_TO]
     msg_type = msg_json[Constants::JSON_SOCK_MSG_TYPE]
     msg_body = msg_json[Constants::JSON_SOCK_MSG_BODY]
     msg_extra = msg_json[Constants::JSON_SOCK_MSG_EXTRA]
