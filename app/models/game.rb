@@ -196,8 +196,11 @@ class Game < ActiveRecord::Base
     res = []
     games = Game.all
     if status != nil
-      games = Game.where(:status => status)
+      games = Game.where("status = (?) and (player1_socketid = (?) or player2_socketid = (?))",status, socket_id, socket_id)
+    else
+      games = Game.where("player1_socketid = (?) or player2_socketid = (?)", socket_id, socket_id)
     end
+    return games
     games.each do |game|
       game_details = JSON.parse(game.details)
       players = game_details[Constants::JSON_GAME_PLAYERS]
