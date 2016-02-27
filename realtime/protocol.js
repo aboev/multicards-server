@@ -72,3 +72,7 @@ exports.http_post_local = function (json_msg) {
   req.end();
 
 };
+
+exports.log_msg = function (msg) {
+  console.log(new Date().toISOString() + " " + msg);
+};
