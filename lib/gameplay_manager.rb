@@ -50,6 +50,18 @@ class GameplayManager
     $redis.publish Constants::SOCK_CHANNEL, message
   end
 
+  def self.reject_invitation(id_from, game_id)
+    game = Game.where(:id => game_id.to_i).first
+    user_from = User.where(:socket_id => id_from).first
+    return if ((game == nil) or (user_from == nil))
+    msg_to = [game.player1_socketid]
+    msg_type = Constants::SOCK_MSG_TYPE_INVITE_REJECTED
+    msg_body = game_id
+    message = Protocol.make_msg(msg_to, msg_type, msg_body)
+    $redis.publish Constants::SOCK_CHANNEL, message
+    game.destroy
+  end
+
   def self.status_update(user_from, status)
     game = Game.find_by_socket_id(user_from, nil).first
     return if game == nil
@@ -98,6 +110,10 @@ class GameplayManager
     msg_extra = game_id
     message = Protocol.make_msg_extra(msg_to, msg_type, msg_body, msg_extra)
     $redis.publish Constants::SOCK_CHANNEL, message
+  end
+
+  def self.update_socketid(old_socketid, new_socketid)
+
   end
 
 end
