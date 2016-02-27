@@ -43,6 +43,7 @@ class Constants
   JSON_USER_SOCKETID	=	"socketid"
   JSON_USER_ID		=	"id"
   JSON_USER_AVATAR	=	"avatar"
+  JSON_USER_NAME	=	"name"
 
   JSON_INVITATION_USER	=	"user"
   JSON_INVITATION_GAME	=	"game"

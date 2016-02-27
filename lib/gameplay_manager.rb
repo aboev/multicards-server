@@ -1,9 +1,24 @@
 require 'question'
 require 'constants'
 require 'game'
+require 'game_log'
 require 'push'
 
 class GameplayManager
+
+  def self.init_and_join(gid, rnd_opp, user, status)
+    game = Game.new
+    game.init(gid, rnd_opp)
+    game.join_player(user, status)
+    GameLog.log(game)
+    return game
+  end
+
+  def self.join_and_start(game, user, gid)
+    game.join_player(user, nil)
+    game.start_game
+    GameLog.log(game)
+  end
 
   def self.start_game(game)
     game_details = JSON.parse(game.gameplay_data)
@@ -38,16 +53,28 @@ class GameplayManager
     end
   end
 
-  def self.accept_invitation(id_from, game_id)
+  def self.accept_invitation(id_from, game_id, invitation_json)
     game = Game.where(:id => game_id.to_i).first
     user_from = User.where(:socket_id => id_from).first
-    return if ((game == nil) or (user_from == nil))
-    game.join_player(user_from, Game::PLAYER_STATUS_PENDING)
-    msg_to = [game.player1_socketid]
-    msg_type = Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED
-    msg_body = game_id
-    message = Protocol.make_msg(msg_to, msg_type, msg_body)
-    $redis.publish Constants::SOCK_CHANNEL, message
+    if (user_from == nil)
+      return
+    elsif (game == nil)
+      return if invitation_json == nil
+      invitation = JSON.parse(invitation_json)
+      game = invitation[Constants::JSON_INVITATION_GAME]
+      user_details = invitation[Constants::JSON_INVITATION_USER]  
+      game_gid = game[Constants::JSON_GAME_GID]
+      user_name = user_details[Constants::JSON_USER_NAME]
+      game = GameplayManager.init_and_join(game_gid, false, user_from, Game::PLAYER_STATUS_PENDING)
+      invite_user(id_from, user_name, game_gid)
+    else
+      game.join_player(user_from, Game::PLAYER_STATUS_PENDING)
+      msg_to = [game.player1_socketid]
+      msg_type = Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED
+      msg_body = game_id
+      message = Protocol.make_msg(msg_to, msg_type, msg_body)
+      $redis.publish Constants::SOCK_CHANNEL, message
+    end
   end
 
   def self.reject_invitation(id_from, game_id)
