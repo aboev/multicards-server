@@ -66,7 +66,7 @@ class GameplayManager
       game_gid = game[Constants::JSON_GAME_GID]
       user_name = user_details[Constants::JSON_USER_NAME]
       game = GameplayManager.init_and_join(game_gid, false, user_from, Game::PLAYER_STATUS_PENDING)
-      invite_user(id_from, user_name, game_gid)
+      invite_user(id_from, user_name, game.id)
     else
       game.join_player(user_from, Game::PLAYER_STATUS_PENDING)
       msg_to = [game.player1_socketid]
