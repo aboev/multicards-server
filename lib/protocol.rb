@@ -115,6 +115,11 @@ class Protocol
     GameplayManager.change_gid(id_from, game_id, gid)
   end
 
+  def self.msg_custom(msg_to, msg_type, msg_body, msg_extra)
+    message = Protocol.make_msg_extra(msg_to, msg_type, msg_body, msg_extra)
+    $redis.publish Constants::SOCK_CHANNEL, message
+  end
+
   def self.msg_confirm(id_to, msg_id)
     msg_to = [id_to]
     msg_body = msg_id
@@ -159,6 +164,8 @@ class Protocol
       self.msg_invite_rejected(id_from, msg_body)
     elsif (msg_type == Constants::SOCK_MSG_TYPE_SET_GID)
       self.msg_set_gid(id_from, msg_type, msg_body, msg_extra)
+    elsif (msg_type == Constants::SOCK_MSG_TYPE_CUSTOM)
+      self.msg_custom(msg_to, msg_type, msg_body, msg_extra)
     end
 
     self.msg_confirm(id_from, msg_id) if msg_id != nil
