@@ -128,6 +128,7 @@ class Constants
   KEY_MIN_CLIENT_VERSION=	"min_client"
   KEY_LATEST_APK_URL	=	"latest_apk"
   KEY_LATEST_APK_VER	=	"latest_ver"
+  KEY_UPDATE_COMMENT	=	"update_comment"
   KEY_PUSHID		=	"pushid"
 
   BONUS_WINNER		=	{:bonus_title => {:en => "Winner bonus", :ru => "Бонус победителя"}, :bonus => 50, :bonus_id => 2, :description => {:en => "Bonus for the player with most correct answers", :ru => "Бонус игрока с максимальным количество правильных ответов"}}
