@@ -7,6 +7,7 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
 
   @@socket1 = SocketIO::Client::Simple.connect 'http://localhost:5002'
   @@socket2 = SocketIO::Client::Simple.connect 'http://localhost:5002'
+  @@socket3 = SocketIO::Client::Simple.connect 'http://localhost:5002'
 
   def setup
     @headers = {'Content-Type' => 'application/json', 'Accept' => '*/*'}
@@ -18,11 +19,13 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     @profile3 = {:email => "test3@test.com", :phone => @contact3, :name => "alex3", :avatar => "http://google.com"}
     @@sock1_msg_list = []
     @@sock2_msg_list = []
+    @@sock3_msg_list = []
 
     @gid = "quizlet_415"
 
     socket_wait(@@socket1)
     socket_wait(@@socket2)
+    socket_wait(@@socket3)
   end
 
   def teardown
@@ -113,12 +116,62 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     assert_equal Constants::ERROR_CARDSET_NOT_FOUND, response['code']
   end
 
-  test "Should return error for non-existing user" do
+  test "Should return error for non-existing user(join existing game)" do
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
-    response = new_game_v2(user_id2, @@socket2.session_id, false, "aaa", @profile1[:name])
+    response = new_game_v2(user_id2, @@socket2.session_id, false, "gid1", @profile1[:name])
     assert_equal Constants::RESULT_ERROR, response['result']
     assert_equal Constants::ERROR_GAME_NOT_FOUND, response['code']
+  end
+
+  test "Should return error for non-existing user(start new game)" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    response = new_game_v2(user_id2, @@socket2.session_id, true, @gid, "user_aaa")
+    assert_equal Constants::RESULT_ERROR, response['result']
+    assert_equal Constants::ERROR_USER_NOT_FOUND, response['code']
+  end
+
+  test "Should resume game after reconnect" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
+    question_msg = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)[0][Constants::JSON_SOCK_MSG_BODY]
+    answer_id = question_msg[Constants::JSON_QST_ANSWER_ID]
+    #announce_userid(@@socket3, user_id2)
+    #@@sock2_msg_list = []
+
+    #player_answer(@@socket3, answer_id, [])
+    #update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+    #update_client_status(@@socket3, Game::PLAYER_STATUS_WAITING)
+ 
+    #assert_equal 1, filter_wait(@@sock3_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+  end
+
+  test "Should make reverse invitation when stale" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    get_games(user_id2, @@socket2.session_id)
+
+    game_id = new_game_v2(user_id1, @@socket1.session_id, true, @gid, @profile2[:name])
+    msg_invite1 = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_INVITE).first["msg_body"].to_json
+
+    quit_game(@@socket1)
+    filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_STOP).first["msg_body"]
+    accept_invite_extra(@@socket2, game_id, msg_invite1)
+    msg_invite2 = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_INVITE).first["msg_body"]
+    
+    game_id = msg_invite2[Constants::JSON_INVITATION_GAME][Constants::JSON_GAME_ID]
+    accept_invite(@@socket1, game_id)
+    msg_accepted = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED).first["msg_body"]
+
+    update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+    update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
+
+    assert_equal 1, filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_START).length
+    assert_equal 1, filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 1, filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_START).length
+    assert_equal 1, filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
   end
 
   @@socket1.on :event do |msg|
@@ -129,6 +182,11 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
   @@socket2.on :event do |msg|
     msg_json = JSON.parse(msg)
     @@sock2_msg_list << msg_json
+  end
+
+  @@socket3.on :event do |msg|
+    msg_json = JSON.parse(msg)
+    @@sock3_msg_list << msg_json
   end
 
 end
