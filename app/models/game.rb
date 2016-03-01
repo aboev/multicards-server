@@ -60,7 +60,7 @@ class Game < ActiveRecord::Base
       msg_type = Constants::SOCK_MSG_TYPE_GAME_START
       msg_body = details_json
       message = Protocol.make_msg(msg_to, msg_type, msg_body)
-      $redis.publish Constants::SOCK_CHANNEL, message
+      $redis.publish APP_CONFIG['sock_channel'], message
       next_question
 
       GameLog.log(self)
@@ -128,7 +128,7 @@ class Game < ActiveRecord::Base
       self.details = details.to_json
       save
 
-      $redis.publish Constants::SOCK_CHANNEL, message
+      $redis.publish APP_CONFIG['sock_channel'], message
     end
   end
 
@@ -142,7 +142,7 @@ class Game < ActiveRecord::Base
     players = details[Constants::JSON_GAME_PLAYERS]
     message_to = players.keys
     message = {Constants::JSON_SOCK_MSG_TO => message_to, Constants::JSON_SOCK_MSG_TYPE => Constants::SOCK_MSG_TYPE_GAME_STOP, Constants::JSON_SOCK_MSG_BODY => self.id}.to_json
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
   end
 
   def end_game
@@ -162,7 +162,7 @@ class Game < ActiveRecord::Base
     GameLog.log(self)
  
     message = {Constants::JSON_SOCK_MSG_TO => message_to, Constants::JSON_SOCK_MSG_TYPE => Constants::SOCK_MSG_TYPE_GAME_END, Constants::JSON_SOCK_MSG_BODY => msg_body}.to_json
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
   end
 
   def gen_stats

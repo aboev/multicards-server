@@ -106,8 +106,6 @@ class Constants
   HEADER_MULTIPLAYER_TYPE=       "multiplayerType"
   HEADER_GAMEID		=       "gameid"
 
-  SOCK_CHANNEL          =       "events"
-
   SOCK_EV_NEW_GAME      =       "game_start"
 
   DB_FLAG_INVERT	=	1
@@ -145,5 +143,6 @@ class Constants
   MULTIPLAYER_TYPE_NEW	=	"1"
 
   ROBOT_NAME		=	"Robot"
+
 end
 

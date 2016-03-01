@@ -15,13 +15,21 @@ defaults: &defaults
   smsc_login: [login for smsc.ru]
   smsc_pw: [password for smsc.ru]
 
+  quizlet_client_id: [quizlet client id]
+
   avatar_prefix: Summer_512px-
 
 development:
   <<: *defaults
 
+  sock_channel: events_dev
+
 test:
   <<: *defaults
 
+  sock_channel: events_test
+
 production:
   <<: *defaults
+
+  sock_channel: events_prod

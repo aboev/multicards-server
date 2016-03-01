@@ -58,7 +58,7 @@ class Protocol
     msg_to = [id_from]
     msg_body = question_id
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
 
     if (game_details[Constants::JSON_GAME_PLAYERS][id_from] != Game::PLAYER_STATUS_WAITING)
       game_details[Constants::JSON_GAME_PLAYERS][id_from] = Game::PLAYER_STATUS_ANSWERED
@@ -71,7 +71,7 @@ class Protocol
       msg_type = Constants::SOCK_MSG_TYPE_PLAYER_ANSWERED
       msg_to.delete(id_from)
       message = Protocol.make_msg(msg_to, msg_type, user_answer) 
-      $redis.publish Constants::SOCK_CHANNEL, message  
+      $redis.publish APP_CONFIG['sock_channel'], message  
       #players = game_details[Constants::JSON_GAME_PLAYERS].keys.except(id_from)
     end
   end
@@ -88,7 +88,7 @@ class Protocol
     
     msg_body = {name => name_avail}
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
   end
 
   def self.msg_game_invite(id_from, opponent_name, game_id)
@@ -106,7 +106,7 @@ class Protocol
   def self.msg_check_network(id_from, msg_type, msg_body)
     msg_to = [id_from]
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
   end
 
   def self.msg_set_gid(id_from, msg_type, msg_body, msg_extra)
@@ -117,7 +117,7 @@ class Protocol
 
   def self.msg_custom(msg_to, msg_type, msg_body, msg_extra)
     message = Protocol.make_msg_extra(msg_to, msg_type, msg_body, msg_extra)
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
   end
 
   def self.msg_confirm(id_to, msg_id)
@@ -125,7 +125,7 @@ class Protocol
     msg_body = msg_id
     msg_type = Constants::SOCK_MSG_TYPE_CONFIRM
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
   end
 
   def self.parse_msg(msg_json)

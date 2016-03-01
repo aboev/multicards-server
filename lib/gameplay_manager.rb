@@ -47,7 +47,7 @@ class GameplayManager
 		Constants::JSON_INVITATION_GAME => game_details,
 		Constants::JSON_INVITATION_CARDSET => cardset}
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
     if ((user_to.status != Constants::STATUS_ONLINE) and (user_to.pushid != nil) and (user_to.pushid.length > 0))
       PushSender.perform(user_to.id, msg_type, msg_body)
     end
@@ -73,7 +73,7 @@ class GameplayManager
       msg_type = Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED
       msg_body = game_id
       message = Protocol.make_msg(msg_to, msg_type, msg_body)
-      $redis.publish Constants::SOCK_CHANNEL, message
+      $redis.publish APP_CONFIG['sock_channel'], message
     end
   end
 
@@ -85,7 +85,7 @@ class GameplayManager
     msg_type = Constants::SOCK_MSG_TYPE_INVITE_REJECTED
     msg_body = game_id
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
     game.destroy
   end
 
@@ -104,7 +104,7 @@ class GameplayManager
       msg_type = Constants::SOCK_MSG_TYPE_PLAYER_STATUS_UPDATE
       msg_body = status
       message = Protocol.make_msg(msg_to, msg_type, msg_body)
-      $redis.publish Constants::SOCK_CHANNEL, message  
+      $redis.publish APP_CONFIG['sock_channel'], message  
       game.start_game if players_ready
     elsif game.status == Game::STATUS_IN_PROGRESS
       questions_count = game_details[Constants::JSON_GAME_QUESTIONCNT]
@@ -136,7 +136,7 @@ class GameplayManager
     msg_body = gid
     msg_extra = game_id
     message = Protocol.make_msg_extra(msg_to, msg_type, msg_body, msg_extra)
-    $redis.publish Constants::SOCK_CHANNEL, message
+    $redis.publish APP_CONFIG['sock_channel'], message
   end
 
   def self.update_socketid(old_socketid, new_socketid)
