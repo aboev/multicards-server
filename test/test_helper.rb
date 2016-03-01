@@ -37,6 +37,12 @@ class ActiveSupport::TestCase
     socket.emit :message, msg
   end
 
+  def quit_game(socket)
+    msg_type = Constants::SOCK_MSG_TYPE_QUIT_GAME
+    msg = Protocol.make_msg(nil, msg_type, nil)
+    socket.emit :message, msg
+  end
+
   def new_game(userid, socketid)
     @headers[Constants::HEADER_USERID] = userid
     @headers[Constants::HEADER_SOCKETID] = socketid
@@ -138,6 +144,14 @@ class ActiveSupport::TestCase
     msg_type = Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED
     msg_body = game_id
     msg = Protocol.make_msg(nil, msg_type, msg_body)
+    socket.emit :message, msg
+  end
+
+  def accept_invite_extra(socket, game_id, invitation)
+    msg_type = Constants::SOCK_MSG_TYPE_INVITE_ACCEPTED
+    msg_body = game_id
+    msg_extra = invitation
+    msg = Protocol.make_msg_extra(nil, msg_type, msg_body, msg_extra)
     socket.emit :message, msg
   end
 
