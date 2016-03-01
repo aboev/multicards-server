@@ -18,7 +18,7 @@ http.post = require('http-post');
 redis.subscribe(consts.SOCK_CHANNEL);
 
 redis.on('message', function(channel, message){
-  protocol.msg_int(io, message);
+  protocol.msg_int(io, channel, message);
 });
 
 io.on('connection', function(socket){

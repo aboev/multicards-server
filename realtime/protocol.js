@@ -22,7 +22,7 @@ exports.msg_ext = function (io, socket, msg) {
   }
 };
 
-exports.msg_int = function (io, msg) {
+exports.msg_int = function (io, channel, msg) {
   msg_json = JSON.parse(msg);
   for (var i = 0; i < msg_json.id_to.length; i++) {
     io.to(msg_json.id_to[i]).emit('event', msg);
