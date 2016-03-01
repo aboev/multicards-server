@@ -12,7 +12,7 @@ else
 exports.msg_ext = function (io, socket, msg) {
   msg_json = JSON.parse(msg);
   msg_json.id_from = socket.id;
-  console.log('Processing message: ' + JSON.stringify(msg_json));
+  this.log_msg('[incoming] Received message from ' + socket.id + ': ' + JSON.stringify(msg_json));
   if ((msg_json.id_to != null) && (msg_json.id_to.length > 0)) {
     for (var i = 0; i < msg_json.id_to.length; i++)
       io.to(msg_json.id_to[i]).emit('event', JSON.stringify(msg_json));
@@ -23,11 +23,10 @@ exports.msg_ext = function (io, socket, msg) {
 };
 
 exports.msg_int = function (io, msg) {
-  console.log('got redis message ' + msg);
   msg_json = JSON.parse(msg);
   for (var i = 0; i < msg_json.id_to.length; i++) {
     io.to(msg_json.id_to[i]).emit('event', msg);
-    console.log('sending message to ' + msg_json.id_to[i]);
+    this.log_msg('[outgoing] Sending message to ' + msg_json.id_to[i] + ': ' + msg);
   }
 };
 
