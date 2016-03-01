@@ -62,6 +62,15 @@ class UserControllerTest < ActionController::TestCase
     assert_equal @profile[:name], update(@profile, user_id)['name']
   end
 
+  test "Should update pushid" do
+    user_id = register(@profile)['id']
+    pushid = "JKSHBVNKSFJBIOWRNBVLKJSNSLKFVBJLSKMFBLKSFJVCM<XZLCJSLFKJBJFSHMCXNZCHBWUORJFSKLMVCLKXZJKH"
+    @profile[:pushid] = pushid
+    update(@profile, user_id)
+    user = User.where(:pushid => pushid).first
+    assert_equal user_id, user.id
+  end
+
   test "Should prevent duplicate names" do
     user_id1 = register(@profile)['id']
     user_id2 = register(@profile2)['id']
