@@ -28,9 +28,16 @@ class User < ActiveRecord::Base
       return false if ((ex_user != nil) and (ex_user.id != self.id))
     end
 
+    if ((json_body[Constants::JSON_USER_DEVICEID] != nil) and (json_body[Constants::JSON_USER_DEVICEID].length > 0))
+      ex_user = User.where(:deviceid => json_body[Constants::JSON_USER_DEVICEID]).first
+      return false if ((ex_user != nil) and (ex_user.id != self.id))
+    end
+
     json_body.each do |key, value|
       if key == Constants::KEY_PUSHID
         self.pushid = value
+      elsif key == Constants::JSON_USER_DEVICEID
+        self.deviceid = value
       elsif key == "name"
         self.name = value
         cur_details[key] = value
@@ -92,6 +99,15 @@ class User < ActiveRecord::Base
   def self.find_by_socket_id(socketid)
     user = User.where(:socket_id => socketid).first
     return user
+  end
+
+  def self.find_by_device_id(deviceid)
+    if ((deviceid != nil) and (deviceid.length > 0))
+      user = User.where(:deviceid => deviceid).first
+      return user
+    else
+      return nil
+    end
   end
 
 end

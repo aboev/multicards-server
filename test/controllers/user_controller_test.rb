@@ -71,6 +71,36 @@ class UserControllerTest < ActionController::TestCase
     assert_equal user_id, user.id
   end
 
+  test "Should update deviceid" do
+    user_id = register(@profile)['id']
+    deviceid = "AAFFMDKVJDNCJDJV"
+    @profile[:deviceid] = deviceid
+    update(@profile, user_id)
+    user = User.where(:deviceid => deviceid).first
+    assert_equal user_id, user.id
+  end
+
+  test "Should prevent duplicate deviceid" do
+    user_id1 = register(@profile)['id']
+    user_id2 = register(@profile2)['id']
+    deviceid = "AAFFMDKVJDNCJDJV"
+    @profile[:deviceid] = deviceid
+    @profile2[:deviceid] = deviceid
+    update(@profile, user_id1)
+    update(@profile, user_id2)
+    assert_equal Constants::RESULT_ERROR, JSON.parse(@response.body)['result']
+  end
+
+  test "Should return existing user with deviceid" do
+    user_id1 = register(@profile)['id']
+    deviceid = "AAFFMDKVJDNCJDJV"
+    @profile[:deviceid] = deviceid
+    update(@profile, user_id1)
+    @profile2[:deviceid] = deviceid
+    user_id2 = register(@profile2)['id']
+    assert_equal user_id1, user_id2
+  end
+
   test "Should prevent duplicate names" do
     user_id1 = register(@profile)['id']
     user_id2 = register(@profile2)['id']

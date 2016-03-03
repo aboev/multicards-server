@@ -7,12 +7,15 @@ before_filter :check_credentials, :except => [:new]
 
 def new
   json_body = JSON.parse(request.body.read)
-  user = User.new
-  user.details = json_body.to_json
-  user.score = 0
-  user.status = Constants::STATUS_ONLINE
-  user.save
-  user.init
+  user = User.find_by_device_id(json_body[Constants::JSON_USER_DEVICEID])
+  if user == nil
+    user = User.new
+    user.details = json_body.to_json
+    user.score = 0
+    user.status = Constants::STATUS_ONLINE
+    user.save
+    user.init
+  end
   msg = { :result => Constants::RESULT_OK, :data => user.to_json }
   respond_to do |format|
     format.json  { render :json => msg }
