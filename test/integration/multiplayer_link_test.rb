@@ -174,6 +174,18 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     assert_equal 1, filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
   end
 
+  test "Should return invitations list" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    announce_userid(@@socket1, user_id1)
+
+    game_id = new_game_v2(user_id1, @@socket1.session_id, true, @gid, @profile2[:name])
+
+    invitations = get_invitations(user_id2, @@socket2.session_id)
+    assert_equal 1, invitations.length
+    assert_equal game_id, invitations[0][Constants::JSON_INVITATION_GAME][Constants::JSON_GAME_ID]
+  end
+
   @@socket1.on :event do |msg|
     msg_json = JSON.parse(msg)
     @@sock1_msg_list << msg_json

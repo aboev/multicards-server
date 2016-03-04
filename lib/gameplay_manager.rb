@@ -39,13 +39,9 @@ class GameplayManager
     game = Game.where(:id => game_id.to_i).first
     cardset = Qcardset.where(:cardset_id => game.setid).first
     return if ((game == nil) or (user_from == nil) or (cardset == nil) or (id_to == nil))
-    game_details = JSON.parse(game.details)
-    user_details = JSON.parse(user_from.details)
     msg_to = [id_to]
     msg_type = Constants::SOCK_MSG_TYPE_GAME_INVITE
-    msg_body = {Constants::JSON_INVITATION_USER => user_details,
-		Constants::JSON_INVITATION_GAME => game_details,
-		Constants::JSON_INVITATION_CARDSET => cardset}
+    msg_body = Protocol.make_invitation(user_from, game, cardset)
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
     $redis.publish APP_CONFIG['sock_channel'], message
     if ((user_to.status != Constants::STATUS_ONLINE) and (user_to.pushid != nil) and (user_to.pushid.length > 0))

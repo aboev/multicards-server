@@ -202,4 +202,12 @@ class Protocol
         Constants::JSON_QST_STATUS => Question::QSTATUS_NO_ANSWER}
   end
 
+  def self.make_invitation(user_from, game, cardset)
+    game_details = JSON.parse(game.details)
+    user_details = JSON.parse(user_from.details)
+    invitation = {Constants::JSON_INVITATION_USER => user_details,
+	Constants::JSON_INVITATION_GAME => game_details,
+	Constants::JSON_INVITATION_CARDSET => cardset}
+  end
+
 end

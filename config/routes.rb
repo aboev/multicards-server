@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   post 'game' => 'game#new'
   post 'game/new' => 'game#start'
   get 'game' => 'game#get'
+  get 'invitations' => 'game#invitations'
   post 'event' => 'event#new'
   post 'image' => 'upload#upload'
   get 'import' => 'cardset#import'

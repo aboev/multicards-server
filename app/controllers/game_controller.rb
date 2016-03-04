@@ -26,6 +26,7 @@ def start
       return
     end
     game = GameplayManager.init_and_join(gid, rnd_opp, @user, Game::PLAYER_STATUS_PENDING)
+    game.join_player(opponent, Game::PLAYER_STATUS_PENDING) if opponent != nil
     GameplayManager.invite_user(@user.socket_id, opponent_name, game.id) if opponent_name != nil
     ret_ok(JSON.parse(game.details))
     return
@@ -96,6 +97,17 @@ def get
     res_item = JSON.parse(game.details)
     res_item[:cardset] = cardset
     res << res_item
+  end
+  ret_ok(res)
+end
+
+def invitations
+  games = Game.where(status: Game::STATUS_WAITING_OPPONENT, player2_id: @user.id)
+  res = []
+  games.each do |game|
+    cardset = Qcardset.where(:cardset_id => game.setid).first
+    user_from = User.where(:id => game.player1_id).first
+    res << Protocol.make_invitation(user_from, game, cardset) if ((user_from != nil) and (cardset != nil))
   end
   ret_ok(res)
 end

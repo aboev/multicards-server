@@ -112,6 +112,14 @@ class ActiveSupport::TestCase
     games = JSON.parse(@response.body)['data']
   end
 
+  def get_invitations(userid, socketid)
+    @headers[Constants::HEADER_USERID] = userid
+    @headers[Constants::HEADER_SOCKETID] = socketid
+    @controller = GameController.new
+    get '/invitations', nil, @headers
+    games = JSON.parse(@response.body)['data']
+  end
+
   def update_client_status(socket, status)
     msg_type = Constants::SOCK_MSG_TYPE_PLAYER_STATUS_UPDATE
     msg_body = status
