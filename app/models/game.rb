@@ -76,13 +76,15 @@ class Game < ActiveRecord::Base
       self.player1_id = user.id
     else
       self.player2_socketid = user.socket_id
-      self.player2_status = status
+      self.player2_status = status if user.status == Constants::STATUS_ONLINE
       self.player2_id = user.id
     end
-    details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
-    details_json[Constants::JSON_GAME_PLAYERS][user.socket_id] = status
-    details_json[Constants::JSON_GAME_SCORES][user.socket_id] = 0
-    details_json[Constants::JSON_GAME_BONUSES][user.socket_id] = []
+    if user.status == Constants::STATUS_ONLINE
+      details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
+      details_json[Constants::JSON_GAME_PLAYERS][user.socket_id] = status
+      details_json[Constants::JSON_GAME_SCORES][user.socket_id] = 0
+      details_json[Constants::JSON_GAME_BONUSES][user.socket_id] = []
+    end
     self.details = details_json.to_json
     self.save
   end
