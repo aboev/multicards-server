@@ -92,10 +92,10 @@ class Game < ActiveRecord::Base
       self.player2_socketid = player.socket_id
     end
     if ((old_socketid != nil) and (old_socketid.length > 0))
-      details_json[Constants::JSON_GAME_PROFILES][old_socketid] = nil
-      details_json[Constants::JSON_GAME_PLAYERS][old_socketid] = nil
-      details_json[Constants::JSON_GAME_SCORES][old_socketid] = nil
-      details_json[Constants::JSON_GAME_BONUSES][old_socketid] = nil
+      details_json[Constants::JSON_GAME_PROFILES].delete(old_socketid)
+      details_json[Constants::JSON_GAME_PLAYERS].delete(old_socketid)
+      details_json[Constants::JSON_GAME_SCORES].delete(old_socketid)
+      details_json[Constants::JSON_GAME_BONUSES].delete(old_socketid)
     end
     details_json[Constants::JSON_GAME_PROFILES][player.socket_id] = player.get_details
     details_json[Constants::JSON_GAME_PLAYERS][player.socket_id] = status
