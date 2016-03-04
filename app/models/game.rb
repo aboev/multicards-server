@@ -71,20 +71,36 @@ class Game < ActiveRecord::Base
     status = Game::PLAYER_STATUS_WAITING if status == nil
     details_json = JSON.parse(self.details)
     if (details_json[Constants::JSON_GAME_PLAYERS].length == 0)
-      self.player1_socketid = user.socket_id
-      self.player1_status = status
       self.player1_id = user.id
+      self.player1_status = status
     else
-      self.player2_socketid = user.socket_id
-      self.player2_status = status if user.status == Constants::STATUS_ONLINE
       self.player2_id = user.id
+      self.player2_status = status
     end
-    if user.status == Constants::STATUS_ONLINE
-      details_json[Constants::JSON_GAME_PROFILES][user.socket_id] = user.get_details
-      details_json[Constants::JSON_GAME_PLAYERS][user.socket_id] = status
-      details_json[Constants::JSON_GAME_SCORES][user.socket_id] = 0
-      details_json[Constants::JSON_GAME_BONUSES][user.socket_id] = []
+    self.save
+    update_player(user, status)
+  end
+
+  def update_player(player, status)
+    details_json = JSON.parse(self.details)
+    old_socketid = nil
+    if ((self.player1_id == player.id) and (self.player1_socketid != player.socket_id))
+      old_socketid = self.player1_socketid
+      self.player1_socketid = player.socket_id
+    elsif ((self.player2_id == player.id) and (self.player2_socketid != player.socket_id))
+      old_socketid = self.player2_socketid
+      self.player2_socketid = player.socket_id
     end
+    if ((old_socketid != nil) and (old_socketid.length > 0))
+      details_json[Constants::JSON_GAME_PROFILES][old_socketid] = nil
+      details_json[Constants::JSON_GAME_PLAYERS][old_socketid] = nil
+      details_json[Constants::JSON_GAME_SCORES][old_socketid] = nil
+      details_json[Constants::JSON_GAME_BONUSES][old_socketid] = nil
+    end
+    details_json[Constants::JSON_GAME_PROFILES][player.socket_id] = player.get_details
+    details_json[Constants::JSON_GAME_PLAYERS][player.socket_id] = status
+    details_json[Constants::JSON_GAME_SCORES][player.socket_id] = 0
+    details_json[Constants::JSON_GAME_BONUSES][player.socket_id] = []
     self.details = details_json.to_json
     self.save
   end
