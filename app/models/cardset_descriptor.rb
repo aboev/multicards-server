@@ -5,6 +5,7 @@ class CardsetDescriptor
   @@lang_terms = ""
   @@lang_definitions = ""
   @@like_count = 0
+  @@flags = []
 
   def self.from_qcardset(qcardset)
     @@title = qcardset.title
@@ -12,6 +13,7 @@ class CardsetDescriptor
     @@lang_terms = qcardset.lang_terms
     @@lang_definitions = qcardset.lang_definitions
     @@like_count = qcardset.like_count
+    @@flags = qcardset.flags
     return self
   end
 
