@@ -2,10 +2,16 @@ class CardsetDescriptor
   @@gid = ""
   @@title = ""
   @@created_by = ""
+  @@lang_terms = ""
+  @@lang_definitions = ""
+  @@like_count = 0
 
   def self.from_qcardset(qcardset)
     @@title = qcardset.title
     @@gid = "quizlet_" + qcardset.cardset_id.to_s
+    @@lang_terms = qcardset.lang_terms
+    @@lang_definitions = qcardset.lang_definitions
+    @@like_count = qcardset.like_count
     return self
   end
 
