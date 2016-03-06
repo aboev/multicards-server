@@ -20,9 +20,9 @@ class PushSender
     request.body = data.to_json
     response = http.request(request)
     if response.kind_of? Net::HTTPSuccess
-      #log.debug("Notification sent to user " + user.id.to_s + ", response message: " + response.body)
+      logger.debug "Notification sent to user " + user.id.to_s + ", response message: " + response.body
     else
-      #log.debug("Failed to send notification to user " + user.id.to_s + ", response message: " + response.body)
+      logger.debug "Failed to send notification to user " + user.id.to_s + ", response message: " + response.body
     end
   end
 
