@@ -95,8 +95,8 @@ class GameplayManager
     players_ready = game.get_players_count() == game.get_ready_players_count()
 
     if ((game.status == Game::STATUS_SEARCHING_PLAYERS) or (game.status == Game::STATUS_WAITING_OPPONENT))
-      msg_to = game_details[Constants::JSON_GAME_PLAYERS].keys
-      msg_to.delete(user_from)
+      msg_to = [game.player2_socketid]
+      msg_to = [game.player1_socketid] if game.player2_socketid == user_from
       msg_type = Constants::SOCK_MSG_TYPE_PLAYER_STATUS_UPDATE
       msg_body = status
       message = Protocol.make_msg(msg_to, msg_type, msg_body)
