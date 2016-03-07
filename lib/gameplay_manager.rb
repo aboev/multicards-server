@@ -43,9 +43,10 @@ class GameplayManager
     msg_type = Constants::SOCK_MSG_TYPE_GAME_INVITE
     msg_body = Protocol.make_invitation(user_from, game, cardset)
     message = Protocol.make_msg(msg_to, msg_type, msg_body)
-    $redis.publish APP_CONFIG['sock_channel'], message
-    if ((user_to.status != Constants::STATUS_ONLINE) and (user_to.pushid != nil) and (user_to.pushid.length > 0))
+    if ((user_to.pushid != nil) and (user_to.pushid.length > 0))
       PushSender.perform(user_to.id, msg_type, msg_body)
+    else
+      $redis.publish APP_CONFIG['sock_channel'], message
     end
   end
 
