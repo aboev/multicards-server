@@ -19,9 +19,6 @@ var utf8 = require('utf8');
 var protocol = require('./protocol.js');
 http.post = require('http-post');
 
-io.set("heartbeat interval", 5000);
-io.set("heartbeat timeout", 6000);
-
 redis.on('message', function(channel, message){
   protocol.msg_int(io, message);
 });
