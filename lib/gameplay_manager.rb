@@ -7,6 +7,12 @@ require 'push'
 class GameplayManager
 
   def self.init_and_join(gid, rnd_opp, user, status)
+    games = Game.find_by_player_id(user.id, nil)
+    games.each do |game|
+      game.stop_game if game.status == Game::STATUS_IN_PROGRESS
+      game.destroy
+    end
+
     game = Game.new
     game.init(gid, rnd_opp)
     game.join_player(user, status)

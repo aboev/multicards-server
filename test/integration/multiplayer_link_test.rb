@@ -26,6 +26,7 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     socket_wait(@@socket1)
     socket_wait(@@socket2)
     socket_wait(@@socket3)
+    ActiveRecord::Base.logger = nil
   end
 
   def teardown
@@ -101,9 +102,8 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     user_id1 = register(@profile1)
     user_id2 = register(@profile2)
     user_id3 = register(@profile3)
-    @@socket3 = SocketIO::Client::Simple.connect 'http://localhost:5002'
     game_id1 = new_game_v2(user_id1, @@socket1.session_id, true, @gid, nil)
-    game_id2 = new_game_v2(user_id1, @@socket1.session_id, true, @gid, @profile1[:name])
+    game_id2 = new_game_v2(user_id2, @@socket2.session_id, true, @gid, @profile2[:name])
     list = get_games(user_id3, @@socket3.session_id)
     assert_equal 1, list.length
     assert_equal game_id1, list[0]["game_id"]
@@ -138,14 +138,16 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid, user_id2, @@socket2, @@sock2_msg_list)
     question_msg = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)[0][Constants::JSON_SOCK_MSG_BODY]
     answer_id = question_msg[Constants::JSON_QST_ANSWER_ID]
-    #announce_userid(@@socket3, user_id2)
-    #@@sock2_msg_list = []
+    announce_userid_sync(@@socket3, user_id2)
+    filter_wait(@@sock3_msg_list, Constants::SOCK_MSG_TYPE_CONFIRM)
+    @@sock2_msg_list = []
 
-    #player_answer(@@socket3, answer_id, [])
-    #update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
-    #update_client_status(@@socket3, Game::PLAYER_STATUS_WAITING)
- 
-    #assert_equal 1, filter_wait(@@sock3_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    player_answer_confirm(@@socket3, answer_id, [], 111)
+    filter_wait(@@sock3_msg_list, Constants::SOCK_MSG_TYPE_CONFIRM)
+    update_client_status(@@socket1, Game::PLAYER_STATUS_WAITING)
+    update_client_status(@@socket3, Game::PLAYER_STATUS_WAITING)
+    
+    assert_equal 1, filter_wait(@@sock3_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
   end
 
   test "Should make reverse invitation when stale" do
@@ -184,6 +186,16 @@ class MultiplayerLinkTest < ActionDispatch::IntegrationTest
     invitations = get_invitations(user_id2, @@socket2.session_id)
     assert_equal 1, invitations.length
     assert_equal game_id, invitations[0][Constants::JSON_INVITATION_GAME][Constants::JSON_GAME_ID]
+  end
+
+  test "Should overwrite existing games" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    user_id3 = register(@profile3)
+    game_id1 = new_game_v2(user_id1, @@socket1.session_id, true, @gid, nil)
+    game_id2 = new_game_v2(user_id1, @@socket2.session_id, true, @gid, @profile3[:name])
+    assert_equal 1, Game.all.length
+    assert_equal game_id2, Game.first.id
   end
 
   @@socket1.on :event do |msg|

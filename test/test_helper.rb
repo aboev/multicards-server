@@ -37,6 +37,13 @@ class ActiveSupport::TestCase
     socket.emit :message, msg
   end
 
+  def announce_userid_sync(socket, userid)
+    msg_type = Constants::SOCK_MSG_TYPE_ANNOUNCE_USERID
+    msg_body = userid
+    message = {Constants::JSON_SOCK_MSG_TYPE => msg_type, Constants::JSON_SOCK_MSG_BODY => msg_body, Constants::JSON_SOCK_MSG_ID => 111}.to_json
+    socket.emit :message, message
+  end
+
   def quit_game(socket)
     msg_type = Constants::SOCK_MSG_TYPE_QUIT_GAME
     msg = Protocol.make_msg(nil, msg_type, nil)
@@ -236,6 +243,17 @@ class ActiveSupport::TestCase
       end
     end
     return res
+  end
+
+  def dump_db
+    puts "Users:"
+    User.all.each do |user|
+      puts user.id.to_s + " " + user.socket_id + " " + user.name.to_s
+    end
+    puts "Games:"
+    Game.all.each do |game|
+      puts game.id.to_s + " " + game.player1_id.to_s + " " + game.player1_socketid + " " + game.player1_status + ", " + game.player2_id.to_s + " " + game.player2_socketid + " " + game.player2_status + " - " + game.status.to_s
+    end
   end
 
 end

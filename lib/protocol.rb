@@ -26,9 +26,13 @@ class Protocol
 
   def self.msg_announce_userid(id_from, msg_type, msg_body)
     userid = msg_body
-    user = User.find_by_id(msg_body)
+    user = User.find_by_id(userid)
     user.socket_id = id_from
     user.save
+    games = Game.find_by_player_id(userid, nil)
+    games.each do |game|
+      game.update_player(user, nil)
+    end
   end
 
   def self.msg_user_answered(id_from, msg_type, msg_body)

@@ -87,9 +87,11 @@ class Game < ActiveRecord::Base
     if ((self.player1_id == player.id) and (self.player1_socketid != player.socket_id))
       old_socketid = self.player1_socketid
       self.player1_socketid = player.socket_id
+      status = self.player1_status if status == nil
     elsif ((self.player2_id == player.id) and (self.player2_socketid != player.socket_id))
       old_socketid = self.player2_socketid
       self.player2_socketid = player.socket_id
+      status = self.player2_status if status == nil
     end
     if ((old_socketid != nil) and (old_socketid.length > 0))
       details_json[Constants::JSON_GAME_PROFILES].delete(old_socketid)
@@ -208,6 +210,17 @@ class Game < ActiveRecord::Base
       end
     end
     return winner, scores_before, scores, bonuses
+  end
+
+  def self.find_by_player_id(player_id, status)
+    res = []
+    games = nil
+    if status != nil
+      games = Game.where("status = (?) and (player1_id = (?) or player2_id = (?))", status, player_id, player_id)
+    else
+      games = Game.where("player1_id = (?) or player2_id = (?)", player_id, player_id)
+    end
+    return games
   end
 
   def self.find_by_socket_id(socket_id, status)
