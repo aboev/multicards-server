@@ -174,6 +174,14 @@ class UserControllerTest < ActionController::TestCase
     assert_equal 2, JSON.parse(@response.body)['data'].length
   end
 
+  test "Should return botlist" do
+    user_id = register(@profile)['id']
+    @request.headers[Constants::HEADER_USERID] = user_id
+    get :get_bots
+    assert_equal 1, JSON.parse(@response.body)['data'].length
+    assert_equal "bot", JSON.parse(@response.body)['data'][0]['name']
+  end
+
   @@socket.on :event do |msg|
     msg_json = JSON.parse(msg)
     @@sock1_msg_list << msg_json

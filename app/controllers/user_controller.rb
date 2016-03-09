@@ -59,6 +59,16 @@ def get
   end
 end
 
+def get_bots
+  bots = User.where('status = ? and ? = ANY(flags)', Constants::STATUS_ONLINE, Constants::FLAG_BOT.to_s)
+
+  msg = { :result => Constants::RESULT_OK, :data => bots }
+
+  respond_to do |format|
+    format.json  { render :json => msg }
+  end
+end
+
 def list
   ids = request.headers[Constants::HEADER_IDS]
 

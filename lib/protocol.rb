@@ -28,6 +28,7 @@ class Protocol
     userid = msg_body
     user = User.find_by_id(userid)
     user.socket_id = id_from
+    user.status = Constants::STATUS_ONLINE
     user.save
     games = Game.find_by_player_id(userid, nil)
     games.each do |game|

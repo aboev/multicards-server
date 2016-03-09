@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160303064833) do
+ActiveRecord::Schema.define(version: 20160309131025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -136,6 +136,7 @@ ActiveRecord::Schema.define(version: 20160303064833) do
     t.integer  "status"
     t.string   "name"
     t.text     "deviceid"
+    t.string   "flags",      default: [], array: true
   end
 
 end

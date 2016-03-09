@@ -123,6 +123,8 @@ class Constants
   FLAG_INVERTED		=	0
   FLAG_DISCOVERED	=	1
 
+  FLAG_BOT		=	0
+
   KEY_SERVER_VERSION	=	"version"
   KEY_MIN_CLIENT_VERSION=	"min_client"
   KEY_LATEST_APK_URL	=	"latest_apk"
