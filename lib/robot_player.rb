@@ -67,8 +67,9 @@ class RobotPlayer
   end
 
   def answer(question)
+    options = question[Constants::JSON_QST_OPTIONS]
     msg_type = Constants::SOCK_MSG_TYPE_PLAYER_ANSWERED
-    msg_body = 0
+    msg_body = Random.rand(0...options.length)
     socket_emit(nil, msg_type, msg_body)
   end
 
