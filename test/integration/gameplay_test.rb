@@ -20,6 +20,7 @@ class GameplayTest < ActionDispatch::IntegrationTest
     @@sock2_msg_list = []
 
     @gid = "quizlet_415"
+    @gid_image = "quizlet_117954645"
 
     socket_wait(@@socket1)
     socket_wait(@@socket2)
@@ -236,6 +237,19 @@ class GameplayTest < ActionDispatch::IntegrationTest
     msg_list_2 = filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_END)
     assert_equal 1, msg_list_1.length
     assert_equal 1, msg_list_2.length
+  end
+
+  test "Should generate question with images" do
+    user_id1 = register(@profile1)
+    user_id2 = register(@profile2)
+    start_game_v2(user_id1, @@socket1, @@sock1_msg_list, @gid_image, user_id2, @@socket2, @@sock2_msg_list)
+
+    question_msg = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)[0][Constants::JSON_SOCK_MSG_BODY]
+    question_type = question_msg[Constants::JSON_QST_TYPE]
+    question = question_msg[Constants::JSON_QST_QUESTION]
+    options = question_msg[Constants::JSON_QST_OPTIONS]
+    assert_not_nil options[0][Constants::JSON_OPTION_IMAGE]
+    assert_not_nil options[0][Constants::JSON_OPTION_TEXT]
   end
 
   @@socket1.on :event do |msg|

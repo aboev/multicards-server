@@ -25,12 +25,14 @@ class GameplayData
     terms = []
     definitions = []
     cards.each do |card|
+      term = card.term
+      definition = cardset.has_images ? card.get_metacard : card.definition
       if inverted
-        terms << card.definition
-        definitions << card.term
+        terms << definition
+        definitions << term
       else
-        terms << card.term
-        definitions << card.definition
+        terms << term
+        definitions << definition
       end
     end
 

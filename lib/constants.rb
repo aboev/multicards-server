@@ -71,6 +71,9 @@ class Constants
   JSON_QST_TYPE		=	"question_type"
   JSON_QST_STATUS	=	"question_status"
 
+  JSON_OPTION_TEXT	=	"text"
+  JSON_OPTION_IMAGE	=	"image"
+
   RESULT_OK             =       "OK"
   RESULT_ERROR          =       "ERROR"
 
