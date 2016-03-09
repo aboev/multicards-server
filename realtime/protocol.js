@@ -37,7 +37,7 @@ exports.make_json_msg = function (idto, msgtype, msgbody) {
 
 exports.announce_socket_id = function (io, socket_id) {
   msg = JSON.stringify( this.make_json_msg (null, consts.SOCK_MSG_TYPE_ANNOUNCE_SOCKETID, socket_id) );
-  console.log("Sending " + msg);
+  this.log_msg("[outgoing] Announce socket id " + msg);
   io.to(socket_id).emit('event', msg);
 };
 

@@ -31,7 +31,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function() {
-    console.log('Disconnected ' + socket.id);
+    protocol.log_msg('Disconnected ' + socket.id);
     json_msg = protocol.make_json_msg(null, consts.SOCK_MSG_TYPE_SOCKET_CLOSE, socket.id);
     protocol.http_post_local(json_msg);
   });
