@@ -194,6 +194,7 @@ class CardsetControllerTest < ActionController::TestCase
     res_json = JSON.parse(response.body)
     assert_equal Constants::RESULT_OK, res_json['result']
     assert_equal Utils.parse_gid(test_cardset)[1].to_s, res_json['data'][0]['cardset_id'].to_s
+    assert_equal 50, res_json['data'][0]['terms'].length
   end
 
 end

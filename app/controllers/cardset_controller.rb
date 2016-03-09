@@ -27,9 +27,9 @@ def get
   gid = request.headers[Constants::HEADER_SETID]
   set_id = Utils.parse_gid(gid)[1]
   provider = Utils.parse_gid(gid)[0]
-  cardset = Qcardset.where(:cardset_id => set_id).first
-  if ((provider == "quizlet") and (cardset != nil))
-    ret_ok([cardset])
+  qcardset = Qcardset.where(:cardset_id => set_id).first
+  if ((provider == "quizlet") and (qcardset != nil))
+    ret_ok(CardsetDescriptor.from_qcardset_list([qcardset]))
   else
     ret_error(Constants::ERROR_CARDSET_NOT_FOUND, Constants::MSG_CARDSET_NOT_FOUND)
   end
