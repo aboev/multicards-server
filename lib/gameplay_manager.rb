@@ -109,7 +109,7 @@ class GameplayManager
       message = Protocol.make_msg(msg_to, msg_type, msg_body)
       $redis.publish APP_CONFIG['sock_channel'], message  
       game.start_game if players_ready
-    elsif game.status == Game::STATUS_IN_PROGRESS
+    elsif ((game.status == Game::STATUS_IN_PROGRESS) and players_ready)
       questions_count = game_details[Constants::JSON_GAME_QUESTIONCNT]
       if ((questions_count >= Constants::GAMEPLAY_Q_PER_G) or (questions_count == (gameplay_data['questions'].length)))
         game.end_game

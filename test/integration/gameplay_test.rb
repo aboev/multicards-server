@@ -39,8 +39,8 @@ class GameplayTest < ActionDispatch::IntegrationTest
 
     assert_equal 1, filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_GAME_STOP).length
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_GAME_STOP).length
-    assert_equal 4, @@sock1_msg_list.length
-    assert_equal 4, @@sock2_msg_list.length
+    assert_equal 5, @@sock1_msg_list.length
+    assert_equal 5, @@sock2_msg_list.length
     game_cnt1 = Game.where(:status => Game::STATUS_SEARCHING_PLAYERS).length
     game_cnt2 = Game.where(:status => Game::STATUS_IN_PROGRESS).length
     game_cnt3 = Game.where(:status => Game::STATUS_WAITING_OPPONENT).length
@@ -84,10 +84,12 @@ class GameplayTest < ActionDispatch::IntegrationTest
     update_client_status(@@socket2, Game::PLAYER_STATUS_WAITING)
 
     assert_equal 1, filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 1, filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEXT_QUESTION).length
     assert_equal 1, filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION).length
+    assert_equal 1, filter_wait(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_NEXT_QUESTION).length
     assert_equal 1, filter(@@sock2_msg_list, Constants::SOCK_MSG_TYPE_PLAYER_ANSWERED).length
-    assert_equal 2, @@sock1_msg_list.length
-    assert_equal 2, @@sock2_msg_list.length
+    assert_equal 3, @@sock1_msg_list.length
+    assert_equal 3, @@sock2_msg_list.length
   end
 
   test "Should confirm socket message" do

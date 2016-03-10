@@ -1,6 +1,7 @@
 class Constants
   SOCK_MSG_TYPE_NEW_EVENT=	"new_event"
   SOCK_MSG_TYPE_NEW_QUESTION=	"new_question"
+  SOCK_MSG_TYPE_NEXT_QUESTION=	"next_question"
   SOCK_MSG_TYPE_PLAYER_STATUS_UPDATE="player_status"
   SOCK_MSG_TYPE_PLAYER_ANSWERED	="player_answered"
   SOCK_MSG_TYPE_PLAYER_TYPED	="player_typed"

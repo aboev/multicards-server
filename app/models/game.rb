@@ -119,11 +119,9 @@ class Game < ActiveRecord::Base
   def next_question
     details = JSON.parse(self.details)
     gameplay_data = JSON.parse(self.gameplay_data)
-    ready_players = self.get_ready_players_count
-    total_players = details[Constants::JSON_GAME_PLAYERS].length
     game_status = details[Constants::JSON_GAME_STATUS]
     question_id = details[Constants::JSON_GAME_QUESTIONCNT] + 1
-    if ( (game_status == Game::STATUS_IN_PROGRESS) and ( ready_players == total_players ) )
+    if (game_status == Game::STATUS_IN_PROGRESS)
 
       #question = Question.make_random(Question::QTYPE_MULTI_CHOICE, self.setid, question_id)
       #if ( rand(100) > 110 )
@@ -149,6 +147,11 @@ class Game < ActiveRecord::Base
       save
 
       $redis.publish APP_CONFIG['sock_channel'], message
+
+      if (msg_body = gameplay_data['questions'][question_id]) != nil
+        msg_type = Constants::SOCK_MSG_TYPE_NEXT_QUESTION
+        $redis.publish APP_CONFIG['sock_channel'], Protocol.make_msg(msg_to, msg_type, msg_body)
+      end
     end
   end
 
