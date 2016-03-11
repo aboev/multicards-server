@@ -23,7 +23,7 @@ def search
 
     res = CardsetDescriptor.from_qcardset_list(qcardset_list)
   elsif query != nil
-    res = Utils.search_qcardset(query)
+    res = Utils.search_qcardset_page(query, 1)
   end
   ret_ok(res)
   return
