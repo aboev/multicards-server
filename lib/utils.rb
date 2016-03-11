@@ -25,6 +25,38 @@ module Utils
     return Qcardset.where(:cardset_id => setid).first
   end
 
+  def self.search_qcardset_page(query, page)
+    url = URI.parse('https://api.quizlet.com/2.0/search/sets?client_id='+APP_CONFIG['quizlet_client_id']+'&per_page=50&page='+page.to_s+'&q='+query.to_s)
+    req = Net::HTTP::Get.new(url.to_s)
+    res = Net::HTTP.start(url.host, url.port, :use_ssl => url.scheme == 'https') {|http| http.request(req)}
+    cardsets = []
+    if res.kind_of? Net::HTTPSuccess
+      res_json = JSON.parse(res.body)
+      sets = res_json['sets']
+      sets.each do |set|
+        cardsets << CardsetDescriptor.from_json(set, false).to_json
+      end
+    end
+    return cardsets
+  end
+
+  def self.search_qcardset(query)
+    url = URI.parse('https://api.quizlet.com/2.0/search/sets?client_id='+APP_CONFIG['quizlet_client_id']+'&per_page=50&page=1&q='+query.to_s)
+    req = Net::HTTP::Get.new(url.to_s)
+    res = Net::HTTP.start(url.host, url.port, :use_ssl => url.scheme == 'https') {|http| http.request(req)}
+    cardsets = []
+    Rails.logger.info "Searching cardsets by query " + query.to_s
+    if res.kind_of? Net::HTTPSuccess
+      res_json = JSON.parse(res.body)
+      total_pages = res_json['total_pages']
+      Rails.logger.info "Total pages " + total_pages.to_s
+      for i in 1..total_pages
+        cardsets << search_qcardset_page(query, i)
+      end
+    end
+    return cardsets
+  end
+
   def self.import_qcardset(gid)
     set_id = parse_gid(gid)[1]
     provider = parse_gid(gid)[0]

@@ -11,14 +11,20 @@ def search
   limit = request.headers[Constants::HEADER_LIMIT]
   tag_ids = request.headers[Constants::HEADER_TAGID]
   query = request.headers[Constants::HEADER_QUERY]
-  limit = 50
-  tags = tag_ids.split(",")
-  qcardset_list = Qcardset.where('? = ANY(tags)', tags[0]).limit(limit)
-  tags.each do |tagid|
-    qcardset_list = qcardset_list.where('? = ANY(tags)', tagid)
-  end
+  limit = 50 if limit == nil
 
-  res = CardsetDescriptor.from_qcardset_list(qcardset_list)
+  res = []
+  if tag_ids != nil
+    tags = tag_ids.split(",")
+    qcardset_list = Qcardset.where('? = ANY(tags)', tags[0]).limit(limit)
+    tags.each do |tagid|
+      qcardset_list = qcardset_list.where('? = ANY(tags)', tagid)
+    end
+
+    res = CardsetDescriptor.from_qcardset_list(qcardset_list)
+  elsif query != nil
+    res = Utils.search_qcardset(query)
+  end
   ret_ok(res)
   return
 end

@@ -4,9 +4,14 @@ class CardsetDescriptor
   @@cardset_id = 0
   @@gid = ""
   @@title = ""
+  @@url = ""
   @@created_by = ""
   @@lang_terms = ""
   @@lang_definitions = ""
+  @@has_images = false
+  @@creator_id = 0
+  @@description = ""
+  @@term_count = 0
   @@like_count = 0
   @@flags = []
   @@terms = []
@@ -18,6 +23,21 @@ class CardsetDescriptor
       terms = Qcard.where(:cardset_id => setid)
       @@terms = terms
     end
+  end
+
+  def self.from_json(cardset_json, include_terms)
+    @@cardset_id = cardset_json['id']
+    @@url = cardset_json['url']
+    @@title = cardset_json['title']
+    @@has_images = cardset_json['has_images']
+    @@lang_terms = cardset_json['lang_terms']
+    @@lang_definitions = cardset_json['lang_definitions']
+    @@creator_id = cardset_json['creator_id']
+    @@description = cardset_json['description']
+    @@term_count = cardset_json['term_count']
+    @@like_count = 0
+    @@terms = cardset_json['terms'] if include_terms == true
+    return self
   end
 
   def self.from_qcardset(qcardset)
