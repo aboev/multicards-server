@@ -61,7 +61,7 @@ class CardsetDescriptor
   end
 
   def self.to_json 
-    {:cardset_id => @@cardset_id, :gid => @@gid, :title => @@title, :lang_terms => @@lang_terms, :lang_definitions => @@lang_definitions, :like_count => @@like_count, :flags => @@flags, :terms => @@terms}
+    {:cardset_id => @@cardset_id, :gid => @@gid, :title => @@title, :lang_terms => @@lang_terms, :lang_definitions => @@lang_definitions, :like_count => @@like_count, :flags => @@flags, :terms => @@terms, :has_images => @@has_images}
   end
 
 end
