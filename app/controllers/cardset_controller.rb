@@ -35,7 +35,7 @@ def get
   provider = Utils.parse_gid(gid)[0]
   qcardset = Utils.get_qcardset(gid)
   if ((provider == "quizlet") and (qcardset != nil))
-    ret_ok(CardsetDescriptor.from_qcardset_list([qcardset]))
+    ret_ok(CardsetDescriptor.from_qcardset_list([qcardset], true))
   else
     ret_error(Constants::ERROR_CARDSET_NOT_FOUND, Constants::MSG_CARDSET_NOT_FOUND)
   end
