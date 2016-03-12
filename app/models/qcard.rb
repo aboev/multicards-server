@@ -2,7 +2,11 @@ require 'json'
 
 class Qcard < ActiveRecord::Base
 
-  def get_metacard
+  def get_term_metacard
+    return {Constants::JSON_OPTION_TEXT => term}
+  end
+
+  def get_def_metacard
     image_json = {}
     begin
       image_json = eval(image) if ((image != nil) and (image.length > 0))

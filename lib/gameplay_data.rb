@@ -40,10 +40,14 @@ class GameplayData
       end
       options << udefinitions[termDefMap[term_id]] if (answer_id == option_count - 1)
 
-      question_data[Constants::JSON_QST_QUESTION] = question
-      question_data[Constants::JSON_QST_OPTIONS] = options if !has_images
-      question_data[Constants::JSON_QST_OPTIONS_IMG] = options if has_images
-      question_data[Constants::JSON_QST_OPTIONS] = [""] if has_images
+      if has_images == true
+        question_data[Constants::JSON_QST_QUESTION_IMG] = question
+        question_data[Constants::JSON_QST_OPTIONS_IMG] = options
+        question_data[Constants::JSON_QST_OPTIONS] = [""]
+      else
+        question_data[Constants::JSON_QST_QUESTION] = question
+        question_data[Constants::JSON_QST_OPTIONS] = options
+      end
       question_data[Constants::JSON_QST_ANSWER_ID] = answer_id
       question_data[Constants::JSON_QST_ID] = i
 
@@ -63,8 +67,8 @@ class GameplayData
     terms = []
     definitions = []
     cards.each do |card|
-      term = card.term
-      definition = cardset.has_images ? card.get_metacard : card.definition
+      term = cardset.has_images ? card.get_term_metacard : card.term
+      definition = cardset.has_images ? card.get_def_metacard : card.definition
       if inverted
         terms << definition
         definitions << term

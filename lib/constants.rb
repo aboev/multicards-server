@@ -66,6 +66,7 @@ class Constants
 
   JSON_QST_ID		=	"question_id"
   JSON_QST_QUESTION	=	"question"
+  JSON_QST_QUESTION_IMG	=	"question_img"
   JSON_QST_OPTIONS	=	"options"
   JSON_QST_OPTIONS_IMG	=	"options_img"
   JSON_QST_IMAGES	=	"images"
