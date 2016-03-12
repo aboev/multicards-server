@@ -218,7 +218,7 @@ module Utils
     return false
   end
 
-  def self.flag(gid, flagid)
+  def self.flag(gid, userid, flagid)
     res = false
 
     flag_log = FlagLog.where(:user_id => userid, :gid => gid, :flag_id => flagid, :commit => false).first

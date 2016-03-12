@@ -121,7 +121,7 @@ def put_flag
   gid = request.headers[Constants::HEADER_SETID]
   flagids = request.headers[Constants::HEADER_FLAGID]
   flagids.split(",").each do |flagid|
-    Utils.flag(gid, flagid)
+    Utils.flag(gid, @user.id, flagid)
   end
 
   msg = { :result => Constants::RESULT_OK }
