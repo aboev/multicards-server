@@ -21,7 +21,7 @@ def search
       qcardset_list = qcardset_list.where('? = ANY(tags)', tagid)
     end
 
-    res = CardsetDescriptor.from_qcardset_list(qcardset_list)
+    res = CardsetDescriptor.from_qcardset_list(qcardset_list, false)
   elsif query != nil
     res = Utils.search_qcardset_page(query, 1)
   end
@@ -55,7 +55,7 @@ end
 def popular
   limit = 50  
   qcardset_list = Qcardset.where("like_count > 0").order('like_count DESC').limit(limit)
-  res = CardsetDescriptor.from_qcardset_list(qcardset_list)
+  res = CardsetDescriptor.from_qcardset_list(qcardset_list, false)
   msg = { :result => Constants::RESULT_OK, :data => res }
   respond_to do |format|
     format.json  { render :json => msg.to_json }

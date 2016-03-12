@@ -40,7 +40,7 @@ class CardsetDescriptor
     return self
   end
 
-  def self.from_qcardset(qcardset)
+  def self.from_qcardset(qcardset, include_terms)
     @@cardset_id = qcardset.cardset_id
     @@title = qcardset.title
     @@gid = "quizlet_" + qcardset.cardset_id.to_s
@@ -48,14 +48,15 @@ class CardsetDescriptor
     @@lang_definitions = qcardset.lang_definitions
     @@like_count = qcardset.like_count
     @@flags = qcardset.flags
-    set_terms
+    @@has_images = qcardset.has_images
+    set_terms if include_terms
     return self
   end
 
-  def self.from_qcardset_list(qcardset_list)
+  def self.from_qcardset_list(qcardset_list, include_terms)
     res = []
     qcardset_list.each do |item|
-      res << from_qcardset(item).to_json
+      res << from_qcardset(item, include_terms).to_json
     end
     return res
   end
