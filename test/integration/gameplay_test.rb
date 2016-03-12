@@ -249,7 +249,7 @@ class GameplayTest < ActionDispatch::IntegrationTest
     question_msg = filter_wait(@@sock1_msg_list, Constants::SOCK_MSG_TYPE_NEW_QUESTION)[0][Constants::JSON_SOCK_MSG_BODY]
     question_type = question_msg[Constants::JSON_QST_TYPE]
     question = question_msg[Constants::JSON_QST_QUESTION]
-    options = question_msg[Constants::JSON_QST_OPTIONS]
+    options = question_msg[Constants::JSON_QST_OPTIONS_IMG]
     assert_not_nil options[0][Constants::JSON_OPTION_IMAGE]
     assert_not_nil options[0][Constants::JSON_OPTION_TEXT]
   end
